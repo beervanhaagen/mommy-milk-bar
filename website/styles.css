@@ -127,12 +127,12 @@ body {
 .hero-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 42px;
+    font-size: 60px;
     line-height: 1.15;
     letter-spacing: 0.01em;
     color: var(--text-black);
     margin-bottom: 16px;
-    max-width: 900px;
+    max-width: 1100px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -157,12 +157,12 @@ body {
 
 .hero-subtitle {
     font-family: 'Poppins', sans-serif;
-    font-weight: 400;
-    font-size: 24px;
+    font-weight: 700;
+    font-size: 42px;
     line-height: 1.4;
     letter-spacing: 0.01em;
     color: var(--secondary-pink);
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -182,7 +182,7 @@ body {
 .hero-visual-img {
     max-width: 100%;
     height: auto;
-    width: 600px;
+    width: 780px;
 }
 
 /* Download CTA */
