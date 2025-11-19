@@ -144,7 +144,15 @@ body {
 }
 
 .wel-highlight::after {
-    display: none;
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 3px;
+    background-image: url('data:image/svg+xml;utf8,<svg width="100" height="6" viewBox="0 0 100 6" xmlns="http://www.w3.org/2000/svg"><path d="M0 3 Q 5 0, 10 3 T 20 3 T 30 3 T 40 3 T 50 3 T 60 3 T 70 3 T 80 3 T 90 3 T 100 3" stroke="%23E47C7C" stroke-width="3" fill="none"/></svg>');
+    background-repeat: repeat-x;
+    background-size: 40px 6px;
 }
 
 .hero-subtitle {
@@ -205,23 +213,20 @@ body {
 .features-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 36px;
-    line-height: 1.15;
-    letter-spacing: 0.01em;
+    font-size: 40px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
     color: var(--text-black);
-    margin-bottom: 12px;
-    text-align: center;
+    margin-bottom: 16px;
 }
 
 .features-subtitle {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 24px;
-    line-height: 1.4;
-    letter-spacing: 0.01em;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
     color: var(--secondary-pink);
-    text-align: center;
-    margin: 0 auto;
 }
 
 /* Features Section - Alle elementen op gelijke hoogte */
@@ -232,28 +237,24 @@ body {
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
     max-width: 1100px;
     margin: 0 auto;
-    align-items: stretch;
-    grid-auto-rows: auto;
+    align-items: start;
 }
 
 .feature-card {
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 28px 24px;
+    border: 2px solid var(--secondary-pink);
+    border-radius: 16px;
+    padding: 30px 24px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 16px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    min-height: 520px;
-    height: 100%;
+    min-height: 600px;
 }
 
 .feature-card:hover {
@@ -261,26 +262,10 @@ body {
     box-shadow: 0 10px 30px rgba(228, 124, 124, 0.2);
 }
 
-.feature-card--full {
-    grid-column: 1 / -1;
-    min-height: 0;
-}
-
-.feature-card--full .feature-banner {
-    min-height: 360px;
-}
-
-.feature-card--full .feature-description {
-    max-width: 520px;
-}
-
-.feature-card--full .onboarding-demo {
-    max-width: 520px;
-}
-
 .feature-banner {
     width: 100%;
-    min-height: 240px;
+    margin-bottom: 24px;
+    min-height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -307,30 +292,29 @@ body {
     line-height: 1.2;
     letter-spacing: 0.02em;
     color: var(--secondary-pink);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     min-height: 50px;
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .feature-description {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
     text-align: center;
     color: var(--text-black);
-    max-width: 360px;
+    max-width: 280px;
 }
 
 /* Nieuwe Onboarding-Style Interactive Demo */
 .interactive-banner-new {
     background: #FFE8ED;
     border-radius: 16px;
-    padding: 32px 28px;
+    padding: 30px 20px;
     width: 100%;
-    min-height: 420px;
+    min-height: 480px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -339,7 +323,7 @@ body {
 
 .onboarding-demo {
     width: 100%;
-    max-width: 420px;
+    max-width: 320px;
 }
 
 .demo-title {
@@ -508,22 +492,19 @@ body {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     font-size: 36px;
-    line-height: 1.15;
-    letter-spacing: 0.01em;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
     color: var(--text-black);
-    margin-bottom: 12px;
-    text-align: center;
+    margin-bottom: 16px;
 }
 
 .disclaimer-subtitle {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 24px;
-    line-height: 1.4;
-    letter-spacing: 0.01em;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
     color: var(--secondary-pink);
-    text-align: center;
-    margin: 0 auto;
 }
 
 /* Values Section */
@@ -730,16 +711,6 @@ body {
     height: 40px;
 }
 
-@media (min-width: 1025px) {
-    .feature-card--left {
-        grid-column: 1;
-    }
-
-    .feature-card--right {
-        grid-column: 3;
-    }
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .container {
@@ -760,13 +731,8 @@ body {
     }
 
     .features-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 24px;
-    }
-
-    .feature-card--left,
-    .feature-card--right {
-        grid-column: auto;
     }
 
     .phones-grid {
@@ -866,7 +832,6 @@ body {
 
     .feature-card {
         min-height: auto;
-        height: auto;
     }
 
     .values-grid {
