@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderProgress = document.getElementById('sliderProgress');
 
     if (demoSlider && mimiChar && statusCard && statusCountdown && sliderProgress) {
+        const pinkGradient = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+
         demoSlider.addEventListener('input', function() {
             const value = parseInt(this.value);
             const totalMinutes = 120; // Total time needed (2 hours)
@@ -32,8 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 mimiChar.src = 'assets/images/open_mimi.png';
                 mimiChar.alt = 'Open Mimi';
 
-                // Update status card to green
-                statusCard.style.background = 'linear-gradient(135deg, #5BC667 0%, #4AAF57 100%)';
+                // Status card stays pink
+                statusCard.style.background = pinkGradient;
                 statusCard.querySelector('.status-text').textContent = 'Open!';
                 statusCard.querySelector('.status-subtext').textContent = 'Je kunt weer voeden';
             } else if (value >= totalMinutes * 0.75) {
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mimiChar.alt = 'Sleeping Mimi';
 
                 // Status card stays pink
-                statusCard.style.background = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+                statusCard.style.background = pinkGradient;
                 statusCard.querySelector('.status-text').textContent = 'Bijna daar';
                 statusCard.querySelector('.status-subtext').textContent = 'Nog eventjes geduld';
             } else {
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 mimiChar.alt = 'Closed Mimi';
 
                 // Status card stays pink
-                statusCard.style.background = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+                statusCard.style.background = pinkGradient;
                 statusCard.querySelector('.status-text').textContent = 'Nog niet open';
                 statusCard.querySelector('.status-subtext').textContent = 'Even geduld nog';
             }
