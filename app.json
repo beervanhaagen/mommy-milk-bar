@@ -4,9 +4,11 @@
     "slug": "mommy-milk-bar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/MMB_other/app_icon2.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "privacy": "unlisted",
+    "description": "Smart alcohol tracking for breastfeeding moms",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -21,10 +23,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.milkbar.app",
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "mommy-milk-bar",
+    "plugins": ["expo-router"]
   }
 }
