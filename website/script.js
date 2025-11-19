@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderProgress = document.getElementById('sliderProgress');
 
     if (demoSlider && mimiChar && statusCard && statusCountdown && sliderProgress) {
-        const pinkGradient = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+        const pinkGradient = '#F49B9B';
 
         demoSlider.addEventListener('input', function() {
             const value = parseInt(this.value);

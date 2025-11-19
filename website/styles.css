@@ -362,16 +362,16 @@ body {
 }
 
 .status-card {
-    background: linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%);
+    background: #F49B9B;
     border-radius: 14px;
-    padding: 14px;
+    padding: 2px;
     margin-bottom: 14px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(244, 155, 155, 0.2);
 }
 
 .status-card.safe {
-    background: linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%);
+    background: #F49B9B;
 }
 
 .status-text {
@@ -385,7 +385,7 @@ body {
 .status-countdown {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 32px;
+    font-size: 26px;
     color: #FFFFFF;
     line-height: 1;
     margin-bottom: 4px;
