@@ -187,32 +187,33 @@ body {
 }
 
 .phone-item-left {
-    left: calc(50% - 380px);
+    left: calc(50% - 180px);
     z-index: 1;
+    filter: drop-shadow(0px -1.94px 8.5px rgba(0, 0, 0, 0.1)) drop-shadow(0px -5.67px 5.97px rgba(255, 255, 255, 0.1)) drop-shadow(0px 12.23px 18.65px rgba(0, 0, 0, 0.15)) drop-shadow(0px 5.52px 5.52px rgba(0, 0, 0, 0.25));
 }
 
 .phone-item-center {
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
+    filter: drop-shadow(0px -2.59px 11.34px rgba(0, 0, 0, 0.1)) drop-shadow(0px -7.56px 7.96px rgba(255, 255, 255, 0.1)) drop-shadow(0px 16.31px 24.87px rgba(0, 0, 0, 0.15)) drop-shadow(0px 7.36px 7.36px rgba(0, 0, 0, 0.25));
 }
 
 .phone-item-right {
-    right: calc(50% - 380px);
+    right: calc(50% - 180px);
     z-index: 1;
+    filter: drop-shadow(0px -1.94px 8.5px rgba(0, 0, 0, 0.1)) drop-shadow(0px -5.67px 5.97px rgba(255, 255, 255, 0.1)) drop-shadow(0px 12.23px 18.65px rgba(0, 0, 0, 0.15)) drop-shadow(0px 5.52px 5.52px rgba(0, 0, 0, 0.25));
 }
 
 .phone-item-left .phone-img,
 .phone-item-right .phone-img {
-    max-width: 280px;
+    width: 180px;
     height: auto;
-    filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0.15));
 }
 
 .phone-item-center .phone-img {
-    max-width: 400px;
+    width: 240px;
     height: auto;
-    filter: drop-shadow(0px 15px 40px rgba(0, 0, 0, 0.2));
 }
 
 .phone-img:hover {
