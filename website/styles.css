@@ -265,18 +265,18 @@ body {
 .feature-banner {
     width: 100%;
     margin-bottom: 24px;
-    min-height: 280px;
+    min-height: 320px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .feature-banner-medium {
-    max-width: 240px;
+    max-width: 280px;
 }
 
 .feature-banner-large {
-    max-width: 320px;
+    max-width: 360px;
 }
 
 .feature-banner-img {
