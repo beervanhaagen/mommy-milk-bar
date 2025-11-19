@@ -101,7 +101,7 @@ body {
 /* Hero Section */
 .hero {
     position: relative;
-    padding: 120px 0 40px;
+    padding: 120px 0 0px;
     text-align: center;
     overflow: hidden;
 }
@@ -113,8 +113,7 @@ body {
 .hero .container {
     position: relative;
     z-index: 1;
-    max-width: 760px;
-    margin: 0 auto;
+    max-width: 1000px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -126,17 +125,16 @@ body {
 .hero-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 48px;
-    line-height: 1.2;
+    font-size: 36px;
+    line-height: 1.15;
     letter-spacing: 0.01em;
     color: var(--text-black);
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
     white-space: normal;
-    text-wrap: balance;
 }
 
 /* Roze onderstreeping voor "wel" met golvend lijntje */
@@ -160,15 +158,14 @@ body {
 .hero-subtitle {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 22px;
-    line-height: 1.35;
-    letter-spacing: 0.02em;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
     color: var(--secondary-pink);
-    max-width: 640px;
+    max-width: 100%;
     margin: 0 auto;
     text-align: center;
     white-space: normal;
-    text-wrap: balance;
 }
 
 /* iPhone Mockups Section */
@@ -721,8 +718,7 @@ body {
     }
 
     .hero-title {
-        font-size: 42px;
-        line-height: 1.2;
+        font-size: 44px;
     }
 
     .hero-subtitle,
