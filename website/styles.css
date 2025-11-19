@@ -107,15 +107,7 @@ body {
 }
 
 .hero-background {
-    position: absolute;
-    top: -150px;
-    right: -300px;
-    width: 800px;
-    height: 800px;
-    background: linear-gradient(345.64deg, #EBEAEC 7.71%, rgba(252, 241, 237, 0.5) 86%);
-    transform: matrix(1, 0.1, -0.11, 0.99, 0, 0);
-    z-index: 0;
-    border-radius: 50%;
+    display: none;
 }
 
 .hero .container {
@@ -127,7 +119,7 @@ body {
 .hero-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 48px;
+    font-size: 36px;
     line-height: 1.15;
     letter-spacing: 0.01em;
     color: var(--text-black);
@@ -159,7 +151,7 @@ body {
 .hero-subtitle {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 20px;
+    font-size: 16px;
     line-height: 1.4;
     letter-spacing: 0.01em;
     color: var(--secondary-pink);
