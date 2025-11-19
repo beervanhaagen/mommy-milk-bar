@@ -312,42 +312,43 @@ body {
 .interactive-banner-new {
     background: #FFE8ED;
     border-radius: 16px;
-    padding: 30px 20px;
+    padding: 22px 18px;
     width: 100%;
-    min-height: 480px;
+    min-height: 360px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 16px;
 }
 
 .onboarding-demo {
     width: 100%;
-    max-width: 320px;
+    max-width: 280px;
 }
 
 .demo-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 22px;
+    font-size: 20px;
     color: var(--text-black);
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .demo-subtitle {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-gray);
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
 .mimi-display {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 16px;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -361,12 +362,12 @@ body {
 }
 
 .status-card {
-    background: linear-gradient(135deg, #FFB8D1 0%, #F49B9B 100%);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 24px;
+    background: linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 18px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(244, 155, 155, 0.3);
+    box-shadow: 0 4px 10px rgba(244, 155, 155, 0.25);
 }
 
 .status-card.safe {
@@ -376,7 +377,7 @@ body {
 .status-text {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
     color: #FFFFFF;
     margin-bottom: 8px;
 }
@@ -384,7 +385,7 @@ body {
 .status-countdown {
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
-    font-size: 48px;
+    font-size: 40px;
     color: #FFFFFF;
     line-height: 1;
     margin-bottom: 8px;
@@ -393,14 +394,14 @@ body {
 .status-subtext {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 12px;
     color: rgba(255, 255, 255, 0.9);
 }
 
 .slider-section {
     background: #FFFFFF;
     border-radius: 16px;
-    padding: 20px;
+    padding: 16px;
 }
 
 .slider-title {
@@ -409,7 +410,7 @@ body {
     font-size: 14px;
     color: var(--text-black);
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .slider-controls {
