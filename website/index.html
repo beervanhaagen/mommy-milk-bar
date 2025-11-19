@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mommy Milk Bar - Wij helpen je met vertrouwen te genieten. Je avond uit en borstvoeding gaan WEL samen.">
+    <meta name="description" content="Mommy Milk Bar - Je avond uit en borstvoeding gaan WEL samen">
     <meta name="keywords" content="borstvoeding, alcohol, veilig, app, moeder, baby">
-    <title>Mommy Milk Bar - Wij helpen je met vertrouwen te genieten</title>
+    <title>Mommy Milk Bar - Je avond uit en borstvoeding gaan WEL samen</title>
     <link rel="icon" type="image/png" href="assets/images/MMB_app_icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,8 +36,8 @@
     <section class="hero">
         <div class="hero-background"></div>
         <div class="container">
-            <h1 class="hero-title">Wij helpen je met vertrouwen te genieten</h1>
-            <h2 class="hero-subtitle">Je avond uit en borstvoeding gaan WEL samen</h2>
+            <h1 class="hero-title">Je avond uit en borstvoeding gaan WEL samen</h1>
+            <p class="hero-subtitle">Voor moeders die borstvoeding geven en willen genieten zonder twijfels</p>
         </div>
     </section>
 
@@ -45,25 +45,31 @@
     <section class="phones-section">
         <div class="container">
             <div class="phones-grid">
-                <div class="phone-item">
-                    <img src="assets/images/iPhone 14 Pro Max_homescr.png" alt="Mommy Milk Bar Home Screen" class="phone-img">
-                </div>
-                <div class="phone-item">
+                <div class="phone-item phone-item-small">
                     <img src="assets/images/iPhone 14 Pro Max_Planning.png" alt="Planning Screen" class="phone-img">
                 </div>
-                <div class="phone-item">
+                <div class="phone-item phone-item-large">
+                    <img src="assets/images/iPhone 14 Pro Max_homescr.png" alt="Mommy Milk Bar Home Screen" class="phone-img">
+                </div>
+                <div class="phone-item phone-item-small">
                     <img src="assets/images/iPhone 14 Pro Max_planlog.png" alt="Plan & Log Screen" class="phone-img">
                 </div>
+            </div>
+
+            <!-- Download Button -->
+            <div class="download-cta">
+                <a href="#download" class="download-link">
+                    <img src="assets/images/appdownloadios.png" alt="Download de app voor iOS" class="download-img">
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Section Headers -->
-    <section class="section-headers">
+    <!-- Features Section Header -->
+    <section class="features-header">
         <div class="container">
-            <h2 class="section-header-main">Meer grip en duidelijkheid</h2>
-            <h3 class="section-header-sub">Geen advies, maar een hulpmiddel</h3>
-            <h3 class="section-header-question">Ben jij er klaar voor?</h3>
+            <h2 class="features-title">Meer grip en duidelijkheid tijdens een drankje</h2>
+            <h3 class="features-subtitle">Zo doen we dat!</h3>
         </div>
     </section>
 
@@ -71,48 +77,69 @@
     <section class="features-section">
         <div class="container">
             <div class="features-grid">
-                <!-- Feature 1: Plannen of loggen -->
+                <!-- Feature 1: Visuele planning (links) -->
                 <div class="feature-card">
-                    <div class="feature-badge">Plannen of loggen</div>
-                    <div class="feature-banner">
-                        <img src="assets/images/plannenloggenbanner.png" alt="Plannen of loggen banner" class="feature-banner-img">
-                    </div>
-                    <p class="feature-description">
-                        Vooruit plannen of in het moment registreren: beide helpen je om rust te creëren en te zien wanneer je waarschijnlijk weer kunt voeden.
-                    </p>
-                </div>
-
-                <!-- Feature 2: Visuele planning -->
-                <div class="feature-card">
-                    <div class="feature-badge">Visuele planning</div>
                     <div class="feature-banner">
                         <img src="assets/images/Planningsoverzichtbanner.png" alt="Planningsoverzicht banner" class="feature-banner-img">
                     </div>
+                    <div class="feature-badge">Visuele planning</div>
                     <p class="feature-description">
                         Veel moeders vinden het fijn om hun avondritme te zien. De tijdlijn geeft overzicht, helpt je rekenen en zorgt voor een relaxter gevoel tijdens je avond uit.
                     </p>
                 </div>
 
-                <!-- Feature 3: Interactieve Countdown -->
-                <div class="feature-card">
-                    <div class="feature-badge">Interactieve Countdown</div>
-                    <div class="feature-banner">
-                        <img src="assets/images/MimiInteractiveBanner.png" alt="Mimi Interactive banner" class="feature-banner-img">
+                <!-- Feature 2: Interactieve Countdown (midden) -->
+                <div class="feature-card feature-card-interactive">
+                    <div class="feature-banner interactive-banner">
+                        <div class="try-me-label">Try me!</div>
+                        <!-- Interactive Countdown Demo -->
+                        <div class="interactive-countdown">
+                            <div class="mimi-container">
+                                <img src="assets/images/open_mimi.png" alt="Mimi open" class="mimi-state" id="mimiOpen">
+                                <img src="assets/images/closed_mimi.png" alt="Mimi closed" class="mimi-state mimi-hidden" id="mimiClosed">
+                            </div>
+                            <div class="countdown-status" id="countdownStatus">
+                                <span class="status-icon">🟢</span>
+                                <span class="status-text">Veilig om te voeden!</span>
+                            </div>
+                            <div class="timeline-controls">
+                                <div class="timeline-labels">
+                                    <span class="timeline-label">Nu</span>
+                                    <span class="timeline-label timeline-value" id="timeValue">2.0 uur</span>
+                                    <span class="timeline-label">3+ uur</span>
+                                </div>
+                                <input type="range" min="0" max="180" value="120" class="timeline-slider" id="countdownSlider">
+                                <div class="timeline-track">
+                                    <div class="timeline-progress" id="countdownProgress"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <div class="feature-badge">Interactieve Countdown</div>
                     <p class="feature-description">
                         Mimi telt met je mee. Ze geeft je een informatieve verwachting op basis van algemene richtlijnen, zodat je kunt inschatten wanneer het meestal weer oké is om te voeden.
+                    </p>
+                </div>
+
+                <!-- Feature 3: Plannen of loggen (rechts) -->
+                <div class="feature-card feature-card-large">
+                    <div class="feature-banner feature-banner-large">
+                        <img src="assets/images/plannenloggenbanner.png" alt="Plannen of loggen banner" class="feature-banner-img">
+                    </div>
+                    <div class="feature-badge">Plannen of loggen</div>
+                    <p class="feature-description">
+                        Vooruit plannen of in het moment registreren: beide helpen je om rust te creëren en te zien wanneer je waarschijnlijk weer kunt voeden.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Action Headers -->
-    <section class="action-headers">
+    <!-- Disclaimer Section -->
+    <section class="disclaimer-section">
         <div class="container">
-            <h3 class="action-header">Zo doen we dat!</h3>
-            <h3 class="action-header">Lees dit goed.</h3>
-            <h3 class="action-header">Download de app!</h3>
+            <h2 class="disclaimer-title">Geen advies, maar een hulpmiddel</h2>
+            <h3 class="disclaimer-subtitle">Lees dit goed.</h3>
         </div>
     </section>
 
@@ -169,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- Disclaimer -->
+            <!-- Disclaimer Text -->
             <div class="disclaimer">
                 <p class="disclaimer-text">
                     MMB is een informatieve tool, geen medisch hulpmiddel. We geven geen persoonlijk advies, doen geen voorspellingen en meten geen alcohol in je bloed of melk. MMB indicaties zijn gebaseerd op algemene richtlijnen en jouw invoer, maar jij blijft altijd degene die bepaalt wat goed voelt voor jou en je baby. We zijn er om je te helpen met overzicht, rust en duidelijkheid, zodat jij met vertrouwen kunt genieten, zonder oordeel en zonder medische claims.
@@ -181,6 +208,7 @@
     <!-- Download Section -->
     <section class="download-section">
         <div class="container">
+            <h3 class="download-title">Download de app!</h3>
             <a href="#download" class="download-link">
                 <img src="assets/images/appdownloadios.png" alt="Download de app voor iOS" class="download-img">
             </a>

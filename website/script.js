@@ -1,11 +1,58 @@
 // Mommy Milk Bar - Landing Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle download link click
-    const downloadLink = document.querySelector('.download-link');
+    // Interactive Countdown Functionality
+    const countdownSlider = document.getElementById('countdownSlider');
+    const timeValue = document.getElementById('timeValue');
+    const countdownProgress = document.getElementById('countdownProgress');
+    const countdownStatus = document.getElementById('countdownStatus');
+    const mimiOpen = document.getElementById('mimiOpen');
+    const mimiClosed = document.getElementById('mimiClosed');
 
-    if (downloadLink) {
-        downloadLink.addEventListener('click', function(e) {
+    if (countdownSlider && timeValue && countdownProgress && countdownStatus && mimiOpen && mimiClosed) {
+        countdownSlider.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const hours = value / 60;
+
+            // Update time display
+            timeValue.textContent = hours.toFixed(1) + ' uur';
+
+            // Update progress bar
+            const percentage = (value / 180) * 100;
+            countdownProgress.style.width = percentage + '%';
+
+            // Update status and Mimi state
+            if (hours >= 2.0) {
+                // Safe to feed
+                countdownStatus.classList.remove('not-safe');
+                countdownStatus.classList.add('safe');
+                countdownStatus.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Veilig om te voeden!</span>';
+
+                // Show open Mimi
+                mimiOpen.classList.remove('mimi-hidden');
+                mimiClosed.classList.add('mimi-hidden');
+            } else {
+                // Not safe yet
+                countdownStatus.classList.remove('safe');
+                countdownStatus.classList.add('not-safe');
+                countdownStatus.innerHTML = '<span class="status-icon">🔴</span><span class="status-text">Nog niet veilig</span>';
+
+                // Show closed Mimi
+                mimiOpen.classList.add('mimi-hidden');
+                mimiClosed.classList.remove('mimi-hidden');
+            }
+        });
+
+        // Initialize slider position
+        countdownSlider.value = 120;
+        countdownSlider.dispatchEvent(new Event('input'));
+    }
+
+    // Handle download link clicks
+    const downloadLinks = document.querySelectorAll('.download-link');
+
+    downloadLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
             e.preventDefault();
 
             // Check if iOS
@@ -19,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Mommy Milk Bar is momenteel alleen beschikbaar voor iPhone. Bezoek deze pagina op je iPhone om de app te downloaden!');
             }
         });
-    }
+    });
 
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
