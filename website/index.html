@@ -36,8 +36,8 @@
     <section class="hero">
         <div class="hero-background"></div>
         <div class="container">
-            <h1 class="hero-title">Je avond uit en borstvoeding gaan WEL samen</h1>
-            <p class="hero-subtitle">Voor moeders die borstvoeding geven en willen genieten zonder twijfels</p>
+            <h1 class="hero-title">Je avond uit en borstvoeding gaan <span class="wel-highlight">wel</span> samen</h1>
+            <h3 class="hero-subtitle">Voor moeders die borstvoeding geven en willen genieten zonder twijfels</h3>
         </div>
     </section>
 
@@ -45,13 +45,13 @@
     <section class="phones-section">
         <div class="container">
             <div class="phones-grid">
-                <div class="phone-item phone-item-small">
+                <div class="phone-item phone-item-left">
                     <img src="assets/images/iPhone 14 Pro Max_Planning.png" alt="Planning Screen" class="phone-img">
                 </div>
-                <div class="phone-item phone-item-large">
+                <div class="phone-item phone-item-center">
                     <img src="assets/images/iPhone 14 Pro Max_homescr.png" alt="Mommy Milk Bar Home Screen" class="phone-img">
                 </div>
-                <div class="phone-item phone-item-small">
+                <div class="phone-item phone-item-right">
                     <img src="assets/images/iPhone 14 Pro Max_planlog.png" alt="Plan & Log Screen" class="phone-img">
                 </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="features-grid">
                 <!-- Feature 1: Visuele planning (links) -->
                 <div class="feature-card">
-                    <div class="feature-banner">
+                    <div class="feature-banner feature-banner-medium">
                         <img src="assets/images/Planningsoverzichtbanner.png" alt="Planningsoverzicht banner" class="feature-banner-img">
                     </div>
                     <div class="feature-badge">Visuele planning</div>
@@ -90,27 +90,38 @@
 
                 <!-- Feature 2: Interactieve Countdown (midden) -->
                 <div class="feature-card feature-card-interactive">
-                    <div class="feature-banner interactive-banner">
-                        <div class="try-me-label">Try me!</div>
-                        <!-- Interactive Countdown Demo -->
-                        <div class="interactive-countdown">
-                            <div class="mimi-container">
-                                <img src="assets/images/open_mimi.png" alt="Mimi open" class="mimi-state" id="mimiOpen">
-                                <img src="assets/images/closed_mimi.png" alt="Mimi closed" class="mimi-state mimi-hidden" id="mimiClosed">
+                    <div class="feature-banner interactive-banner-new">
+                        <!-- Exact zoals onboarding screen -->
+                        <div class="onboarding-demo">
+                            <h3 class="demo-title">Probeer het zelf</h3>
+                            <p class="demo-subtitle">Beweeg de slider om te zien hoe Mimi verandert</p>
+
+                            <!-- Mimi Container -->
+                            <div class="mimi-display">
+                                <img src="assets/images/closed_mimi.png" alt="Mimi" class="mimi-char" id="mimiChar">
                             </div>
-                            <div class="countdown-status" id="countdownStatus">
-                                <span class="status-icon">🟢</span>
-                                <span class="status-text">Veilig om te voeden!</span>
+
+                            <!-- Status Card -->
+                            <div class="status-card" id="statusCard">
+                                <div class="status-text">Nog niet open</div>
+                                <div class="status-countdown" id="statusCountdown">01:35</div>
+                                <div class="status-subtext">Even geduld nog</div>
                             </div>
-                            <div class="timeline-controls">
-                                <div class="timeline-labels">
-                                    <span class="timeline-label">Nu</span>
-                                    <span class="timeline-label timeline-value" id="timeValue">2.0 uur</span>
-                                    <span class="timeline-label">3+ uur</span>
-                                </div>
-                                <input type="range" min="0" max="180" value="120" class="timeline-slider" id="countdownSlider">
-                                <div class="timeline-track">
-                                    <div class="timeline-progress" id="countdownProgress"></div>
+
+                            <!-- Slider Section -->
+                            <div class="slider-section">
+                                <div class="slider-title">Tijd sinds laatste drankje</div>
+                                <div class="slider-controls">
+                                    <div class="slider-labels">
+                                        <span class="slider-label">Nu</span>
+                                        <span class="slider-label">1u</span>
+                                        <span class="slider-label">2u</span>
+                                        <span class="slider-label">3u</span>
+                                    </div>
+                                    <input type="range" min="0" max="180" value="95" class="demo-slider" id="demoSlider">
+                                    <div class="slider-track-bg">
+                                        <div class="slider-progress-fill" id="sliderProgress"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +133,7 @@
                 </div>
 
                 <!-- Feature 3: Plannen of loggen (rechts) -->
-                <div class="feature-card feature-card-large">
+                <div class="feature-card">
                     <div class="feature-banner feature-banner-large">
                         <img src="assets/images/plannenloggenbanner.png" alt="Plannen of loggen banner" class="feature-banner-img">
                     </div>
@@ -197,7 +208,7 @@
             </div>
 
             <!-- Disclaimer Text -->
-            <div class="disclaimer">
+            <div class="disclaimer-text-container">
                 <p class="disclaimer-text">
                     MMB is een informatieve tool, geen medisch hulpmiddel. We geven geen persoonlijk advies, doen geen voorspellingen en meten geen alcohol in je bloed of melk. MMB indicaties zijn gebaseerd op algemene richtlijnen en jouw invoer, maar jij blijft altijd degene die bepaalt wat goed voelt voor jou en je baby. We zijn er om je te helpen met overzicht, rust en duidelijkheid, zodat jij met vertrouwen kunt genieten, zonder oordeel en zonder medische claims.
                 </p>

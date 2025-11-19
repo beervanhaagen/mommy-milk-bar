@@ -1,51 +1,65 @@
 // Mommy Milk Bar - Landing Page JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Interactive Countdown Functionality
-    const countdownSlider = document.getElementById('countdownSlider');
-    const timeValue = document.getElementById('timeValue');
-    const countdownProgress = document.getElementById('countdownProgress');
-    const countdownStatus = document.getElementById('countdownStatus');
-    const mimiOpen = document.getElementById('mimiOpen');
-    const mimiClosed = document.getElementById('mimiClosed');
+    // Interactive Countdown Functionality (Onboarding-style Demo)
+    const demoSlider = document.getElementById('demoSlider');
+    const mimiChar = document.getElementById('mimiChar');
+    const statusCard = document.getElementById('statusCard');
+    const statusCountdown = document.getElementById('statusCountdown');
+    const sliderProgress = document.getElementById('sliderProgress');
 
-    if (countdownSlider && timeValue && countdownProgress && countdownStatus && mimiOpen && mimiClosed) {
-        countdownSlider.addEventListener('input', function() {
+    if (demoSlider && mimiChar && statusCard && statusCountdown && sliderProgress) {
+        demoSlider.addEventListener('input', function() {
             const value = parseInt(this.value);
-            const hours = value / 60;
+            const totalMinutes = 120; // Total time needed (2 hours)
+            const remainingMinutes = Math.max(0, totalMinutes - value);
 
-            // Update time display
-            timeValue.textContent = hours.toFixed(1) + ' uur';
+            // Calculate hours and minutes for countdown
+            const hours = Math.floor(remainingMinutes / 60);
+            const minutes = remainingMinutes % 60;
+            const countdownText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 
             // Update progress bar
             const percentage = (value / 180) * 100;
-            countdownProgress.style.width = percentage + '%';
+            sliderProgress.style.width = percentage + '%';
 
-            // Update status and Mimi state
-            if (hours >= 2.0) {
-                // Safe to feed
-                countdownStatus.classList.remove('not-safe');
-                countdownStatus.classList.add('safe');
-                countdownStatus.innerHTML = '<span class="status-icon">🟢</span><span class="status-text">Veilig om te voeden!</span>';
+            // Update countdown display
+            statusCountdown.textContent = countdownText;
 
-                // Show open Mimi
-                mimiOpen.classList.remove('mimi-hidden');
-                mimiClosed.classList.add('mimi-hidden');
+            // Update Mimi character and status based on time
+            if (value >= totalMinutes) {
+                // Safe to feed - show open Mimi
+                mimiChar.src = 'assets/images/open_mimi.png';
+                mimiChar.alt = 'Open Mimi';
+
+                // Update status card to green
+                statusCard.style.background = 'linear-gradient(135deg, #5BC667 0%, #4AAF57 100%)';
+                statusCard.querySelector('.status-text').textContent = 'Open!';
+                statusCard.querySelector('.status-subtext').textContent = 'Je kunt weer voeden';
+            } else if (value >= totalMinutes * 0.75) {
+                // Almost there - show sleeping Mimi
+                mimiChar.src = 'assets/images/sleeping_mimi_2.png';
+                mimiChar.alt = 'Sleeping Mimi';
+
+                // Status card stays pink
+                statusCard.style.background = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+                statusCard.querySelector('.status-text').textContent = 'Bijna daar';
+                statusCard.querySelector('.status-subtext').textContent = 'Nog eventjes geduld';
             } else {
-                // Not safe yet
-                countdownStatus.classList.remove('safe');
-                countdownStatus.classList.add('not-safe');
-                countdownStatus.innerHTML = '<span class="status-icon">🔴</span><span class="status-text">Nog niet veilig</span>';
+                // Not safe yet - show closed Mimi
+                mimiChar.src = 'assets/images/closed_mimi.png';
+                mimiChar.alt = 'Closed Mimi';
 
-                // Show closed Mimi
-                mimiOpen.classList.add('mimi-hidden');
-                mimiClosed.classList.remove('mimi-hidden');
+                // Status card stays pink
+                statusCard.style.background = 'linear-gradient(135deg, #F49B9B 0%, #E47C7C 100%)';
+                statusCard.querySelector('.status-text').textContent = 'Nog niet open';
+                statusCard.querySelector('.status-subtext').textContent = 'Even geduld nog';
             }
         });
 
         // Initialize slider position
-        countdownSlider.value = 120;
-        countdownSlider.dispatchEvent(new Event('input'));
+        demoSlider.value = 95;
+        demoSlider.dispatchEvent(new Event('input'));
     }
 
     // Handle download link clicks

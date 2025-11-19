@@ -1,4 +1,4 @@
-/* Mommy Milk Bar - Updated Landing Page */
+/* Mommy Milk Bar - Final Landing Page */
 
 * {
     margin: 0;
@@ -137,20 +137,38 @@ body {
     margin-right: auto;
 }
 
+/* Roze onderstreeping voor "wel" met golvend lijntje */
+.wel-highlight {
+    position: relative;
+    display: inline-block;
+}
+
+.wel-highlight::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 3px;
+    background-image: url('data:image/svg+xml;utf8,<svg width="100" height="6" viewBox="0 0 100 6" xmlns="http://www.w3.org/2000/svg"><path d="M0 3 Q 5 0, 10 3 T 20 3 T 30 3 T 40 3 T 50 3 T 60 3 T 70 3 T 80 3 T 90 3 T 100 3" stroke="%23E47C7C" stroke-width="3" fill="none"/></svg>');
+    background-repeat: repeat-x;
+    background-size: 40px 6px;
+}
+
 .hero-subtitle {
     font-family: 'Poppins', sans-serif;
-    font-weight: 400;
+    font-weight: 700;
     font-size: 24px;
-    line-height: 1.4;
-    text-align: center;
-    color: var(--text-gray);
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    color: var(--secondary-pink);
     max-width: 700px;
     margin: 0 auto;
 }
 
-/* iPhone Mockups Section */
+/* iPhone Mockups Section with Overlap */
 .phones-section {
-    padding: 60px 0;
+    padding: 80px 0;
     background-color: var(--bg-primary);
 }
 
@@ -158,34 +176,50 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px;
-    flex-wrap: wrap;
     margin-bottom: 40px;
+    position: relative;
+    height: 550px;
 }
 
 .phone-item {
-    flex: 0 0 auto;
+    position: absolute;
+    transition: transform 0.3s ease;
 }
 
-.phone-item-small .phone-img {
-    max-width: 224px; /* 280px * 0.8 */
+.phone-item-left {
+    left: calc(50% - 380px);
+    z-index: 1;
+}
+
+.phone-item-center {
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.phone-item-right {
+    right: calc(50% - 380px);
+    z-index: 1;
+}
+
+.phone-item-left .phone-img,
+.phone-item-right .phone-img {
+    max-width: 280px;
     height: auto;
     filter: drop-shadow(0px 10px 30px rgba(0, 0, 0, 0.15));
-    transition: transform 0.3s ease;
 }
 
-.phone-item-large .phone-img {
-    max-width: 336px; /* 280px * 1.2 */
+.phone-item-center .phone-img {
+    max-width: 400px;
     height: auto;
     filter: drop-shadow(0px 15px 40px rgba(0, 0, 0, 0.2));
-    transition: transform 0.3s ease;
 }
 
 .phone-img:hover {
     transform: translateY(-10px);
 }
 
-/* Download CTA under phones */
+/* Download CTA */
 .download-cta {
     text-align: center;
     margin-top: 40px;
@@ -226,7 +260,7 @@ body {
     color: var(--secondary-pink);
 }
 
-/* Features Section */
+/* Features Section - Alle elementen op gelijke hoogte */
 .features-section {
     padding: 40px 0 60px;
     background-color: var(--bg-primary);
@@ -238,11 +272,12 @@ body {
     gap: 30px;
     max-width: 1100px;
     margin: 0 auto;
+    align-items: start;
 }
 
 .feature-card {
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--secondary-pink);
     border-radius: 16px;
     padding: 30px 24px;
     text-align: center;
@@ -250,17 +285,25 @@ body {
     flex-direction: column;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 600px;
 }
 
 .feature-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(228, 124, 124, 0.2);
 }
 
 .feature-banner {
     width: 100%;
-    max-width: 280px;
     margin-bottom: 24px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-banner-medium {
+    max-width: 240px;
 }
 
 .feature-banner-large {
@@ -281,6 +324,9 @@ body {
     letter-spacing: 0.02em;
     color: var(--secondary-pink);
     margin-bottom: 16px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
 }
 
 .feature-description {
@@ -293,110 +339,128 @@ body {
     max-width: 280px;
 }
 
-/* Interactive Countdown */
-.feature-card-interactive {
-    position: relative;
-}
-
-.interactive-banner {
-    position: relative;
-    background: #FFF;
+/* Nieuwe Onboarding-Style Interactive Demo */
+.interactive-banner-new {
+    background: #FFE8ED;
     border-radius: 16px;
     padding: 30px 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.try-me-label {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #FFFFFF;
-    color: var(--secondary-pink);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 6px 16px;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(228, 124, 124, 0.3);
-    z-index: 10;
-}
-
-.interactive-countdown {
+    width: 100%;
+    min-height: 480px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
 }
 
-.mimi-container {
-    position: relative;
-    width: 120px;
-    height: 120px;
+.onboarding-demo {
+    width: 100%;
+    max-width: 320px;
 }
 
-.mimi-state {
-    position: absolute;
-    top: 0;
-    left: 0;
+.demo-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text-black);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.demo-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--text-gray);
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.mimi-display {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mimi-char {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    transition: opacity 0.5s ease;
+    transition: all 0.5s ease;
 }
 
-.mimi-hidden {
-    opacity: 0;
+.status-card {
+    background: linear-gradient(135deg, #FFB8D1 0%, #F49B9B 100%);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(244, 155, 155, 0.3);
 }
 
-.countdown-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 20px;
-    background: #FFFFFF;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 14px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.countdown-status.not-safe {
-    background: linear-gradient(135deg, #FFE8E8 0%, #FFCCCC 100%);
-}
-
-.countdown-status.safe {
-    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
-}
-
-.status-icon {
-    font-size: 16px;
+.status-card.safe {
+    background: linear-gradient(135deg, #A8E6CF 0%, #5BC667 100%);
 }
 
 .status-text {
     font-family: 'Poppins', sans-serif;
-    font-size: 13px;
+    font-weight: 600;
+    font-size: 16px;
+    color: #FFFFFF;
+    margin-bottom: 8px;
 }
 
-.timeline-controls {
-    width: 100%;
-    max-width: 250px;
+.status-countdown {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    color: #FFFFFF;
+    line-height: 1;
+    margin-bottom: 8px;
 }
 
-.timeline-labels {
+.status-subtext {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.slider-section {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.slider-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-black);
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.slider-controls {
+    position: relative;
+}
+
+.slider-labels {
     display: flex;
     justify-content: space-between;
     margin-bottom: 12px;
+    padding: 0 4px;
+}
+
+.slider-label {
+    font-family: 'Poppins', sans-serif;
     font-size: 12px;
     color: var(--text-gray);
 }
 
-.timeline-value {
-    font-weight: 600;
-    color: var(--secondary-pink);
-}
-
-.timeline-slider {
+.demo-slider {
     width: 100%;
     height: 8px;
     -webkit-appearance: none;
@@ -409,35 +473,29 @@ body {
     margin-bottom: 12px;
 }
 
-.timeline-slider::-webkit-slider-thumb {
+.demo-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background: var(--secondary-pink);
     border: 3px solid #FFFFFF;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(228, 124, 124, 0.4);
 }
 
-.timeline-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(228, 124, 124, 0.3);
-}
-
-.timeline-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+.demo-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
     background: var(--secondary-pink);
     border: 3px solid #FFFFFF;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(228, 124, 124, 0.4);
 }
 
-.timeline-track {
+.slider-track-bg {
     width: 100%;
     height: 8px;
     background: #E0E0E0;
@@ -447,11 +505,11 @@ body {
     pointer-events: none;
 }
 
-.timeline-progress {
+.slider-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--secondary-pink) 0%, var(--primary-pink) 100%);
     border-radius: 4px;
-    width: 67%;
+    width: 53%;
     transition: width 0.1s ease;
 }
 
@@ -578,14 +636,12 @@ body {
     flex: 1;
 }
 
-/* Disclaimer */
-.disclaimer {
+/* Disclaimer Text - Transparant */
+.disclaimer-text-container {
     max-width: 700px;
     margin: 0 auto;
     text-align: center;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 12px;
+    padding: 30px 0;
 }
 
 .disclaimer-text {
@@ -696,7 +752,8 @@ body {
         font-size: 44px;
     }
 
-    .hero-subtitle {
+    .hero-subtitle,
+    .features-subtitle {
         font-size: 20px;
     }
 
@@ -709,12 +766,31 @@ body {
         gap: 24px;
     }
 
-    .phone-item-small .phone-img {
-        max-width: 200px;
+    .phones-grid {
+        height: 480px;
     }
 
-    .phone-item-large .phone-img {
-        max-width: 280px;
+    .phone-item-left,
+    .phone-item-right {
+        left: auto;
+        right: auto;
+    }
+
+    .phone-item-left {
+        left: calc(50% - 320px);
+    }
+
+    .phone-item-right {
+        right: calc(50% - 320px);
+    }
+
+    .phone-item-left .phone-img,
+    .phone-item-right .phone-img {
+        max-width: 240px;
+    }
+
+    .phone-item-center .phone-img {
+        max-width: 350px;
     }
 }
 
@@ -742,23 +818,20 @@ body {
     }
 
     .hero-title {
-        font-size: 36px;
+        font-size: 32px;
     }
 
-    .hero-subtitle {
+    .hero-subtitle,
+    .features-subtitle {
         font-size: 18px;
     }
 
     .features-title {
-        font-size: 30px;
-    }
-
-    .features-subtitle {
-        font-size: 20px;
+        font-size: 28px;
     }
 
     .disclaimer-title {
-        font-size: 30px;
+        font-size: 28px;
     }
 
     .disclaimer-subtitle {
@@ -766,18 +839,30 @@ body {
     }
 
     .phones-grid {
+        height: auto;
         flex-direction: column;
         gap: 30px;
+        position: static;
     }
 
-    .phone-item-small .phone-img,
-    .phone-item-large .phone-img {
-        max-width: 240px;
+    .phone-item {
+        position: static;
+        transform: none !important;
+    }
+
+    .phone-item-left .phone-img,
+    .phone-item-right .phone-img,
+    .phone-item-center .phone-img {
+        max-width: 280px;
     }
 
     .features-grid {
         grid-template-columns: 1fr;
         gap: 24px;
+    }
+
+    .feature-card {
+        min-height: auto;
     }
 
     .values-grid {
@@ -813,23 +898,20 @@ body {
     }
 
     .hero-title {
-        font-size: 28px;
+        font-size: 26px;
     }
 
-    .hero-subtitle {
+    .hero-subtitle,
+    .features-subtitle {
         font-size: 16px;
     }
 
     .features-title {
-        font-size: 26px;
-    }
-
-    .features-subtitle {
-        font-size: 18px;
+        font-size: 24px;
     }
 
     .disclaimer-title {
-        font-size: 26px;
+        font-size: 24px;
     }
 
     .disclaimer-subtitle {
@@ -839,11 +921,6 @@ body {
     .feature-badge,
     .download-title {
         font-size: 18px;
-    }
-
-    .phone-item-small .phone-img,
-    .phone-item-large .phone-img {
-        max-width: 200px;
     }
 
     .values-mimi {
@@ -858,12 +935,12 @@ body {
         padding: 30px 20px;
     }
 
-    .mimi-container {
-        width: 100px;
-        height: 100px;
+    .mimi-display {
+        width: 110px;
+        height: 110px;
     }
 
-    .timeline-controls {
-        max-width: 200px;
+    .status-countdown {
+        font-size: 40px;
     }
 }
