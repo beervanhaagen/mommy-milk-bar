@@ -23,9 +23,9 @@ const preheader =
 const IMAGE_BASE_URL = 'https://www.mommymilkbar.nl/assets/images';
 const imageUrls = {
   mascot: `${IMAGE_BASE_URL}/mimi_happy.png`,
-  iphonePlanlog: `${IMAGE_BASE_URL}/iphone_planlog_optimized_tiny.png`,
-  iphoneHomescr: `${IMAGE_BASE_URL}/iphone_homescr_optimized_tiny.png`,
-  iphonePlanning: `${IMAGE_BASE_URL}/iphone_planning_optimized_tiny.png`,
+  iphonePlanlog: `${IMAGE_BASE_URL}/iphone_planlog_optimized_medium.png`,
+  iphoneHomescr: `${IMAGE_BASE_URL}/iphone_homescr_optimized_medium.png`,
+  iphonePlanning: `${IMAGE_BASE_URL}/iphone_planning_optimized_medium.png`,
   appStore: `${IMAGE_BASE_URL}/appdownloadios.png`,
   instagram: `${IMAGE_BASE_URL}/Instagram_logo.png`,
 };
