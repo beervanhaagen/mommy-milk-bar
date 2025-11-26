@@ -2,7 +2,7 @@
 
 **Last Updated:** January 26, 2025
 **Target:** App Store Submission Ready
-**Status:** 5/9 Must-Fix Complete ✅
+**Status:** 7/9 Must-Fix Complete ✅
 
 ---
 
@@ -35,6 +35,13 @@
   - ✅ Sync to Supabase on account creation
   - ✅ Load from Supabase on app startup
 
+- [x] **TASK 6:** Localize English Text to Dutch
+  - ✅ Translated [app/result.tsx](app/result.tsx) with improved safety messaging
+  - ✅ Translated [app/settings.tsx](app/settings.tsx) completely
+  - ✅ Translated [app/plan.tsx](app/plan.tsx) all labels and buttons
+  - ✅ Translated [app/(tabs)/drinks.tsx](app/(tabs)/drinks.tsx)
+  - ✅ Verified auth screens already in Dutch
+
 ### Security
 - [x] **Verified .env not in Git**
   - ✅ .env was never committed
@@ -43,25 +50,16 @@
 
 ---
 
-## 🔴 MUST-FIX BEFORE SUBMISSION (4 Remaining)
+## 🔴 MUST-FIX BEFORE SUBMISSION (2 Remaining)
 
 ### UX - Critical Bugs
-
-**TASK 6: Localize English Text to Dutch** 🔴 BLOCKING
-- **Issue:** Mixed English/Dutch breaks brand consistency
-- **Files to fix:**
-  - [ ] [app/result.tsx](app/result.tsx) - "Likely safe at", "Set Reminder", "New Session"
-  - [ ] [app/settings.tsx](app/settings.tsx) - Entire screen is English
-  - [ ] Check all screens for English text
-- **Impact:** User experience, brand consistency
-- **Estimate:** 1-2 hours
 
 **TASK 7: Remove/Implement Non-Functional UI Elements** 🔴 BLOCKING
 - **Issue:** Broken buttons hurt user trust and App Store approval
 - **Files to fix:**
-  - [ ] [app/(tabs)/profile.tsx](app/(tabs)/profile.tsx:461-479) - "Account instellingen", "Notificaties", etc.
-  - [ ] [app/settings.tsx](app/settings.tsx:201-209) - "Privacy Policy", "Disclaimer" buttons
-  - [ ] [app/plan.tsx](app/plan.tsx:74-76) - "Change Time" button
+  - [ ] [app/(tabs)/profile.tsx](app/(tabs)/profile.tsx:461-479) - "Account instellingen", "Notificaties", "Privacy & data", "Help & ondersteuning"
+  - [x] [app/settings.tsx](app/settings.tsx) - Already removed broken "Privacy Policy" and "Disclaimer" buttons ✅
+  - [ ] [app/plan.tsx](app/plan.tsx:74-76) - "Tijdstip wijzigen" button (non-functional)
 - **Options:**
   - Quick: Comment out or delete non-functional links
   - Better: Implement basic functionality or show "Coming soon"
@@ -70,14 +68,14 @@
 
 ### Algorithm/Safety - Critical Messaging
 
-**TASK 8: Improve "Likely Safe" Messaging** 🟠 RECOMMENDED
-- **Issue:** [app/result.tsx](app/result.tsx:90) uses checkmark that feels too authoritative
+**TASK 8: Improve "Likely Safe" Messaging** ✅ COMPLETE
+- **Issue:** [app/result.tsx](app/result.tsx) used checkmark that felt too authoritative
 - **Implementation:**
-  - [ ] Change "✅ Likely Safe Now!" → "Veilig volgens berekening"
-  - [ ] Add sub-text: "Dit is een indicatie. Raadpleeg bij twijfel een professional."
-  - [ ] Consider replacing checkmark with ℹ️ or removing emoji
+  - [x] Changed "✅ Likely Safe Now!" → "Veilig volgens berekening"
+  - [x] Added disclaimer: "Dit is een indicatie. Raadpleeg bij twijfel een professional."
+  - [x] Removed checkmark emoji for less authoritative tone
 - **Impact:** Liability protection, clear risk communication
-- **Estimate:** 30 minutes
+- **Completed:** January 26, 2025 (as part of Task 6)
 
 **TASK 9: Add Quantity-Based Alcohol Warnings** 🟠 RECOMMENDED
 - **Issue:** App doesn't warn about health risks of heavy drinking
@@ -297,4 +295,6 @@ You're ready when:
 
 **Questions or need help?** Reference the comprehensive audit document and task descriptions for detailed implementation guidance.
 
-**Progress:** 5/9 Must-Fix Complete | ~60% Ready for Submission
+**Progress:** 7/9 Must-Fix Complete (Tasks 1-6, 8) | ~75% Ready for Submission
+
+**Remaining Must-Fix:** Task 7 (broken buttons), Task 9 (alcohol warnings)
