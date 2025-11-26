@@ -18,15 +18,14 @@ const instagramUrl =
 const preheader =
   'Activeer je e-mail en ontdek hoe Mimi je helpt plannen, loggen en ontspannen.';
 
-// Images hosted on mommymilkbar.nl for reliable delivery across all email clients
-// This approach avoids inline attachment issues with Apple Mail / iCloud
-const IMAGE_BASE_URL = 'https://mommymilkbar.nl/assets/images';
+// Industry standard: Hosted images (like Amazon, Airbnb, etc. all use)
+// Images served from CDN with proper caching
+const IMAGE_BASE_URL = 'https://www.mommymilkbar.nl/assets/images';
 const imageUrls = {
   mascot: `${IMAGE_BASE_URL}/mimi_happy.png`,
-  banner: `${IMAGE_BASE_URL}/plannenloggenbanner_v2.png`,
-  iphonePlanlog: `${IMAGE_BASE_URL}/iphone_planlog_optimized.png`,
-  iphoneHomescr: `${IMAGE_BASE_URL}/iphone_homescr_optimized.png`,
-  iphonePlanning: `${IMAGE_BASE_URL}/iphone_planning_optimized.png`,
+  iphonePlanlog: `${IMAGE_BASE_URL}/iphone_planlog_optimized_tiny.png`,
+  iphoneHomescr: `${IMAGE_BASE_URL}/iphone_homescr_optimized_tiny.png`,
+  iphonePlanning: `${IMAGE_BASE_URL}/iphone_planning_optimized_tiny.png`,
   appStore: `${IMAGE_BASE_URL}/appdownloadios.png`,
   instagram: `${IMAGE_BASE_URL}/Instagram_logo.png`,
 };
