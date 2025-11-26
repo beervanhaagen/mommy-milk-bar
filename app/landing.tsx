@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from "react-native";
+import Svg, { Path } from "react-native-svg";
 import { useRouter } from "expo-router";
 import { useStore } from "../src/state/store";
 import { useAuth } from "../src/contexts/AuthContext";
@@ -22,6 +23,13 @@ export default function Landing() {
 
   return (
     <View style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Svg width={20} height={20} viewBox="0 0 24 24">
+          <Path d="M15 18l-6-6 6-6" fill="#FFFCF4" />
+        </Svg>
+      </TouchableOpacity>
+
       {/* Mimi Character */}
       <View style={styles.mimiContainer}>
         <Image 
@@ -39,6 +47,11 @@ export default function Landing() {
       {/* Description */}
       <Text style={styles.description}>
         De app voor mama's die borstvoeding geven én af en toe een glas willen drinken.
+      </Text>
+
+      {/* Subtle Disclaimer */}
+      <Text style={styles.disclaimer}>
+        Deze app geeft algemene richtlijnen, geen medisch advies.
       </Text>
 
       {/* Get Started Button */}
@@ -69,6 +82,16 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: width,
     height: height,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   mimiContainer: {
     position: 'absolute',
@@ -106,6 +129,18 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFF8F2',
+  },
+  disclaimer: {
+    position: 'absolute',
+    width: 280,
+    left: (width - 280) / 2,
+    top: 740,
+    fontFamily: 'Poppins',
+    fontWeight: '300',
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: 'center',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   button: {
     position: 'absolute',
