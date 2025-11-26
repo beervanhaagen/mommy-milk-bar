@@ -87,7 +87,7 @@ export default function PrivacyConsent() {
 
         {/* Age Gate */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🔞 Leeftijdscheck</Text>
+          <Text style={styles.cardTitle}>Leeftijdscheck</Text>
           <Text style={styles.cardText}>
             Mommy Milk Bar is alleen bedoeld voor volwassenen van 18 jaar en ouder.
             Deze app helpt bij het plannen van veilige voedmomenten na alcoholgebruik.
@@ -105,7 +105,7 @@ export default function PrivacyConsent() {
 
         {/* Medical Disclaimer */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>⚕️ Medische disclaimer</Text>
+          <Text style={styles.cardTitle}>Medische disclaimer</Text>
           <Text style={styles.cardText}>
             Mommy Milk Bar is een <Text style={styles.bold}>informatieve tool</Text>, geen medisch advies.
             De app geeft richtlijnen op basis van algemene informatie en wetenschappelijke bronnen.
@@ -127,7 +127,7 @@ export default function PrivacyConsent() {
 
         {/* Privacy */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>🔒 Privacy & je data</Text>
+          <Text style={styles.cardTitle}>Privacy & je data</Text>
           <Text style={styles.cardText}>
             We verzamelen persoonlijke informatie zoals je geboortedatum, gewicht, en gegevens
             over je baby om veilige voedtijden te berekenen.

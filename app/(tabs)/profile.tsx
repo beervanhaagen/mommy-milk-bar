@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Modal, Dimensions, TextInput, Platform } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Modal, Dimensions, TextInput, Platform, Alert } from "react-native";
+import { useRouter } from "expo-router";
 import { useStore } from "../../src/state/store";
-import { exportUserData, deleteAllUserData } from "../../src/lib/dataExport";
+import { exportUserData } from "../../src/lib/dataExport";
+import { deleteAccount as supabaseDeleteAccount, signOut } from "../../src/services/auth.service";
 import Svg, { Path } from "react-native-svg";
 import Slider from '@react-native-community/slider';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -96,7 +98,25 @@ const SettingsIcon = () => (
 type EditModalType = 'mother' | 'baby' | 'feeding' | 'names' | null;
 
 export default function Profile() {
-  const { settings, updateSettings } = useStore();
+  const router = useRouter();
+  const profile = useStore((state) => state.profile);
+  const activeBaby = useStore((state) => state.getActiveBaby());
+  const updateSettings = useStore((state) => state.updateSettings);
+
+  const settings = {
+    motherName: profile.motherName,
+    motherBirthdate: profile.motherBirthdate,
+    weightKg: profile.weightKg,
+    heightCm: profile.heightCm,
+    babyName: activeBaby?.name,
+    babyBirthdate: activeBaby?.birthdate,
+    babyWeightKg: activeBaby?.weightKg,
+    babyLengthCm: activeBaby?.lengthCm,
+    feedingType: activeBaby?.feedingType,
+    pumpPreference: activeBaby?.pumpPreference,
+    feedsPerDay: activeBaby?.feedsPerDay,
+    typicalAmountMl: activeBaby?.typicalAmountMl,
+  };
   const [editModal, setEditModal] = useState<EditModalType>(null);
 
   // Mother data
@@ -219,30 +239,60 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      await deleteAllUserData(() => {
-        // Clear all settings
-        updateSettings({
-          motherBirthdate: undefined,
-          motherName: undefined,
-          babyBirthdate: undefined,
-          babyName: undefined,
-          weightKg: undefined,
-          heightCm: undefined,
-          babyWeightKg: undefined,
-          babyLengthCm: undefined,
-          feedingType: undefined,
-          pumpPreference: undefined,
-          feedsPerDay: undefined,
-          typicalAmountMl: undefined,
-          hasCompletedOnboarding: false,
-        });
-      });
-    } catch (error) {
-      // User cancelled or error occurred
-      console.log('Delete cancelled or failed:', error);
-    }
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Account verwijderen',
+      'Weet je zeker dat je al je data en account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.',
+      [
+        { text: 'Annuleren', style: 'cancel' },
+        {
+          text: 'Verwijderen',
+          style: 'destructive',
+          onPress: async () => {
+            const clearLegacySettings = () =>
+              updateSettings({
+                motherBirthdate: undefined,
+                motherName: undefined,
+                babyBirthdate: undefined,
+                babyName: undefined,
+                weightKg: undefined,
+                heightCm: undefined,
+                babyWeightKg: undefined,
+                babyLengthCm: undefined,
+                feedingType: undefined,
+                pumpPreference: undefined,
+                feedsPerDay: undefined,
+                typicalAmountMl: undefined,
+                hasCompletedOnboarding: false,
+              });
+
+            try {
+              try {
+                await supabaseDeleteAccount({ silent: true });
+              } catch (remoteError: any) {
+                console.warn('Supabase account deletion skipped:', remoteError?.message || remoteError);
+                await signOut().catch(() => {});
+              }
+
+              const { resetProfile, clearPersistedState } = useStore.getState();
+              clearLegacySettings();
+              resetProfile();
+              await clearPersistedState();
+
+              Alert.alert('Account verwijderd', 'Je bent terug bij het startscherm.', [
+                {
+                  text: 'OK',
+                  onPress: () => router.replace('/landing'),
+                },
+              ]);
+            } catch (error: any) {
+              console.error('Delete account failed:', error);
+              Alert.alert('Fout', error.message || 'Verwijderen mislukt, probeer later opnieuw.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -404,30 +454,13 @@ export default function Profile() {
           </View>
         </View>
 
-        {/* Account & Privacy Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account & Privacy</Text>
-
-          <TouchableOpacity style={styles.sectionItem}>
-            <Text style={styles.sectionItemText}>Account instellingen</Text>
-            <Text style={styles.sectionItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.sectionItem}>
-            <Text style={styles.sectionItemText}>Notificaties</Text>
-            <Text style={styles.sectionItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.sectionItem}>
-            <Text style={styles.sectionItemText}>Privacy & data</Text>
-            <Text style={styles.sectionItemArrow}>›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.sectionItem}>
-            <Text style={styles.sectionItemText}>Help & ondersteuning</Text>
-            <Text style={styles.sectionItemArrow}>›</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Account & Privacy Section - Removed non-functional buttons for MVP */}
+        {/* Will be implemented post-launch with:
+          - Account instellingen (link to settings)
+          - Notificaties (notification preferences)
+          - Privacy & data (privacy settings)
+          - Help & ondersteuning (help center)
+        */}
 
         {/* Bottom Actions */}
         <View style={styles.bottomSection}>
@@ -804,7 +837,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   scrollView: {
     flex: 1,

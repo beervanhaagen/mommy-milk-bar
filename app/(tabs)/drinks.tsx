@@ -191,6 +191,17 @@ export default function Drinks() {
           </View>
         )}
 
+        {/* Alcohol Warning - Show if > 3 drinks already logged */}
+        {currentSession && currentSession.entries && currentSession.entries.length >= 3 && (
+          <View style={styles.warningContainer}>
+            <Text style={styles.warningTitle}>Let op</Text>
+            <Text style={styles.warningText}>
+              Regelmatig veel alcohol kan melkproductie en baby-ontwikkeling beïnvloeden.
+              Overweeg om te stoppen of minder te drinken. Raadpleeg bij twijfel een zorgverlener.
+            </Text>
+          </View>
+        )}
+
         {/* Log Button */}
         {selectedDrink && (
           <TouchableOpacity style={styles.logButton} onPress={handleLogDrink}>
@@ -451,6 +462,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#8E8B88',
     textAlign: 'center',
+  },
+  warningContainer: {
+    backgroundColor: '#FFF4E6',
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF9800',
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 24,
+    marginBottom: 20,
+    shadowColor: '#FF9800',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  warningTitle: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#E65100',
+    marginBottom: 8,
+  },
+  warningText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#8B4513',
   },
   logButton: {
     backgroundColor: '#F49B9B',
