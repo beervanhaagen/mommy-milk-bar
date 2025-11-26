@@ -37,7 +37,8 @@ export default function PrivacyConsent() {
         consentTimestamp: new Date().toISOString(),
       });
 
-      router.replace('/onboarding/survey-names');
+      // Navigate to account creation after consent
+      router.push('/onboarding/CreateAccount');
     }
   };
 

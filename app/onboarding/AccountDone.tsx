@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Animated, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Animated, SafeAreaView, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "../../src/state/store";
+import { syncAllDataToSupabase } from "../../src/services/profile.service";
 import Svg, { Path } from "react-native-svg";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,6 +22,7 @@ export default function AccountDone() {
   const router = useRouter();
   const { updateSettings } = useStore();
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -49,18 +52,31 @@ export default function AccountDone() {
     return () => animations.forEach(a => a.stop());
   }, []);
 
-  const handleStart = () => {
-    // Mark onboarding as completed
-    updateSettings({ hasCompletedOnboarding: true });
-    router.push('/(tabs)');
+  const handleStart = async () => {
+    setIsSyncing(true);
+
+    try {
+      // Sync all onboarding data to Supabase before entering app
+      await syncAllDataToSupabase();
+
+      // Mark onboarding as completed
+      updateSettings({ hasCompletedOnboarding: true });
+
+      // Navigate to main app
+      router.push('/(tabs)');
+    } catch (error) {
+      console.error('Sync error (non-critical):', error);
+      // Continue anyway - data is saved locally and will sync later
+      updateSettings({ hasCompletedOnboarding: true });
+      router.push('/(tabs)');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      {/* Background shape */}
-      <Svg width={width} height={504} style={styles.onboardingShape} viewBox="0 0 414 504" preserveAspectRatio="xMinYMin slice">
-        <Path d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" fill="#FFE2D8" />
-      </Svg>
+      <AnimatedBackground variant="variant1" />
 
       {/* Confetti */}
       <View style={styles.confettiLayer} pointerEvents="none">
@@ -70,6 +86,11 @@ export default function AccountDone() {
       </View>
 
       <SafeAreaView style={styles.safeArea}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Svg width={20} height={20} viewBox="0 0 24 24">
+            <Path d="M15 18l-6-6 6-6" fill="#F49B9B" />
+          </Svg>
+        </TouchableOpacity>
         {/* Mimi */}
         <View style={styles.mimiContainer}>
           <Image source={require('../../assets/Mimi_karakters/1_enthousiast_whiter.png')} style={styles.mimiImage} resizeMode="contain" />
@@ -84,8 +105,19 @@ export default function AccountDone() {
       </SafeAreaView>
 
       {/* CTA */}
-      <TouchableOpacity style={styles.primaryButton} onPress={handleStart}>
-        <Text style={styles.primaryButtonText}>Start met Mommy Milk Bar</Text>
+      <TouchableOpacity
+        style={[styles.primaryButton, isSyncing && styles.primaryButtonDisabled]}
+        onPress={handleStart}
+        disabled={isSyncing}
+      >
+        {isSyncing ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator color="#FFFFFF" size="small" />
+            <Text style={[styles.primaryButtonText, { marginLeft: 12 }]}>Gegevens opslaan...</Text>
+          </View>
+        ) : (
+          <Text style={styles.primaryButtonText}>Start met Mommy Milk Bar</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.bottomLine} />
@@ -96,17 +128,10 @@ export default function AccountDone() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   confettiLayer: {
     position: 'absolute',
@@ -127,6 +152,16 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 30,
   },
   mimiContainer: {
     position: 'absolute',
@@ -191,6 +226,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 4,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.7,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryButtonText: {
     fontFamily: 'Poppins',
