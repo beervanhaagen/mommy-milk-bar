@@ -47,10 +47,10 @@ export default function PlanAhead() {
           />
         </View>
 
-        <Text style={styles.title}>📅 Plan Ahead</Text>
-        <Text style={styles.subtitle}>When will you have your first drink?</Text>
+        <Text style={styles.title}>📅 Vooruit plannen</Text>
+        <Text style={styles.subtitle}>Wanneer neem je je eerste drankje?</Text>
         <View style={styles.drinksContainer}>
-          <Text style={styles.label}>How many drinks?</Text>
+          <Text style={styles.label}>Hoeveel drankjes?</Text>
           <View style={styles.drinksButtons}>
             {[1, 2, 3, 4].map((count) => (
               <TouchableOpacity
@@ -67,21 +67,21 @@ export default function PlanAhead() {
         </View>
 
         <View style={styles.timeContainer}>
-          <Text style={styles.label}>Drink time</Text>
+          <Text style={styles.label}>Tijdstip</Text>
           <Text style={styles.timeDisplay}>
             {drinkTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </Text>
           <TouchableOpacity style={styles.timeButton}>
-            <Text style={styles.timeButtonText}>Change Time</Text>
+            <Text style={styles.timeButtonText}>Tijdstip wijzigen</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.primaryButton} onPress={handleCalculate}>
-          <Text style={styles.primaryButtonText}>Calculate Safe Time</Text>
+          <Text style={styles.primaryButtonText}>Bereken veilige tijd</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/')}>
-          <Text style={styles.secondaryButtonText}>Back to Home</Text>
+          <Text style={styles.secondaryButtonText}>Terug naar home</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -91,7 +91,7 @@ export default function PlanAhead() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   svgBackground: {
     position: 'absolute',
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: '#F49B9B',
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   timeButtonText: {
     color: '#F49B9B',

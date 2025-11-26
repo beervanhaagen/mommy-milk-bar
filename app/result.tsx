@@ -22,9 +22,9 @@ export default function Result() {
   if (!session) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Session not found</Text>
+        <Text style={styles.errorText}>Sessie niet gevonden</Text>
         <TouchableOpacity style={styles.button} onPress={() => router.push('/')}>
-          <Text style={styles.buttonText}>Go Home</Text>
+          <Text style={styles.buttonText}>Naar home</Text>
         </TouchableOpacity>
       </View>
     );
@@ -37,8 +37,8 @@ export default function Result() {
 
   const handleSetReminder = () => {
     Alert.alert(
-      "Reminder Set",
-      "We'll notify you when it's likely safe to feed.",
+      "Herinnering ingesteld",
+      "We laten je weten wanneer het waarschijnlijk veilig is om te voeden.",
       [{ text: "OK" }]
     );
   };
@@ -46,8 +46,8 @@ export default function Result() {
   const handleMarkSafe = () => {
     markCompleted(session.id);
     Alert.alert(
-      "Marked as Safe",
-      "Great! You can now feed safely.",
+      "Gemarkeerd als veilig",
+      "Top! Je kunt nu veilig voeden.",
       [{ text: "OK", onPress: () => router.push('/') }]
     );
   };
@@ -79,15 +79,16 @@ export default function Result() {
         </View>
         {isSafe ? (
           <View style={styles.safeContainer}>
-            <Text style={styles.safeText}>✅ Likely Safe Now!</Text>
-            <Text style={styles.safeSubtext}>You can feed safely</Text>
+            <Text style={styles.safeText}>Veilig volgens berekening</Text>
+            <Text style={styles.safeSubtext}>Je kunt waarschijnlijk veilig voeden</Text>
+            <Text style={styles.disclaimer}>Dit is een indicatie. Raadpleeg bij twijfel een professional.</Text>
             <TouchableOpacity style={styles.safeButton} onPress={handleMarkSafe}>
-              <Text style={styles.safeButtonText}>Mark as Safe</Text>
+              <Text style={styles.safeButtonText}>Markeer als veilig</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.countdownContainer}>
-            <Text style={styles.etaLabel}>Likely safe at</Text>
+            <Text style={styles.etaLabel}>Waarschijnlijk veilig om</Text>
             <Text style={styles.etaTime}>
               {new Date(session.predictedSafeAt).toLocaleTimeString([], {
                 hour: '2-digit',
@@ -95,26 +96,26 @@ export default function Result() {
               })}
             </Text>
             <Text style={styles.countdown}>
-              {hours > 0 ? `${hours}h ` : ''}{minutes}m remaining
+              {hours > 0 ? `${hours}u ` : ''}{minutes}m nog te gaan
             </Text>
           </View>
         )}
 
         <View style={styles.actions}>
           <TouchableOpacity style={styles.primaryButton} onPress={handleSetReminder}>
-            <Text style={styles.primaryButtonText}>Set Reminder</Text>
+            <Text style={styles.primaryButtonText}>Herinnering instellen</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/')}>
-            <Text style={styles.secondaryButtonText}>New Session</Text>
+            <Text style={styles.secondaryButtonText}>Nieuwe sessie</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.tips}>
-          <Text style={styles.tipsTitle}>What to do now:</Text>
-          <Text style={styles.tip}>🍼 Use stored milk</Text>
-          <Text style={styles.tip}>💧 Pump if needed</Text>
-          <Text style={styles.tip}>⏱ Wait for clearance</Text>
+          <Text style={styles.tipsTitle}>Wat nu te doen:</Text>
+          <Text style={styles.tip}>🍼 Gebruik bewaarde melk</Text>
+          <Text style={styles.tip}>💧 Kolven indien nodig</Text>
+          <Text style={styles.tip}>⏱ Wacht tot afbraak voltooid is</Text>
         </View>
       </View>
     </View>
@@ -124,7 +125,7 @@ export default function Result() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   svgBackground: {
     position: 'absolute',
@@ -162,9 +163,17 @@ const styles = StyleSheet.create({
   safeSubtext: {
     fontSize: 18,
     color: '#7A6C66',
+    marginBottom: 8,
+    fontFamily: 'Poppins',
+    textAlign: 'center',
+  },
+  disclaimer: {
+    fontSize: 12,
+    color: '#8E8B88',
     marginBottom: 20,
     fontFamily: 'Poppins',
     textAlign: 'center',
+    fontStyle: 'italic',
   },
   safeButton: {
     backgroundColor: '#27ae60',

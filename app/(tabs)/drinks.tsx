@@ -147,7 +147,7 @@ export default function Drinks() {
                   <IconComponent size={32} />
                   <Text style={styles.drinkName}>{drink.label}</Text>
                   <Text style={[styles.drinkAlcohol, selectedDrink === drink.id && { color: '#FFFFFF' }] }>
-                    {drink.isCustom ? 'Custom' : `${drink.abv}% alcohol`}
+                    {drink.isCustom ? 'Aangepast' : `${drink.abv}% alcohol`}
                   </Text>
                 </TouchableOpacity>
               );
@@ -322,7 +322,7 @@ export default function Drinks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   scrollView: {
     flex: 1,
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     overflow: 'hidden',
   },
   confettiPiece: {

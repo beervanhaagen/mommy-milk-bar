@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Switch, Dimensions, Image, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { useStore } from "../src/state/store";
+import { useStore, getSettings } from "../src/state/store";
 import { useAuth } from "../src/contexts/AuthContext";
 import { signOut, deleteAccount } from "../src/services/auth.service";
 import Svg, { Path } from "react-native-svg";
@@ -9,7 +9,13 @@ const { width, height } = Dimensions.get('window');
 
 export default function Settings() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
+  const store = useStore();
+  const settings = getSettings();
+  const { updateSettings, resetProfile, clearPersistedState } = {
+    updateSettings: store.updateSettings,
+    resetProfile: store.resetProfile,
+    clearPersistedState: store.clearPersistedState,
+  };
   const { isAuthenticated, user } = useAuth();
 
   const toggleNotifications = () => {
@@ -44,7 +50,7 @@ export default function Settings() {
     );
   };
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = () => {
     Alert.alert(
       'Account verwijderen',
       'Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt en al je data wordt permanent verwijderd.',
@@ -54,11 +60,43 @@ export default function Settings() {
           text: 'Verwijderen',
           style: 'destructive',
           onPress: async () => {
+            const clearLegacySettings = () =>
+              updateSettings({
+                motherBirthdate: undefined,
+                motherName: undefined,
+                babyBirthdate: undefined,
+                babyName: undefined,
+                weightKg: undefined,
+                heightCm: undefined,
+                babyWeightKg: undefined,
+                babyLengthCm: undefined,
+                feedingType: undefined,
+                pumpPreference: undefined,
+                feedsPerDay: undefined,
+                typicalAmountMl: undefined,
+                hasCompletedOnboarding: false,
+              });
+
             try {
-              await deleteAccount();
-              router.replace('/landing');
+              try {
+                await deleteAccount({ silent: true });
+              } catch (remoteError: any) {
+                console.warn('Supabase account deletion skipped:', remoteError?.message || remoteError);
+                await signOut().catch(() => {});
+              }
+
+              clearLegacySettings();
+              resetProfile();
+              await clearPersistedState();
+
+              Alert.alert('Account verwijderd', 'Je bent terug bij het startscherm.', [
+                {
+                  text: 'OK',
+                  onPress: () => router.replace('/landing'),
+                },
+              ]);
             } catch (error: any) {
-              Alert.alert('Fout', error.message);
+              Alert.alert('Fout', error.message || 'Verwijderen mislukt, probeer later opnieuw.');
             }
           },
         },
@@ -92,33 +130,33 @@ export default function Settings() {
           />
         </View>
 
-        <Text style={styles.title}>⚙️ Settings</Text>
+        <Text style={styles.title}>Instellingen</Text>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Safety</Text>
-          
+          <Text style={styles.sectionTitle}>Veiligheid</Text>
+
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Safety Mode</Text>
+              <Text style={styles.settingLabel}>Veiligheidsmodus</Text>
               <Text style={styles.settingDescription}>
-                {settings.safetyMode === 'normal' ? 'Normal (2.5h per drink)' : 'Cautious (3h per drink)'}
+                {settings.safetyMode === 'normal' ? 'Normaal (2,5u per drankje)' : 'Voorzichtig (3u per drankje)'}
               </Text>
             </View>
             <TouchableOpacity onPress={toggleSafetyMode}>
               <Text style={styles.toggleText}>
-                {settings.safetyMode === 'cautious' ? 'Cautious' : 'Normal'}
+                {settings.safetyMode === 'cautious' ? 'Voorzichtig' : 'Normaal'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notifications</Text>
-          
+          <Text style={styles.sectionTitle}>Notificaties</Text>
+
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Reminders</Text>
+              <Text style={styles.settingLabel}>Herinneringen</Text>
               <Text style={styles.settingDescription}>
-                Get notified when it's safe to feed
+                Ontvang een melding wanneer het veilig is om te voeden
               </Text>
             </View>
             <Switch
@@ -153,33 +191,23 @@ export default function Settings() {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.sectionTitle}>Over</Text>
 
           <View style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Version</Text>
+            <Text style={styles.settingLabel}>Versie</Text>
             <Text style={styles.settingValue}>1.0.0</Text>
           </View>
-
-          <TouchableOpacity style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Privacy Policy</Text>
-            <Text style={styles.settingValue}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.settingRow}>
-            <Text style={styles.settingLabel}>Disclaimer</Text>
-            <Text style={styles.settingValue}>→</Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
-            This app provides general guidance only. Consult a healthcare professional if unsure.
+            Deze app geeft alleen algemene richtlijnen. Raadpleeg bij twijfel een zorgverlener.
           </Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>
-        <Text style={styles.backButtonText}>← Back to Home</Text>
+        <Text style={styles.backButtonText}>← Terug naar home</Text>
       </TouchableOpacity>
     </View>
   );
@@ -188,7 +216,7 @@ export default function Settings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   svgBackground: {
     position: 'absolute',
