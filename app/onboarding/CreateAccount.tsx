@@ -45,6 +45,13 @@ export default function CreateAccount() {
       return;
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Oeps', 'Voer een geldig e-mailadres in (bijv. naam@example.com).');
+      return;
+    }
+
     if (password.length < 6) {
       Alert.alert('Oeps', 'Wachtwoord moet minimaal 6 tekens bevatten.');
       return;

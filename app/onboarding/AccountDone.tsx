@@ -20,7 +20,12 @@ type ConfettiPiece = {
 
 export default function AccountDone() {
   const router = useRouter();
-  const { updateSettings } = useStore();
+  const store = useStore();
+  const { updateSettings, getProfile, getBabies } = {
+    updateSettings: store.updateSettings,
+    getProfile: store.getProfile,
+    getBabies: store.getBabies,
+  };
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -56,8 +61,12 @@ export default function AccountDone() {
     setIsSyncing(true);
 
     try {
+      // Get current profile and babies from store
+      const profile = getProfile();
+      const babies = getBabies();
+
       // Sync all onboarding data to Supabase before entering app
-      await syncAllDataToSupabase();
+      await syncAllDataToSupabase(profile, babies);
 
       // Mark onboarding as completed
       updateSettings({ hasCompletedOnboarding: true });
