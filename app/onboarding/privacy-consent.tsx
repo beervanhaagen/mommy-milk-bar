@@ -9,14 +9,17 @@
  */
 
 import { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Linking, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
+import { useStore } from "../../src/state/store";
 
 const { width, height } = Dimensions.get('window');
 
 export default function PrivacyConsent() {
   const router = useRouter();
+  const { updateProfile } = useStore();
   const [acceptedAge, setAcceptedAge] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
@@ -25,24 +28,42 @@ export default function PrivacyConsent() {
 
   const handleContinue = () => {
     if (canContinue) {
-      router.replace('/onboarding/survey-you');
+      // ✅ Save consent data to store (GDPR compliance)
+      updateProfile({
+        consentVersion: '1.0.0',
+        ageConsent: acceptedAge,
+        medicalDisclaimerConsent: acceptedDisclaimer,
+        privacyPolicyConsent: acceptedPrivacy,
+        consentTimestamp: new Date().toISOString(),
+      });
+
+      router.replace('/onboarding/survey-names');
+    }
+  };
+
+  const openPrivacyPolicy = async () => {
+    const url = 'https://mommymilkbar.nl/privacy.html';
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert('Oeps', 'Kan privacy policy niet openen. Bezoek mommymilkbar.nl voor meer info.');
+    }
+  };
+
+  const openTerms = async () => {
+    const url = 'https://mommymilkbar.nl/terms.html';
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert('Oeps', 'Kan voorwaarden niet openen. Bezoek mommymilkbar.nl voor meer info.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Svg
-        width={width}
-        height={504}
-        style={styles.onboardingShape}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
-      >
-        <Path
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z"
-          fill="#FFE2D8"
-        />
-      </Svg>
+      <AnimatedBackground variant="variant1" />
 
       {/* Fixed header with back button */}
       <View style={styles.fixedHeader}>
@@ -132,11 +153,11 @@ export default function PrivacyConsent() {
         </View>
 
         <View style={styles.legalLinks}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={openPrivacyPolicy}>
             <Text style={styles.legalLinkText}>Privacy Policy</Text>
           </TouchableOpacity>
           <Text style={styles.legalSeparator}>•</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={openTerms}>
             <Text style={styles.legalLinkText}>Algemene Voorwaarden</Text>
           </TouchableOpacity>
         </View>
@@ -160,17 +181,10 @@ export default function PrivacyConsent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   fixedHeader: {
     position: 'absolute',

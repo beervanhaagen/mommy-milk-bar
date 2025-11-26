@@ -1,21 +1,46 @@
-import { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Alert, KeyboardAvoidingView, Platform, SafeAreaView, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
-import Svg, { Path } from "react-native-svg";
-import { useStore } from "../../src/state/store";
-import { signUp } from "../../src/services/auth.service";
+/**
+ * Create Account Screen (Onboarding Flow)
+ *
+ * Allows users to create an account after completing onboarding
+ * Includes privacy consent (GDPR compliance)
+ */
+
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+  Linking,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useStore } from '../../src/state/store';
+import { signUp } from '../../src/services/auth.service';
+import Svg, { Path } from 'react-native-svg';
+import { AnimatedBackground } from '../../src/components/AnimatedBackground';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CreateAccount() {
   const router = useRouter();
-  const { settings } = useStore();
+  const motherName = useStore((state) => state.profile.motherName);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
-    if (!email || !password) {
+    // Validation
+    if (!email || !password || !confirmPassword) {
       Alert.alert('Oeps', 'Vul alle velden in.');
       return;
     }
@@ -25,13 +50,23 @@ export default function CreateAccount() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      Alert.alert('Oeps', 'Wachtwoorden komen niet overeen.');
+      return;
+    }
+
+    if (!acceptedTerms) {
+      Alert.alert('Oeps', 'Je moet akkoord gaan met de voorwaarden en privacy policy.');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Create account with Supabase
+      // Create account with Supabase, including onboarding data
       await signUp({
         email,
         password,
-        motherName: settings.motherName,
+        motherName: motherName || undefined,
         consentVersion: '1.0.0',
         analyticsConsent: true,
         marketingConsent: false,
@@ -51,204 +86,339 @@ export default function CreateAccount() {
     router.push('/auth/login');
   };
 
+  const openTerms = async () => {
+    const url = 'https://mommymilkbar.nl/terms.html';
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert('Oeps', 'Kan voorwaarden niet openen. Bezoek mommymilkbar.nl voor meer info.');
+    }
+  };
+
+  const openPrivacyPolicy = async () => {
+    const url = 'https://mommymilkbar.nl/privacy.html';
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert('Oeps', 'Kan privacy policy niet openen. Bezoek mommymilkbar.nl voor meer info.');
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        style={styles.keyboardView} 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        {/* Background shape */}
-        <Svg width={width} height={504} style={styles.onboardingShape} viewBox="0 0 414 504" preserveAspectRatio="xMinYMin slice">
-          <Path d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" fill="#FFE2D8" />
-        </Svg>
+        <AnimatedBackground variant="variant4" />
+
+        {/* Back Button */}
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Svg width={20} height={20} viewBox="0 0 24 24">
+            <Path d="M15 18l-6-6 6-6" fill="#F49B9B" />
+          </Svg>
+        </TouchableOpacity>
+
+        {/* Mimi Character */}
+        <View style={styles.mimiContainer}>
+          <Image
+            source={require('../../assets/Mimi_karakters/2_mimi_happy_2.png')}
+            style={styles.mimiImage}
+            resizeMode="contain"
+          />
+        </View>
 
         {/* Content */}
         <View style={styles.content}>
           <Text style={styles.title}>Je account aanmaken</Text>
           <Text style={styles.subtitle}>Zo kun je je gegevens veilig opslaan en overal bij je persoonlijke adviezen.</Text>
 
-          <View style={styles.formContainer}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>E-mailadres</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="je@email.nl"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>E-mailadres</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="je@email.nl"
+              placeholderTextColor="#C4C1BD"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+          </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Wachtwoord</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Minimaal 8 tekens"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
+          {/* Password Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Wachtwoord (min. 6 tekens)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#C4C1BD"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+          </View>
 
-            <Text style={styles.microcopy}>
-              We gebruiken je e-mailadres alleen om je in te loggen. Geen nieuwsbrieven, geen spam.
+          {/* Confirm Password Input */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Bevestig wachtwoord</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor="#C4C1BD"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              editable={!loading}
+            />
+          </View>
+
+          {/* Terms Checkbox */}
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity
+              style={styles.checkbox}
+              onPress={() => setAcceptedTerms(!acceptedTerms)}
+              disabled={loading}
+            >
+              <View style={[styles.checkboxBox, acceptedTerms && styles.checkboxChecked]}>
+                {acceptedTerms && (
+                  <Svg width={16} height={16} viewBox="0 0 24 24">
+                    <Path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#FFFFFF" />
+                  </Svg>
+                )}
+              </View>
+            </TouchableOpacity>
+            <View style={styles.checkboxLabelContainer}>
+              <Text style={styles.checkboxLabel}>
+                Ik ga akkoord met de{' '}
+                <Text style={styles.link} onPress={openTerms}>
+                  voorwaarden
+                </Text>
+                {' '}en{' '}
+                <Text style={styles.link} onPress={openPrivacyPolicy}>
+                  privacy policy
+                </Text>
+              </Text>
+            </View>
+          </View>
+
+          {/* Privacy Note */}
+          <View style={styles.privacyNote}>
+            <Text style={styles.privacyText}>
+              🔒 Je data wordt veilig opgeslagen en nooit gedeeld met derden.
             </Text>
+          </View>
+
+          {/* Create Account Button */}
+          <TouchableOpacity
+            style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+            onPress={handleSignup}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.primaryButtonText}>Account aanmaken</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Login Link */}
+          <View style={styles.loginContainer}>
+            <Text style={styles.loginText}>Al een account? </Text>
+            <TouchableOpacity onPress={handleLogin} disabled={loading}>
+              <Text style={styles.loginLink}>Log hier in</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* CTAs */}
-        <TouchableOpacity 
-          style={[styles.primaryButton, loading && styles.primaryButtonDisabled]} 
-          onPress={handleSignup}
-          disabled={loading}
-        >
-          <Text style={styles.primaryButtonText}>
-            {loading ? 'Account wordt aangemaakt...' : 'Account aanmaken'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.secondaryButton} onPress={handleLogin}>
-          <Text style={styles.secondaryButtonText}>Al een account? Inloggen</Text>
-        </TouchableOpacity>
-
+        {/* Bottom Line */}
         <View style={styles.bottomLine} />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
+  },
+  scrollContent: {
+    minHeight: height,
     position: 'relative',
   },
-  keyboardView: {
-    flex: 1,
-  },
-  onboardingShape: {
+  backButton: {
     position: 'absolute',
+    top: 50,
+    left: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  mimiContainer: {
+    position: 'absolute',
+    height: 180,
+    left: width * 0.3,
+    right: width * 0.3,
+    top: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mimiImage: {
     width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
+    height: '100%',
   },
   content: {
-    flex: 1,
+    marginTop: 300,
     paddingHorizontal: 24,
-    paddingTop: 120,
-    paddingBottom: 200,
-    alignItems: 'center',
+    paddingBottom: 40,
   },
   title: {
     fontFamily: 'Quicksand',
     fontWeight: '700',
     fontSize: 28,
-    lineHeight: 36,
+    lineHeight: 38,
     textAlign: 'center',
-    color: '#4B3B36',
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontFamily: 'Poppins',
-    fontWeight: '300',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-    color: '#8E8B88',
-    maxWidth: 320,
-    marginBottom: 40,
-  },
-  formContainer: {
-    width: '100%',
-    maxWidth: 340,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  inputLabel: {
-    fontFamily: 'Poppins',
-    fontWeight: '500',
-    fontSize: 14,
     color: '#4B3B36',
     marginBottom: 8,
   },
-  textInput: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontFamily: 'Poppins',
-    fontSize: 16,
-    color: '#4B3B36',
-    borderWidth: 1,
-    borderColor: '#E6E6E6',
-  },
-  microcopy: {
-    fontFamily: 'Poppins',
-    fontWeight: '300',
-    fontSize: 12,
-    lineHeight: 18,
-    textAlign: 'center',
-    color: '#A8A5A2',
-    marginTop: 16,
-  },
-  primaryButton: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    height: 56,
-    bottom: 100,
-    backgroundColor: '#F49B9B',
-    borderRadius: 38,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#F49B9B',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  primaryButtonDisabled: {
-    backgroundColor: '#D9D9D9',
-    shadowOpacity: 0,
-  },
-  primaryButtonText: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 17,
-    lineHeight: 26,
-    textAlign: 'center',
-    color: '#FFFFFF',
-  },
-  secondaryButton: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    height: 48,
-    bottom: 50,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
+  subtitle: {
     fontFamily: 'Poppins',
     fontWeight: '400',
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
     color: '#8E8B88',
+    marginBottom: 24,
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  label: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#4B3B36',
+    marginBottom: 8,
+  },
+  input: {
+    height: 56,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontFamily: 'Poppins',
+    fontSize: 16,
+    color: '#4B3B36',
+    borderWidth: 1,
+    borderColor: '#E8E5E1',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  checkbox: {
+    marginRight: 12,
+  },
+  checkboxBox: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderColor: '#E8E5E1',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxChecked: {
+    backgroundColor: '#F49B9B',
+    borderColor: '#F49B9B',
+  },
+  checkboxLabelContainer: {
+    flex: 1,
+    paddingTop: 2,
+  },
+  checkboxLabel: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 13,
+    color: '#8E8B88',
+    lineHeight: 20,
+  },
+  link: {
+    color: '#F49B9B',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  privacyNote: {
+    backgroundColor: '#FFF8F2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 24,
+  },
+  privacyText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#8E8B88',
+    textAlign: 'center',
+  },
+  primaryButton: {
+    height: 56,
+    backgroundColor: '#F49B9B',
+    borderRadius: 38,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 17,
+    color: '#FFFFFF',
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#8E8B88',
+  },
+  loginLink: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#F49B9B',
   },
   bottomLine: {
     position: 'absolute',
     width: 143,
     height: 5,
     left: (width - 143) / 2,
-    bottom: 14,
+    bottom: 20,
     backgroundColor: '#E6E6E6',
   },
 });
