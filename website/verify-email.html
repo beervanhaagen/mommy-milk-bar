@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verificatie - Mommy Milk Bar</title>
+    <link rel="icon" type="image/png" href="assets/images/MMB_app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FAF7F3;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #F49B9B;
+            opacity: 0;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(244, 155, 155, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+
+        .mimi-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .mimi-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #4B3B36;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #7A6C66;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .status-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Loading State */
+        .loading {
+            display: block;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #F49B9B;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success State */
+        .success {
+            display: none;
+        }
+
+        .success.active {
+            display: block;
+        }
+
+        /* Error State */
+        .error {
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .error .title {
+            color: #E47C7C;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 32px;
+            background-color: #F49B9B;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 16px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 155, 155, 0.3);
+        }
+
+        .secondary-link {
+            display: block;
+            margin-top: 20px;
+            color: #8E8B88;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .secondary-link:hover {
+            color: #F49B9B;
+            text-decoration: underline;
+        }
+
+        /* Hide states initially */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="loading-spinner"></div>
+            <h1 class="title">Even geduld...</h1>
+            <p class="message">We verifiëren je e-mailadres.</p>
+        </div>
+
+        <!-- Success State -->
+        <div id="successState" class="success">
+            <div class="mimi-container">
+                <img src="assets/images/1_enthousiast_whiter.png" alt="Mimi blij" class="mimi-img">
+            </div>
+            <span class="status-icon">🎉</span>
+            <h1 class="title">Gelukt!</h1>
+            <p class="message">
+                Je e-mailadres is succesvol geverifieerd.<br>
+                Welkom bij Mommy Milk Bar!
+            </p>
+            <a href="index.html" class="cta-button">Ga naar de website</a>
+            <a href="mailto:info@mommymilkbar.nl" class="secondary-link">Contact opnemen</a>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error">
+            <div class="mimi-container">
+                <img src="assets/images/4_gefrustreerd_whiter.png" alt="Mimi gefrustreerd" class="mimi-img" onerror="this.style.display='none'">
+            </div>
+            <span class="status-icon">⚠️</span>
+            <h1 class="title">Oeps...</h1>
+            <p class="message" id="errorMessage">
+                Er ging iets mis bij het verifiëren van je e-mailadres.
+            </p>
+            <a href="index.html" class="cta-button">Terug naar de website</a>
+            <a href="mailto:info@mommymilkbar.nl" class="secondary-link">Hulp nodig? Neem contact op</a>
+        </div>
+    </div>
+
+    <script>
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#F49B9B', '#FFFFFF', '#E47C7C', '#FDF2F2'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(confetti);
+            }
+        }
+
+        // Show state
+        function showState(state) {
+            document.getElementById('loadingState').classList.remove('active');
+            document.getElementById('successState').classList.remove('active');
+            document.getElementById('errorState').classList.remove('active');
+
+            if (state === 'loading') {
+                document.getElementById('loadingState').classList.add('active');
+            } else if (state === 'success') {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('successState').classList.add('active');
+                createConfetti();
+            } else if (state === 'error') {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.add('active');
+            }
+        }
+
+        // Verify email
+        async function verifyEmail(token) {
+            if (!token) {
+                document.getElementById('errorMessage').textContent =
+                    'Ongeldige verificatie link. Controleer of je de volledige link uit de e-mail hebt gebruikt.';
+                showState('error');
+                return;
+            }
+
+            try {
+                // Call the Supabase Edge Function
+                const response = await fetch('https://lqmnkdqyoxytyyxuglhx.supabase.co/functions/v1/verify-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showState('success');
+                } else {
+                    // Show specific error message from API
+                    document.getElementById('errorMessage').textContent =
+                        data.message || 'Er ging iets mis. Probeer het opnieuw of neem contact op.';
+                    showState('error');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                document.getElementById('errorMessage').textContent =
+                    'Er is een netwerkfout opgetreden. Controleer je internetverbinding en probeer het opnieuw.';
+                showState('error');
+            }
+        }
+
+        // Auto-verify on page load
+        if (token) {
+            verifyEmail(token);
+        } else {
+            document.getElementById('errorMessage').textContent =
+                'Geen verificatie token gevonden. Gebruik de link uit je e-mail.';
+            showState('error');
+        }
+    </script>
+</body>
+</html>

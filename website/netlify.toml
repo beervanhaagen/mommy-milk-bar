@@ -4,6 +4,13 @@
   publish = "."
   command = ""
 
+# Serve verify-email page directly (no redirect)
+[[redirects]]
+  from = "/verify-email"
+  to = "/verify-email.html"
+  status = 200
+
+# Catch-all redirect (for SPA-style routing if needed)
 [[redirects]]
   from = "/*"
   to = "/index.html"
