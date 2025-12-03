@@ -2,5 +2,15 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "framework": null,
-  "installCommand": null
+  "installCommand": null,
+  "rewrites": [
+    {
+      "source": "/verify-email",
+      "destination": "/verify-email.html"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/reset-password.html"
+    }
+  ]
 }
