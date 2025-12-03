@@ -9,8 +9,8 @@
  */
 
 import { supabase } from '../lib/supabase';
-import { ProfileInsert } from '../types/database';
 import { Alert } from 'react-native';
+import { generateVerificationToken } from '../lib/verificationToken';
 
 export type SignUpData = {
   email: string;
@@ -32,37 +32,57 @@ export type SignInData = {
  */
 export const signUp = async (data: SignUpData) => {
   try {
+    const normalizedEmail = data.email.trim().toLowerCase();
+
     // 1. Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: data.email,
+      email: normalizedEmail,
       password: data.password,
     });
 
     if (authError) throw authError;
     if (!authData.user) throw new Error('No user returned from signup');
 
-    // 2. Create profile
-    const profileData: ProfileInsert = {
-      id: authData.user.id,
-      mother_name: data.motherName || null,
-      consent_version: data.consentVersion || '1.0.0',
-      marketing_consent: data.marketingConsent || false,
-      analytics_consent: data.analyticsConsent || false,
-      has_completed_onboarding: false,
-      notifications_enabled: true,
-      safety_mode: 'normal',
-    };
+    // 2. Generate email verification token
+    const verificationToken = await generateVerificationToken();
 
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert(profileData);
+    // 3. Create profile via server-side function (bypasses RLS)
+    const { data: createProfileResponse, error: createProfileError } = await supabase.functions.invoke(
+      'create-profile',
+      {
+        body: {
+          userId: authData.user.id,
+          email: normalizedEmail,
+          motherName: data.motherName || null,
+          consentVersion: data.consentVersion || '1.0.0',
+          marketingConsent: data.marketingConsent || false,
+          analyticsConsent: data.analyticsConsent || false,
+          verificationToken,
+        },
+      }
+    );
 
-    if (profileError) {
-      // Rollback: delete auth user if profile creation fails
-      console.error('Profile creation failed, cleaning up auth user');
-      await supabase.auth.admin.deleteUser(authData.user.id);
-      throw profileError;
+    if (createProfileError || !createProfileResponse?.success) {
+      console.error('Profile initialization failed', createProfileError || createProfileResponse);
+      throw new Error(
+        createProfileError?.message ||
+          createProfileResponse?.message ||
+          'Er ging iets mis bij het opslaan van je profiel.'
+      );
     }
+
+    // 4. Fire-and-forget welcome email with verification token
+    supabase.functions
+      .invoke('send-welcome-email', {
+        body: {
+          email: normalizedEmail,
+          motherName: data.motherName || null,
+          verificationToken: verificationToken,
+        },
+      })
+      .catch((emailError) => {
+        console.warn('Failed to enqueue welcome email', emailError);
+      });
 
     return { user: authData.user, session: authData.session };
   } catch (error: any) {
@@ -149,11 +169,37 @@ export const getCurrentUser = async () => {
  */
 export const resetPassword = async (email: string) => {
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'mommymilkbar://reset-password', // Deep link
-    });
+    const normalizedEmail = email.trim().toLowerCase();
 
-    if (error) throw error;
+    // Eerst proberen via onze eigen edge function (Resend + Mimi mail)
+    let usedCustomEmail = false;
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        'send-password-reset-email',
+        {
+          body: { email: normalizedEmail },
+        }
+      );
+
+      if (error || data?.success === false) {
+        console.warn('Password reset edge function failed, falling back to Supabase email:', error || data);
+      } else {
+        usedCustomEmail = true;
+      }
+    } catch (fnError) {
+      console.warn('Password reset edge function exception, falling back to Supabase email:', fnError);
+    }
+
+    // Fallback: gebruik standaard Supabase reset e-mail als edge function niet werkte
+    if (!usedCustomEmail) {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        normalizedEmail,
+        {
+          redirectTo: 'mommymilkbar://reset-password',
+        }
+      );
+      if (resetError) throw resetError;
+    }
 
     Alert.alert(
       'E-mail verzonden',
@@ -230,21 +276,37 @@ export const resendVerificationEmail = async (email: string) => {
  * Delete user account (GDPR compliance)
  * This will trigger cascading deletes for all related data
  */
-export const deleteAccount = async () => {
+export const deleteAccount = async (options?: { silent?: boolean }) => {
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('Geen gebruiker gevonden');
+    }
+
     // Call the RLS-protected function to delete all user data
     const { error: dataError } = await supabase.rpc('delete_user_data');
 
     if (dataError) throw dataError;
 
+    // Delete auth user via service role function
+    const { error: deleteUserError } = await supabase.functions.invoke('delete-user', {
+      body: { userId: user.id },
+    });
+
+    if (deleteUserError) {
+      console.error('Failed to delete auth user', deleteUserError);
+    }
+
     // Sign out
     await signOut();
 
-    Alert.alert(
-      'Account verwijderd',
-      'Je account en alle data zijn succesvol verwijderd.',
-      [{ text: 'OK' }]
-    );
+    if (!options?.silent) {
+      Alert.alert(
+        'Account verwijderd',
+        'Je account en alle data zijn succesvol verwijderd.',
+        [{ text: 'OK' }]
+      );
+    }
   } catch (error: any) {
     console.error('Delete account error:', error);
     throw new Error(error.message || 'Er is iets misgegaan bij het verwijderen van je account.');
