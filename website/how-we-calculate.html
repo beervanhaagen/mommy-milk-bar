@@ -152,7 +152,41 @@
         .back-link:hover {
             opacity: 0.7;
         }
+        .quote-container {
+            position: relative;
+            min-height: 150px;
+        }
+        .quote-slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .quote-slide.active {
+            display: block;
+            opacity: 1;
+        }
     </style>
+    <script>
+        // Quote carousel rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            const quotes = document.querySelectorAll('.quote-slide');
+            let currentIndex = 0;
+
+            function showNextQuote() {
+                // Hide current quote
+                quotes[currentIndex].classList.remove('active');
+
+                // Move to next quote (loop back to start if at end)
+                currentIndex = (currentIndex + 1) % quotes.length;
+
+                // Show next quote
+                quotes[currentIndex].classList.add('active');
+            }
+
+            // Rotate every 40 seconds
+            setInterval(showNextQuote, 40000);
+        });
+    </script>
 </head>
 <body>
     <!-- Header -->
@@ -255,91 +289,106 @@
 
             <h2 class="section-heading">Wetenschappelijk Onderzoek</h2>
             <p class="section-text">
-                Uitgebreid onderzoek door het Amerikaanse National Institutes of Health (NIH) en gepubliceerd in de LactMed database toont de effecten van alcohol op borstvoeding. Hieronder de belangrijkste bevindingen uit klinische studies:
+                Uitgebreid onderzoek door het Amerikaanse National Institutes of Health (NIH) en gepubliceerd in de LactMed database toont de effecten van alcohol op borstvoeding. Hieronder de belangrijkste bevindingen uit klinische studies.
             </p>
 
-            <div class="highlight-box" style="background: #FFFCF4; border: 1px solid #E47C7C;">
-                <h3 class="highlight-title">Effect op Voedingsgedrag</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "Infants who drank milk that contained alcohol consumed 20 to 23% less milk during the 3- or 4-hour testing session, even though the time spent at the breast and number of sucks was unchanged."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — Klinische studie met 12 moeders, gepubliceerd in LactMed (NIH)
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px;">
-                    Baby's compenseerden dit later door vaker te voeden, waardoor de totale hoeveelheid melk over 20 uur gelijk bleef.
-                </p>
-            </div>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Voedingsgedrag</h3>
+            <p class="section-text">
+                In klinische studies met 12 moeders bleek dat baby's die melk dronken met alcohol 20 tot 23% minder melk consumeerden tijdens de 3 tot 4 uur na inname, ondanks dat de tijd aan de borst en het aantal zuigbewegingen onveranderd bleven. Baby's compenseerden dit later door vaker te voeden, waardoor de totale hoeveelheid melk over 20 uur gelijk bleef.
+            </p>
 
-            <div class="highlight-box" style="background: #FFFCF4; border: 1px solid #E47C7C;">
-                <h3 class="highlight-title">Effect op Melkproductie en Toeschietreflex</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "Nursing mothers who ingested a 0.3 grams/kg dose of alcohol produced an average of 9.3% less milk 2 hours after the alcohol intake using a breast pump than they did when a nonalcoholic beverage was taken."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — LactMed melkproductie studie
-                </p>
-                <p class="section-text" style="font-style: italic; color: #555; margin-top: 15px;">
-                    "Alcohol doses of 0.5 to 0.99 grams/kg reduced oxytocin response to infant sucking by 18%; doses of 1 to 1.49 grams/kg reduced the response by 62%; and doses from 1.5 to 1.99 grams/kg reduced the response by 80%."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — LactMed oxytocine onderzoek (toeschietreflex)
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px;">
-                    Deze studies tonen aan dat alcohol tijdelijk de toeschietreflex kan remmen, wat de melkproductie kort kan verminderen.
-                </p>
-            </div>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Melkproductie en Toeschietreflex</h3>
+            <p class="section-text">
+                Moeders die 0,3 gram alcohol per kg lichaamsgewicht dronken, produceerden gemiddeld 9,3% minder melk 2 uur na alcoholinname dan wanneer ze een niet-alcoholische drank consumeerden. Studies tonen ook aan dat alcohol de oxytocine-respons (toeschietreflex) doseringsafhankelijk remt: bij 0,5-0,99 g/kg met 18%, bij 1-1,49 g/kg met 62%, en bij 1,5-1,99 g/kg met maar liefst 80%. Dit verklaart waarom alcohol tijdelijk de toeschietreflex kan remmen, wat de melkproductie kort kan verminderen.
+            </p>
 
-            <div class="highlight-box" style="background: #FFFCF4; border: 1px solid #E47C7C;">
-                <h3 class="highlight-title">Effect op Babyslaap</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "Infants slept more frequently for shorter periods of time during the 3.5 to 4 hours after alcohol intake, whether it was after mothers drank 0.3 grams/kg of alcohol before breastfeeding or infants were given their mothers' milk spiked with an equivalent amount of alcohol."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — Meerdere slaapstudies, LactMed database
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px;">
-                    Baby's compenseerden dit later door meer REM-slaap, met geen langdurig effect na 24 uur.
-                </p>
-            </div>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Babyslaap</h3>
+            <p class="section-text">
+                Baby's sliepen vaker maar voor kortere perioden tijdens de 3,5 tot 4 uur na alcoholinname door de moeder. Dit gold zowel na borstvoeding als wanneer baby's melk kregen met een equivalent alcoholgehalte. Baby's compenseerden dit later door meer REM-slaap, zonder langdurig effect na 24 uur.
+            </p>
 
-            <div class="highlight-box" style="background: #E8F5E9; border: 2px solid #66BB6A;">
-                <h3 class="highlight-title" style="color: #2E7D32;">Goed Nieuws: Matig Gebruik met Timing</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "Most mothers' alcohol use was moderate, and drinking was almost always timed to minimize the amount of alcohol in breastmilk. Infants' social, mental and motor development were examined with the Ages and Stages questionnaires. The infants of mothers who used alcohol postpartum had no greater risk of adverse outcomes up to 12 months of age than the infants of mothers who were alcohol abstainers."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — Prospectieve cohort studie, Australië, gepubliceerd in LactMed
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px; font-weight: 500; color: #2E7D32;">
-                    Dit toont aan dat matig alcoholgebruik met goede timing - zoals onze app helpt berekenen - geen negatief effect heeft op baby-ontwikkeling.
-                </p>
-            </div>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Goed Nieuws: Matig Gebruik met Timing</h3>
+            <p class="section-text">
+                Een grote prospectieve cohortstudie uit Australië toont aan dat matig alcoholgebruik met goede timing - zoals onze app helpt berekenen - geen negatief effect heeft op baby-ontwikkeling. Wanneer moeders hun alcoholgebruik tijdelijk plannen om de hoeveelheid alcohol in moedermelk te minimaliseren, hebben hun baby's tot 12 maanden geen verhoogd risico op nadelige uitkomsten vergeleken met baby's van niet-drinkende moeders.
+            </p>
 
-            <div class="highlight-box" style="background: #FFF8E1; border-left: 4px solid #FFA726;">
-                <h3 class="highlight-title" style="color: #E65100;">Belangrijk: Meer dan 1 Drankje per Dag</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "Alcohol intake of more than 1 drink daily during nursing produced a measurable decrease in motor function development, but not mental development at 1 year of age."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — Lange-termijn ontwikkelingsstudie, LactMed
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px; font-weight: 500; color: #E65100;">
-                    Daarom adviseren wij - in lijn met CDC en AAP richtlijnen - maximaal 1 standaarddrankje per dag, met voldoende wachttijd.
-                </p>
-            </div>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Belangrijk: Meer dan 1 Drankje per Dag</h3>
+            <p class="section-text">
+                Lange-termijn ontwikkelingsstudies laten zien dat alcoholinname van meer dan 1 drankje per dag tijdens het geven van borstvoeding een meetbare afname in motorische ontwikkeling veroorzaakt bij 1 jaar oude baby's, hoewel de mentale ontwikkeling onveranderd bleef. Daarom adviseren wij - in lijn met CDC en AAP richtlijnen - maximaal 1 standaarddrankje per dag, met voldoende wachttijd.
+            </p>
 
-            <div class="highlight-box" style="background: #F3E5F5; border-left: 4px solid #AB47BC;">
-                <h3 class="highlight-title" style="color: #7B1FA2;">Duur van Borstvoeding</h3>
-                <p class="section-text" style="font-style: italic; color: #555;">
-                    "A 1-year long survey of 587 new mothers in Australia found that women who drank more than 2 standard drinks (10 grams or 12.5 mL of absolute alcohol) daily were twice as likely to discontinue breastfeeding by 6 months postpartum than mothers who reported use below this amount."
-                </p>
-                <p class="section-text" style="font-size: 14px; color: #666;">
-                    — 1-jaar survey studie, 587 moeders, Australië
-                </p>
-                <p class="section-text" style="font-size: 15px; margin-top: 12px;">
-                    Matig gebruik beïnvloedt de borstvoedingsduur niet negatief.
-                </p>
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Duur van Borstvoeding</h3>
+            <p class="section-text">
+                Een 1-jarige survey onder 587 moeders in Australië toont dat vrouwen die meer dan 2 standaarddrankjes per dag dronken twee keer zo vaak stopten met borstvoeding voor 6 maanden postpartum dan moeders die onder deze hoeveelheid bleven. Matig gebruik beïnvloedt de borstvoedingsduur niet negatief.
+            </p>
+
+            <div class="highlight-box" id="quote-carousel" style="margin-top: 40px;">
+                <h3 class="highlight-title">Uit het Onderzoek</h3>
+                <div class="quote-container">
+                    <!-- Quote 1 -->
+                    <div class="quote-slide active">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Infants who drank milk that contained alcohol consumed 20 to 23% less milk during the 3- or 4-hour testing session, even though the time spent at the breast and number of sucks was unchanged."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Klinische studie met 12 moeders, gepubliceerd in LactMed (NIH)
+                        </p>
+                    </div>
+                    <!-- Quote 2 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Nursing mothers who ingested a 0.3 grams/kg dose of alcohol produced an average of 9.3% less milk 2 hours after the alcohol intake using a breast pump than they did when a nonalcoholic beverage was taken."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — LactMed melkproductie studie
+                        </p>
+                    </div>
+                    <!-- Quote 3 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Alcohol doses of 0.5 to 0.99 grams/kg reduced oxytocin response to infant sucking by 18%; doses of 1 to 1.49 grams/kg reduced the response by 62%; and doses from 1.5 to 1.99 grams/kg reduced the response by 80%."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — LactMed oxytocine onderzoek (toeschietreflex)
+                        </p>
+                    </div>
+                    <!-- Quote 4 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Infants slept more frequently for shorter periods of time during the 3.5 to 4 hours after alcohol intake, whether it was after mothers drank 0.3 grams/kg of alcohol before breastfeeding or infants were given their mothers' milk spiked with an equivalent amount of alcohol."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Meerdere slaapstudies, LactMed database
+                        </p>
+                    </div>
+                    <!-- Quote 5 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Most mothers' alcohol use was moderate, and drinking was almost always timed to minimize the amount of alcohol in breastmilk. The infants of mothers who used alcohol postpartum had no greater risk of adverse outcomes up to 12 months of age than the infants of mothers who were alcohol abstainers."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Prospectieve cohort studie, Australië
+                        </p>
+                    </div>
+                    <!-- Quote 6 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Alcohol intake of more than 1 drink daily during nursing produced a measurable decrease in motor function development, but not mental development at 1 year of age."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Lange-termijn ontwikkelingsstudie, LactMed
+                        </p>
+                    </div>
+                    <!-- Quote 7 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Women who drank more than 2 standard drinks daily were twice as likely to discontinue breastfeeding by 6 months postpartum than mothers who reported use below this amount."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — 1-jaar survey studie, 587 moeders, Australië
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div class="disclaimer-box">
