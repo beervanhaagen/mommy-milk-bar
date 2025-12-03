@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hoe Mommy Milk Bar de veilige wachttijd berekent - wetenschappelijke onderbouwing">
+    <title>Hoe wij rekenen - Mommy Milk Bar</title>
+    <link rel="icon" type="image/png" href="assets/images/MMB_app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .science-section {
+            background: #FFFCF4;
+            padding: 80px 20px;
+        }
+        .science-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .science-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #E47C7C;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .science-subtitle {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .science-intro {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #FFF;
+            border-radius: 16px;
+            border-left: 4px solid #E47C7C;
+        }
+        .section-heading {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 24px;
+            color: #E47C7C;
+            margin: 40px 0 20px 0;
+        }
+        .section-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background: #FFF8F2;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 2px solid #F49B9B;
+        }
+        .highlight-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #E47C7C;
+            margin-bottom: 15px;
+        }
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .bullet-list li {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+        }
+        .bullet-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #E47C7C;
+            font-weight: 600;
+        }
+        .sources-section {
+            background: #F49B9B;
+            padding: 40px;
+            border-radius: 16px;
+            margin-top: 60px;
+        }
+        .sources-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #FFF;
+            margin-bottom: 20px;
+        }
+        .source-link {
+            display: block;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 24px;
+            color: #FFFCF4;
+            margin-bottom: 10px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .source-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        .disclaimer-box {
+            background: #FFE6E6;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 40px;
+            border-left: 4px solid #E47C7C;
+        }
+        .disclaimer-box-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #D45A5A;
+            margin-bottom: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            color: #E47C7C;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .back-link:hover {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <img src="assets/images/MMB_app_icon.png" alt="Mommy Milk Bar Icon" class="logo-img">
+                    </div>
+                    <span class="logo-text">Mommy Milk Bar</span>
+                </div>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="privacy.html" class="nav-link">Privacy</a>
+                    <a href="terms.html" class="nav-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="nav-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="nav-link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Science Section -->
+    <section class="science-section">
+        <div class="science-content">
+            <h1 class="science-title">Hoe wij rekenen</h1>
+            <p class="science-subtitle">Wetenschappelijke onderbouwing van ons rekenmodel</p>
+
+            <div class="science-intro">
+                Mommy Milk Bar gebruikt een rekenmodel om in te schatten hoelang je na het drinken van alcohol moet wachten voordat je weer veilig borstvoeding kunt geven. Deze berekening is gebaseerd op gerenommeerde wetenschappelijke bronnen en richtlijnen van gezondheidsinstanties. Belangrijk: alle uitkomsten zijn <strong>indicaties</strong>, geen persoonlijk medisch advies.
+            </div>
+
+            <h2 class="section-heading">Uitgangspunten</h2>
+            <p class="section-text">
+                De veiligste keuze is om geen alcohol te drinken als je borstvoeding geeft. Als je wel af en toe een drankje wilt, raden gezondheidsinstanties aan dit met mate te doen. Zowel het Amerikaanse CDC als de American Academy of Pediatrics stellen dat matige consumptie (maximaal 1 standaarddrankje per dag) niet bekend schadelijk is voor de baby, mits je minstens ~2 uur wacht per drankje voordat je weer voedt.
+            </p>
+
+            <div class="highlight-box">
+                <h3 class="highlight-title">De algemene vuistregel</h3>
+                <p class="section-text">
+                    Veel bronnen hanteren als vuistregel dat het ongeveer <strong>2 tot 3 uur</strong> duurt voordat één standaardglas alcohol is uitgescheiden uit de moedermelk. Het geneesmiddelendatabank LactMed (van de Amerikaanse gezondheidsbibliotheek) adviseert bijvoorbeeld ~2 à 2,5 uur wachten per standaarddrankje bij incidenteel alcoholgebruik.
+                </p>
+            </div>
+
+            <h2 class="section-heading">Hoe werkt onze berekening?</h2>
+
+            <p class="section-text">
+                Uit onderzoek blijkt dat de belangrijkste factoren voor hoelang alcohol in de moedermelk blijft, de <strong>gedronken hoeveelheid alcohol</strong> en het <strong>lichaamsgewicht</strong> van de moeder zijn. Ons model houdt rekening met deze twee inputs:
+            </p>
+
+            <ul class="bullet-list">
+                <li><strong>Standaarddrankje:</strong> We definiëren één drankje als één standaardglas alcohol (ongeveer 10 gram pure alcohol in NL/EU).</li>
+                <li><strong>Gewichtsaanpassing:</strong> We gebruiken het LactMed nomogram met specifieke meetpunten:
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>54 kg → 2,5 uur per standaarddrankje</li>
+                        <li>68 kg → 2,25 uur per standaarddrankje</li>
+                        <li>82 kg → 2,0 uur per standaarddrankje</li>
+                    </ul>
+                </li>
+                <li><strong>Lineaire interpolatie:</strong> Voor gewichten tussen deze punten berekenen we de tijd proportioneel.</li>
+                <li><strong>Veiligheidsmarge:</strong> We bouwen een conservatieve factor in om individuele variatie op te vangen.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3 class="highlight-title">Concreet voorbeeld</h3>
+                <p class="section-text">
+                    Een moeder van ~70 kg die één standaarddrank (bijv. 1 glas wijn) drinkt, zou volgens ons model ongeveer 2 uur en 15 minuten moeten wachten. Weegt zij 55 kg, dan kan het richting 2 uur 30 worden; weegt zij 85 kg, dan ongeveer 2 uur voor dat ene glas.
+                </p>
+                <p class="section-text">
+                    Bij meerdere drankjes tellen we de tijden op. Twee drankjes voor een gemiddelde vrouw komt uit op ongeveer 4-5 uur wachttijd.
+                </p>
+            </div>
+
+            <h2 class="section-heading">Wetenschappelijke basis</h2>
+            <p class="section-text">
+                Ons model is gebaseerd op onderzoek gepubliceerd in <em>Biology of the Neonate</em> (Ho et al. 2001), waarin bijvoorbeeld een zeer lichte vrouw (40 kg) na 3 drankjes ~8,5 uur nodig had tot haar melk alcoholvrij was, terwijl een zwaardere vrouw (95 kg) voor dezelfde hoeveelheid ongeveer 5,5 uur moest wachten. Dit toont aan: meer gewicht = kortere tijd per drankje, minder gewicht = langere tijd.
+            </p>
+
+            <h2 class="section-heading">Waarom een veiligheidsmarge?</h2>
+            <p class="section-text">
+                Omdat iedereen alcohol anders verwerkt, bouwen we een veiligheidsmarge in. Factoren zoals hoe snel je gedronken hebt, of je genoeg gegeten hebt, je hydratatie, hormonale toestand, medicijnen, en genetische verschillen kunnen de afbraaksnelheid beïnvloeden. Het is onmogelijk al deze individuele factoren mee te wegen in één simpel model.
+            </p>
+            <p class="section-text">
+                Daarom kiezen we voor een voorzichtige schatting die aan de veilige kant zit voor vrijwel iedereen. Liever geven we tien minuten te lang aan dan tien minuten te kort.
+            </p>
+
+            <div class="disclaimer-box">
+                <h3 class="disclaimer-box-title">Belangrijke disclaimers</h3>
+                <ul class="bullet-list">
+                    <li><strong>Geen medisch advies:</strong> Mommy Milk Bar is een informatieve tool, geen medisch hulpmiddel. We stellen geen diagnoses en meten geen alcohol in je bloed of melk.</li>
+                    <li><strong>Variatie tussen personen:</strong> Ons model werkt met gemiddelden en aannames. Jouw lichaam kan alcohol sneller of langzamer verwerken dan gemiddeld.</li>
+                    <li><strong>Je eigen gevoel blijft leidend:</strong> Voel je je nog niet 100% fit, dan kun je beter langer wachten.</li>
+                    <li><strong>Veiligheid voorop:</strong> Ook als je melk weer vrij van alcohol is volgens de app, is het belangrijk dat jijzelf weer helemaal nuchter en scherp bent.</li>
+                </ul>
+            </div>
+
+            <div class="sources-section">
+                <h3 class="sources-title">Bronnen</h3>
+                <a href="https://www.ncbi.nlm.nih.gov/books/NBK501469/" target="_blank" class="source-link">
+                    1. Alcohol - Drugs and Lactation Database (LactMed) - NCBI Bookshelf
+                </a>
+                <a href="https://abcpediatrics.org/2023/12/22/alcohol-and-breastfeeding/" target="_blank" class="source-link">
+                    2. Alcohol and Breastfeeding - ABC Pediatrics of Dunn
+                </a>
+                <a href="https://infantrisk.com/content/alcohol-breastfeeding-whats-your-time-zero" target="_blank" class="source-link">
+                    3. Alcohol & Breastfeeding: What's your time-to-zero? | InfantRisk Center
+                </a>
+                <a href="https://www.beststart.org/resources/alc_reduction/pdf/brstfd_alc_deskref_eng.pdf" target="_blank" class="source-link">
+                    4. Drinking Alcohol while Breastfeeding Desk Reference - BestStart
+                </a>
+                <a href="https://helpwithdrinking.ca/getting-help/information-for-specific-populations/alcohol-and-breastmilk-chestmilk-calculator/" target="_blank" class="source-link">
+                    5. Alcohol and breastmilk/chestmilk calculator - Help With Drinking Canada
+                </a>
+                <a href="https://www.cdc.gov/" target="_blank" class="source-link">
+                    6. Centers for Disease Control and Prevention (CDC)
+                </a>
+                <a href="https://publications.aap.org/" target="_blank" class="source-link">
+                    7. American Academy of Pediatrics
+                </a>
+            </div>
+
+            <a href="index.html" class="back-link">← Terug naar home</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-divider"></div>
+            <div class="footer-content">
+                <nav class="footer-nav">
+                    <a href="privacy.html" class="footer-link">Privacy</a>
+                    <a href="terms.html" class="footer-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="footer-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="footer-link">Contact</a>
+                </nav>
+                <div class="footer-social">
+                    <a href="https://instagram.com/mommymilkbar" target="_blank" rel="noopener noreferrer" class="social-link">
+                        <img src="assets/images/Instagram_logo.png" alt="Instagram" class="social-icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
