@@ -10,6 +10,12 @@
   to = "/verify-email.html"
   status = 200
 
+# Serve reset-password page directly (no redirect)
+[[redirects]]
+  from = "/reset-password"
+  to = "/reset-password.html"
+  status = 200
+
 # Catch-all redirect (for SPA-style routing if needed)
 [[redirects]]
   from = "/*"
