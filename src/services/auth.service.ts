@@ -38,6 +38,9 @@ export const signUp = async (data: SignUpData) => {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: normalizedEmail,
       password: data.password,
+      options: {
+        emailRedirectTo: 'https://mommymilkbar.nl/verify-email',
+      },
     });
 
     if (authError) throw authError;
@@ -71,7 +74,10 @@ export const signUp = async (data: SignUpData) => {
       );
     }
 
-    // 4. Fire-and-forget welcome email with verification token
+    // 4. DISABLED: Custom welcome email (has broken verification link)
+    // TODO: Re-enable this as a post-verification welcome email
+    // For now, Supabase sends its default confirmation email which works properly
+    /*
     supabase.functions
       .invoke('send-welcome-email', {
         body: {
@@ -83,6 +89,7 @@ export const signUp = async (data: SignUpData) => {
       .catch((emailError) => {
         console.warn('Failed to enqueue welcome email', emailError);
       });
+    */
 
     return { user: authData.user, session: authData.session };
   } catch (error: any) {
@@ -129,6 +136,10 @@ export const signIn = async (data: SignInData) => {
       throw new Error('Onjuist e-mailadres of wachtwoord.');
     }
 
+    if (error.message?.includes('Email not confirmed')) {
+      throw new Error('Je moet eerst je e-mailadres verifiëren. Controleer je inbox voor de verificatiemail.');
+    }
+
     throw new Error(error.message || 'Er is iets misgegaan bij het inloggen.');
   }
 };
@@ -171,7 +182,12 @@ export const resetPassword = async (email: string) => {
   try {
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Eerst proberen via onze eigen edge function (Resend + Mimi mail)
+    // TEMPORARY: Skip custom edge function due to database issues
+    // Use Supabase's built-in email instead
+    // TODO: Debug and fix send-password-reset-email Edge Function
+    const usedCustomEmail = false;
+
+    /* Disabled temporarily - has database errors
     let usedCustomEmail = false;
     try {
       const { data, error } = await supabase.functions.invoke(
@@ -182,13 +198,25 @@ export const resetPassword = async (email: string) => {
       );
 
       if (error || data?.success === false) {
+        // If it's a rate limit error, throw it immediately (don't fall back)
+        if (data?.message?.includes('recent al een reset link aangevraagd') ||
+            data?.message?.includes('rate limit') ||
+            error?.message?.includes('rate limit')) {
+          throw new Error(data?.message || error?.message || 'Rate limit exceeded');
+        }
         console.warn('Password reset edge function failed, falling back to Supabase email:', error || data);
       } else {
         usedCustomEmail = true;
       }
-    } catch (fnError) {
+    } catch (fnError: any) {
+      // Re-throw rate limit errors, fall back for other errors
+      if (fnError.message?.includes('recent al een reset link aangevraagd') ||
+          fnError.message?.includes('rate limit')) {
+        throw fnError;
+      }
       console.warn('Password reset edge function exception, falling back to Supabase email:', fnError);
     }
+    */
 
     // Fallback: gebruik standaard Supabase reset e-mail als edge function niet werkte
     if (!usedCustomEmail) {
@@ -208,6 +236,14 @@ export const resetPassword = async (email: string) => {
     );
   } catch (error: any) {
     console.error('Reset password error:', error);
+
+    // Handle rate limiting error
+    if (error.message?.includes('only request this after') ||
+        error.message?.includes('rate limit') ||
+        error.message?.includes('too many requests')) {
+      throw new Error('Je hebt recent al een reset link aangevraagd. Controleer je inbox of probeer het over een minuut opnieuw.');
+    }
+
     throw new Error(error.message || 'Er is iets misgegaan bij het resetten van je wachtwoord.');
   }
 };
