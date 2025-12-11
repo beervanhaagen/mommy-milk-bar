@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, ScrollView, SafeAreaView, Animated } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -9,11 +9,45 @@ import { CountdownCard } from "../../src/components/CountdownCard";
 import { DrinkLogTable } from "../../src/components/DrinkLogTable";
 import { TipCarousel } from "../../src/components/TipCarousel";
 import { FeedbackWidget } from "../../src/components/FeedbackWidget";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 import { drinkTypes } from "../../src/data/drinkTypes";
 import { countdownMs } from "../../src/lib/alcohol";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Path, SvgUri } from "react-native-svg";
 
 const { width, height } = Dimensions.get('window');
+const sleepingMimiSource = require('../../assets/Mimi_karakters/sleeping_mimi.png');
+const DRINK_INTERACTION_KEY = 'mmb:last_drink_interaction';
+const MINUTE_MS = 60 * 1000;
+
+type PlanningMomentStatus = 'safe' | 'warning' | 'unsafe';
+
+type StoredPlanningMoment = {
+  time: string;
+  type: 'drink' | 'feed' | 'pump' | 'safe';
+  label: string;
+  description: string;
+  status: PlanningMomentStatus;
+  drinkTypeId?: string;
+};
+
+type StoredPlanningSummary = {
+  plannedDrinks: any[];
+  selectedDate: string;
+  startTime: string;
+  safeFeedTime?: string | null;
+  lastFeedTime?: string | null;
+  feedDurationMin?: number;
+  strategy?: 'minimal' | 'conservative';
+  generatedAt?: string;
+  planningMoments?: StoredPlanningMoment[];
+};
+
+type HydratedPlanningMoment = Omit<StoredPlanningMoment, 'time'> & { time: Date };
+
+const babyFaceSvgUri = Image.resolveAssetSource(require('../../assets/MMB_other/Babysface.svg')).uri;
+const pumpSvgUri = Image.resolveAssetSource(require('../../assets/MMB_other/pump.svg')).uri;
+const bottleSvgUri = Image.resolveAssetSource(require('../../assets/MMB_other/Baby Bottle.svg')).uri;
+const safeSvgUri = Image.resolveAssetSource(require('../../assets/MMB_other/Approval_green.svg')).uri;
 
 // Inline SVG icons in MMB pink
 const WineIcon = () => (
@@ -53,14 +87,37 @@ const ClockIcon = () => (
   </Svg>
 );
 
+const resolveMimiByMinutes = (minutesRemaining: number) => {
+  if (minutesRemaining <= 0) {
+    return require('../../assets/Mimi_karakters/Milkbar_open_1.png');
+  }
+  if (minutesRemaining < 60) {
+    return require('../../assets/Mimi_karakters/2_mimi_happy_2.png');
+  }
+  if (minutesRemaining < 120) {
+    return require('../../assets/Mimi_karakters/4_nogniet_2.png');
+  }
+  return require('../../assets/Mimi_karakters/7_Closed_mimi_png.png');
+};
+
 export default function Home() {
   const router = useRouter();
-  const { settings, getCurrentSession, getProfile, dispatchDrinkAction } = useStore();
+  const {
+    profile: storeProfile,
+    getCurrentSession,
+    getProfile,
+    dispatchDrinkAction,
+  } = useStore();
   const [hasActiveDrink, setHasActiveDrink] = useState(false);
   const [hasPlannedDrink, setHasPlannedDrink] = useState(false);
-  const [plannedSummary, setPlannedSummary] = useState<null | { plannedDrinks: any[]; selectedDate: string; startTime: string; safeFeedTime?: string | null }>(null);
+  const [plannedSummary, setPlannedSummary] = useState<StoredPlanningSummary | null>(null);
   const [hasDrinksToday, setHasDrinksToday] = useState(false);
+  const [hasLoggedDrinkToday, setHasLoggedDrinkToday] = useState(false);
+  const [lastDrinkInteractionDate, setLastDrinkInteractionDate] = useState<string | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [activePlanningSafeTime, setActivePlanningSafeTime] = useState<number | null>(null);
+  const [isPlanningExpanded, setIsPlanningExpanded] = useState(true);
+  const [safetyMarginMin, setSafetyMarginMin] = useState(0);
 
   // ZZZ Animation refs
   const zzz1Anim = useRef(new Animated.Value(0)).current;
@@ -70,21 +127,54 @@ export default function Home() {
   // Check for active sessions and update time
   useEffect(() => {
     const checkActiveSessions = () => {
-      const currentSession = getCurrentSession();
-      const hasEntries = currentSession && currentSession.entries.length > 0;
+      const session = getCurrentSession();
+      const entries = session?.entries ?? [];
+      const hasEntries = entries.length > 0;
+      const todayKey = new Date().toISOString().slice(0, 10);
 
       setHasDrinksToday(hasEntries);
       setHasActiveDrink(hasEntries);
       setNow(Date.now());
+
+      // Update active planning safe time
+      if (plannedSummary) {
+        const startTime = plannedSummary.startTime ? new Date(plannedSummary.startTime).getTime() : null;
+        const safeFeedTime = plannedSummary.safeFeedTime ? new Date(plannedSummary.safeFeedTime).getTime() : null;
+        const currentTime = Date.now();
+        const isPlanningActive =
+          startTime &&
+          currentTime >= startTime &&
+          safeFeedTime &&
+          currentTime < safeFeedTime + safetyMarginMin * MINUTE_MS;
+
+        if (isPlanningActive && safeFeedTime) {
+          setActivePlanningSafeTime(safeFeedTime);
+        } else {
+          setActivePlanningSafeTime(null);
+        }
+      }
+
+      if (hasEntries) {
+        if (!hasLoggedDrinkToday) {
+          setHasLoggedDrinkToday(true);
+        }
+        if (lastDrinkInteractionDate !== todayKey) {
+          setLastDrinkInteractionDate(todayKey);
+          AsyncStorage.setItem(DRINK_INTERACTION_KEY, todayKey).catch(() => {});
+        }
+      } else if (lastDrinkInteractionDate && lastDrinkInteractionDate !== todayKey) {
+        setHasLoggedDrinkToday(false);
+        setLastDrinkInteractionDate(null);
+        AsyncStorage.removeItem(DRINK_INTERACTION_KEY).catch(() => {});
+      }
     };
 
     checkActiveSessions();
 
-    // Update every second
     const interval = setInterval(checkActiveSessions, 1000);
 
     return () => clearInterval(interval);
-  }, [getCurrentSession]);
+  }, [getCurrentSession, hasLoggedDrinkToday, lastDrinkInteractionDate, plannedSummary, safetyMarginMin]);
 
   // Load planned schedule for summary card whenever screen focuses
   const loadPlanning = useCallback(async () => {
@@ -92,14 +182,32 @@ export default function Home() {
       const raw = await AsyncStorage.getItem('mmb:planned_schedule');
       if (raw) {
         const parsed = JSON.parse(raw);
-        setPlannedSummary(parsed);
-        setHasPlannedDrink((parsed.plannedDrinks || []).length > 0);
+        const normalized: StoredPlanningSummary = {
+          ...parsed,
+          planningMoments: Array.isArray(parsed.planningMoments) ? parsed.planningMoments : [],
+        };
+        setPlannedSummary(normalized);
+        setHasPlannedDrink((normalized.plannedDrinks || []).length > 0);
+
+        // Check if planning is currently active and set the safe time
+        const startTime = parsed.startTime ? new Date(parsed.startTime).getTime() : null;
+        const safeFeedTime = parsed.safeFeedTime ? new Date(parsed.safeFeedTime).getTime() : null;
+        const currentTime = Date.now();
+        const isPlanningActive = startTime && currentTime >= startTime && safeFeedTime && currentTime < safeFeedTime;
+
+        if (isPlanningActive && safeFeedTime) {
+          setActivePlanningSafeTime(safeFeedTime);
+        } else {
+          setActivePlanningSafeTime(null);
+        }
       } else {
         setPlannedSummary(null);
         setHasPlannedDrink(false);
+        setActivePlanningSafeTime(null);
       }
     } catch (e) {
       setPlannedSummary(null);
+      setActivePlanningSafeTime(null);
     }
   }, []);
 
@@ -109,9 +217,163 @@ export default function Home() {
     }, [loadPlanning])
   );
 
+  useEffect(() => {
+    const loadDrinkInteraction = async () => {
+      try {
+        const storedDate = await AsyncStorage.getItem(DRINK_INTERACTION_KEY);
+        const todayKey = new Date().toISOString().slice(0, 10);
+        setLastDrinkInteractionDate(storedDate);
+        setHasLoggedDrinkToday(storedDate === todayKey);
+      } catch {
+        setLastDrinkInteractionDate(null);
+        setHasLoggedDrinkToday(false);
+      }
+    };
+
+    loadDrinkInteraction();
+  }, []);
+
+  const currentSession = getCurrentSession();
+  const alcoholProfile = getProfile();
+  const motherDisplayName = 'mama';
+  const effectivePlanningSafeTime = activePlanningSafeTime !== null
+    ? activePlanningSafeTime + safetyMarginMin * MINUTE_MS
+    : null;
+  const planningMsRemaining = effectivePlanningSafeTime ? Math.max(effectivePlanningSafeTime - now, 0) : null;
+  const isPlanningActive = planningMsRemaining !== null && planningMsRemaining > 0;
+
+  // Determine which Mimi te tonen per dag en countdown
+  const mimiImage = useMemo(() => {
+    if (currentSession && (currentSession.entries || []).length > 0) {
+      const ms = countdownMs(currentSession.entries || [], alcoholProfile, now);
+      const minutesRemaining = Math.ceil(ms / (1000 * 60));
+
+      return resolveMimiByMinutes(minutesRemaining);
+    }
+
+    if (isPlanningActive && planningMsRemaining !== null) {
+      const minutesRemaining = Math.ceil(planningMsRemaining / (1000 * 60));
+      return resolveMimiByMinutes(minutesRemaining);
+    }
+
+    if (!hasLoggedDrinkToday) {
+      return sleepingMimiSource;
+    }
+
+    return require('../../assets/Mimi_karakters/Milkbar_open_1.png');
+  }, [currentSession, alcoholProfile, now, isPlanningActive, planningMsRemaining, hasLoggedDrinkToday]);
+  const isSleepingMimi = !hasLoggedDrinkToday && !isPlanningActive;
+
+  const timelineMoments = useMemo<HydratedPlanningMoment[]>(() => {
+    if (!plannedSummary) return [];
+
+    const hydrate = (moments: StoredPlanningMoment[]) => {
+      return moments
+        .reduce<HydratedPlanningMoment[]>((acc, moment) => {
+          const time = new Date(moment.time);
+          if (!isNaN(time.getTime())) {
+            acc.push({ ...moment, time });
+          }
+          return acc;
+        }, [])
+        .sort((a, b) => a.time.getTime() - b.time.getTime());
+    };
+
+    if (plannedSummary.planningMoments && plannedSummary.planningMoments.length > 0) {
+      return hydrate(plannedSummary.planningMoments);
+    }
+
+    if (plannedSummary.plannedDrinks && plannedSummary.plannedDrinks.length > 0) {
+      const fallbackStored: StoredPlanningMoment[] = [];
+
+      plannedSummary.plannedDrinks.forEach((drink: any) => {
+        const drinkTime = drink.time instanceof Date ? drink.time : new Date(drink.time);
+        if (isNaN(drinkTime.getTime())) {
+          return;
+        }
+        fallbackStored.push({
+          time: drinkTime.toISOString(),
+          type: 'drink',
+          label: 'Drankje',
+          description: drink.type === 'wine' ? 'Wijn' : drink.type === 'beer' ? 'Bier' : 'Drankje',
+          status: 'unsafe',
+          drinkTypeId: drink.type,
+        });
+      });
+
+      if (plannedSummary.safeFeedTime) {
+        const safeTime = new Date(plannedSummary.safeFeedTime);
+        if (!isNaN(safeTime.getTime())) {
+          fallbackStored.push({
+            time: safeTime.toISOString(),
+            type: 'safe',
+            label: 'Veilig voeden',
+            description: 'Alcohol volledig afgebroken',
+            status: 'safe',
+          });
+        }
+      }
+
+      return hydrate(fallbackStored);
+    }
+
+    return [];
+  }, [plannedSummary]);
+
+  const planningMomentColors = (type: HydratedPlanningMoment['type']) => {
+    if (type === 'safe') {
+      return { time: '#6FCF97', label: '#56B57D', detail: '#56B57D' };
+    }
+    return { time: '#4B3B36', label: '#4B3B36', detail: '#4B3B36' };
+  };
+
+  const isBottleMoment = (moment: HydratedPlanningMoment) => {
+    const label = moment.label?.toLowerCase() || '';
+    const description = moment.description?.toLowerCase() || '';
+    return label.includes('flesje') || description.includes('voorraad');
+  };
+
+  const planningMomentBubbleColor = (moment: HydratedPlanningMoment) => {
+    if (moment.type === 'safe') return '#E8F5E9';
+    if (moment.type === 'pump') return '#FFF1F0';
+    if (moment.type === 'drink') return '#FFF4F2';
+    if (moment.type === 'feed') {
+      return isBottleMoment(moment) ? '#FFF5F2' : '#FFF6F4';
+    }
+    return '#FFF6F4';
+  };
+
+  const getPlanningMomentIcon = (moment: HydratedPlanningMoment) => {
+    if (moment.type === 'drink') {
+      const drinkType = moment.drinkTypeId ? drinkTypes[moment.drinkTypeId] : null;
+      const IconComponent = drinkType?.icon;
+      if (IconComponent) {
+        return <IconComponent size={24} />;
+      }
+      return <Text style={styles.planningMomentIconText}>🍷</Text>;
+    }
+
+    if (moment.type === 'pump') {
+      return <SvgUri width={24} height={24} uri={pumpSvgUri} />;
+    }
+
+    if (moment.type === 'safe') {
+      return <SvgUri width={24} height={24} uri={safeSvgUri} />;
+    }
+
+    if (moment.type === 'feed') {
+      if (isBottleMoment(moment)) {
+        return <SvgUri width={24} height={24} uri={bottleSvgUri} />;
+      }
+      return <SvgUri width={24} height={24} uri={babyFaceSvgUri} />;
+    }
+
+    return <SvgUri width={24} height={24} uri={babyFaceSvgUri} />;
+  };
+
   // ZZZ Animation effect
   useEffect(() => {
-    if (!hasDrinksToday) {
+    if (isSleepingMimi) {
       // Start ZZZ animation when Mimi is sleeping
       const createZzzAnimation = (animValue: Animated.Value, delay: number) => {
         return Animated.loop(
@@ -145,16 +407,12 @@ export default function Home() {
         zzz3.stop();
       };
     } else {
-      // Reset animations when Mimi is awake
+      // Reset animations when Mimi wakker is of niet de slaap-versie gebruikt
       zzz1Anim.setValue(0);
       zzz2Anim.setValue(0);
       zzz3Anim.setValue(0);
     }
-  }, [hasDrinksToday]);
-
-  // Get current session and profile
-  const currentSession = getCurrentSession();
-  const profile = getProfile();
+  }, [isSleepingMimi, zzz1Anim, zzz2Anim, zzz3Anim]);
 
   // Dynamische begroeting op basis van tijdstip
   const getGreeting = () => {
@@ -166,35 +424,6 @@ export default function Home() {
     } else {
       return 'Goedeavond';
     }
-  };
-
-  // Determine which Mimi to show based on countdown timer (same logic as onboarding)
-  const getMimiImage = () => {
-    // Als er een session bestaat (ook al zijn alle drankjes verwijderd), gebruik countdown logica
-    // Dit geeft gebruikers vertrouwen dat de app hun activiteit bijhoudt
-    if (currentSession) {
-      // Calculate countdown in minutes
-      const ms = countdownMs(currentSession.entries || [], profile, now);
-      const minutesRemaining = Math.ceil(ms / (1000 * 60));
-
-      // Mimi state based on countdown
-      if (minutesRemaining === 0) {
-        // VEILIG - Milkbar open! (ook als alle drankjes zijn verwijderd)
-        return require('../../assets/Mimi_karakters/Milkbar_open_1.png');
-      } else if (minutesRemaining < 60) {
-        // BIJNA - Almost open
-        return require('../../assets/Mimi_karakters/2_mimi_happy_2.png');
-      } else if (minutesRemaining < 120) {
-        // NOG NIET - Not yet open
-        return require('../../assets/Mimi_karakters/4_nogniet_2.png');
-      } else {
-        // GESLOTEN - Closed, still waiting
-        return require('../../assets/Mimi_karakters/7_Closed_mimi_png.png');
-      }
-    }
-
-    // Geen session vandaag = sleeping Mimi (echt nog niets gelogd)
-    return require('../../assets/Mimi_karakters/sleeping_mimi.png');
   };
 
   const mainChoices = [
@@ -235,11 +464,14 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.backgroundLayer}>
+        <AnimatedBackground variant="home" />
+      </View>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.greeting}>
-            {getGreeting()}, {settings.motherName === 'prefer_not_to_share' ? 'mama' : settings.motherName || 'mama'}
+            {getGreeting()}, {motherDisplayName}
           </Text>
           <Text style={styles.subGreeting}>
             {hasDrinksToday
@@ -271,13 +503,13 @@ export default function Home() {
             {/* Mimi character layer */}
             <View style={styles.mimiContainer}>
               <Image 
-                source={getMimiImage()} 
+                source={mimiImage} 
                 style={styles.mimiImage} 
                 resizeMode="contain" 
               />
               
               {/* ZZZ Animation - only show when sleeping */}
-              {!hasDrinksToday && (
+              {isSleepingMimi && (
                 <View style={styles.zzzContainer}>
                   <Animated.View style={[
                     styles.zzz,
@@ -330,10 +562,13 @@ export default function Home() {
           </View>
 
           {/* Countdown Card */}
-          <CountdownCard 
-            session={currentSession} 
-            drinkTypes={drinkTypes} 
-            profile={profile} 
+          <CountdownCard
+            session={currentSession}
+            drinkTypes={drinkTypes}
+            profile={alcoholProfile}
+            activePlanningSafeTime={activePlanningSafeTime}
+            safetyMarginMin={safetyMarginMin}
+            onSafetyMarginChange={setSafetyMarginMin}
           />
         </View>
 
@@ -347,44 +582,130 @@ export default function Home() {
           </View>
 
           {/* Planned summary card */}
-          {plannedSummary && (
-            <View style={styles.plannedCard}>
-              <Text style={styles.plannedTitle}>Volgend gepland drankje</Text>
-              <View style={styles.plannedRow}>
-                <Text style={styles.plannedLabel}>Wanneer:</Text>
-                <Text style={styles.plannedValue}>{new Date(plannedSummary.selectedDate).toLocaleDateString('nl-NL')}</Text>
-              </View>
-              <View style={styles.plannedRow}>
-                <Text style={styles.plannedLabel}>Starttijd:</Text>
-                <Text style={styles.plannedValue}>{new Date(plannedSummary.startTime).toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}</Text>
-              </View>
-              <View style={styles.plannedRow}>
-                <Text style={styles.plannedLabel}>Aantal:</Text>
-                <Text style={styles.plannedValue}>{plannedSummary.plannedDrinks.length} drankje(n)</Text>
-              </View>
-              {plannedSummary.safeFeedTime && (
-                <View style={styles.plannedRow}>
-                  <Text style={styles.plannedLabel}>Veilig voeden:</Text>
-                  <Text style={styles.plannedValue}>{new Date(plannedSummary.safeFeedTime).toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}</Text>
+          {plannedSummary && (() => {
+            const startTime = plannedSummary.startTime ? new Date(plannedSummary.startTime).getTime() : null;
+            const baseSafeFeedDate = plannedSummary.safeFeedTime ? new Date(plannedSummary.safeFeedTime) : null;
+            const baseSafeFeedMs = baseSafeFeedDate ? baseSafeFeedDate.getTime() : null;
+            const marginMsForDisplay = isPlanningActive ? safetyMarginMin * MINUTE_MS : 0;
+            const effectiveSafeFeedMs =
+              baseSafeFeedMs !== null ? baseSafeFeedMs + marginMsForDisplay : null;
+            const safeFeedDisplayDate = effectiveSafeFeedMs ? new Date(effectiveSafeFeedMs) : baseSafeFeedDate;
+            const timeUntilSafe = effectiveSafeFeedMs !== null ? effectiveSafeFeedMs - now : null;
+            const showCountdown = isPlanningActive && timeUntilSafe !== null && timeUntilSafe > 0;
+
+            const formatCountdown = (ms: number) => {
+              const hours = Math.floor(ms / (1000 * 60 * 60));
+              const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+              return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+
+            return (
+              <View style={[styles.plannedCard, isPlanningActive && styles.plannedCardActive]}>
+                <Text style={[styles.plannedTitle, isPlanningActive && styles.plannedTitleActive]}>
+                  {isPlanningActive ? 'Planning actief' : 'Volgend gepland drankje'}
+                </Text>
+
+                <View style={styles.plannedDetailsSection}>
+                  <View style={styles.plannedRow}>
+                    <Text style={styles.plannedLabel}>Wanneer:</Text>
+                    <Text style={styles.plannedValue}>{new Date(plannedSummary.selectedDate).toLocaleDateString('nl-NL')}</Text>
+                  </View>
+                  <View style={styles.plannedRow}>
+                    <Text style={styles.plannedLabel}>Starttijd:</Text>
+                    <Text style={styles.plannedValue}>{new Date(plannedSummary.startTime).toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}</Text>
+                  </View>
+                  <View style={styles.plannedRow}>
+                    <Text style={styles.plannedLabel}>Aantal:</Text>
+                    <Text style={styles.plannedValue}>{plannedSummary.plannedDrinks.length} drankje(s)</Text>
+                  </View>
+                  {isPlanningActive && showCountdown && (
+                    <View style={styles.plannedRow}>
+                      <Text style={styles.plannedLabel}>Veilig voeden over:</Text>
+                      <Text style={[styles.plannedValue, styles.plannedCountdownInline]}>{formatCountdown(timeUntilSafe)}</Text>
+                    </View>
+                  )}
+                  {plannedSummary.safeFeedTime && safeFeedDisplayDate && (
+                    <View style={styles.plannedRow}>
+                      <Text style={styles.plannedLabel}>Veilig voeden:</Text>
+                      <Text style={styles.plannedValue}>
+                        {safeFeedDisplayDate.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              )}
-              <Text style={styles.plannedDisclaimer}>Indicatie, geen medisch advies.</Text>
-              <View style={styles.plannedActions}>
-                <TouchableOpacity style={styles.plannedEdit} onPress={() => router.push('/planning/smart')}>
-                  <Text style={styles.plannedEditText}>Aanpassen</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.plannedDelete}
-                  onPress={async () => {
-                    try { await AsyncStorage.removeItem('mmb:planned_schedule'); } catch {}
-                    loadPlanning();
-                  }}
-                >
-                  <Text style={styles.plannedDeleteText}>Verwijderen</Text>
-                </TouchableOpacity>
+
+                {/* Planning Timeline */}
+                {timelineMoments.length > 0 && (
+                  <View style={styles.planningTimeline}>
+                    <TouchableOpacity
+                      style={styles.planningTimelineToggle}
+                      onPress={() => setIsPlanningExpanded(!isPlanningExpanded)}
+                    >
+                      <Text style={styles.planningTimelineToggleText}>
+                        {isPlanningExpanded ? 'Verberg planning' : 'Toon planning'}
+                      </Text>
+                      <Text style={styles.planningTimelineToggleIcon}>
+                        {isPlanningExpanded ? '▲' : '▼'}
+                      </Text>
+                    </TouchableOpacity>
+                    {isPlanningExpanded && (
+                      <View style={styles.planningTimelineContent}>
+                        <Text style={styles.planningTimelineTitle}>Je planning vandaag:</Text>
+                        <View style={styles.planningTimelineItems}>
+                          {timelineMoments.map((moment, index) => {
+                            const colors = planningMomentColors(moment.type);
+                            const displayTime =
+                              moment.type === 'safe' && isPlanningActive
+                                ? new Date(moment.time.getTime() + safetyMarginMin * MINUTE_MS)
+                                : moment.time;
+                            return (
+                              <View key={index} style={styles.planningMomentRow}>
+                                <View style={styles.planningMomentTime}>
+                                  <Text style={[styles.planningMomentTimeText, { color: colors.time }]}>
+                                    {displayTime.toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}
+                                  </Text>
+                                </View>
+                                <View style={styles.planningMomentIcon}>
+                                  <View style={[styles.planningMomentIconBubble, { backgroundColor: planningMomentBubbleColor(moment) }]}>
+                                    {getPlanningMomentIcon(moment)}
+                                  </View>
+                                </View>
+                                <View style={styles.planningMomentDetails}>
+                                  <Text style={[styles.planningMomentLabel, { color: colors.label }]}>
+                                    {moment.label}
+                                  </Text>
+                                  <Text style={[styles.planningMomentDescription, { color: colors.detail }]}>
+                                    {moment.description}
+                                  </Text>
+                                </View>
+                              </View>
+                            );
+                          })}
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                <Text style={styles.plannedDisclaimer}>Indicatie, geen medisch advies.</Text>
+                <View style={styles.plannedActions}>
+                  <TouchableOpacity style={styles.plannedEdit} onPress={() => router.push('/planning/smart')}>
+                    <Text style={styles.plannedEditText}>Aanpassen</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.plannedDelete}
+                    onPress={async () => {
+                      try { await AsyncStorage.removeItem('mmb:planned_schedule'); } catch {}
+                      loadPlanning();
+                    }}
+                  >
+                    <Text style={styles.plannedDeleteText}>Verwijderen</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
+            );
+          })()}
           <TouchableOpacity 
             style={styles.drinkCard}
             onPress={mainChoices[0].onPress}
@@ -415,7 +736,7 @@ export default function Home() {
             <DrinkLogTable 
               entries={currentSession.entries} 
               drinkTypes={drinkTypes} 
-              profile={profile}
+              profile={alcoholProfile}
               onDelete={(entryId) => dispatchDrinkAction({ type: 'DELETE_ENTRY', payload: { id: entryId } })}
             />
           )}
@@ -444,30 +765,6 @@ export default function Home() {
             </View>
           </TouchableOpacity>
 
-          {/* Compact planningsoverzicht onder 'Ik wil straks drinken' */}
-          {plannedSummary && (
-            <View style={styles.compactPlanCard}>
-              <Text style={styles.compactTitle}>Planningsoverzicht</Text>
-              <View style={styles.compactRow}>
-                <Text style={styles.compactLabel}>Wanneer</Text>
-                <Text style={styles.compactValue}>{new Date(plannedSummary.selectedDate).toLocaleDateString('nl-NL')}</Text>
-              </View>
-              <View style={styles.compactRow}>
-                <Text style={styles.compactLabel}>Starttijd</Text>
-                <Text style={styles.compactValue}>{new Date(plannedSummary.startTime).toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}</Text>
-              </View>
-              <View style={styles.compactRow}>
-                <Text style={styles.compactLabel}>Drankjes</Text>
-                <Text style={styles.compactValue}>{plannedSummary.plannedDrinks.length}</Text>
-              </View>
-              {plannedSummary.safeFeedTime && (
-                <View style={styles.compactRow}>
-                  <Text style={styles.compactLabel}>Veilig voeden</Text>
-                  <Text style={styles.compactValue}>{new Date(plannedSummary.safeFeedTime).toLocaleTimeString('nl-NL', {hour:'2-digit', minute:'2-digit'})}</Text>
-                </View>
-              )}
-            </View>
-          )}
         </View>
 
         {/* Quick Actions - Hidden until activity */}
@@ -507,7 +804,12 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
+  },
+  backgroundLayer: {
+    ...StyleSheet.absoluteFillObject,
+    pointerEvents: 'none',
+    opacity: 0.5,
   },
   scrollView: {
     flex: 1,
@@ -897,12 +1199,81 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F0D5D1',
   },
+  plannedCardActive: {
+    borderColor: '#F49B9B',
+    borderWidth: 2,
+    backgroundColor: '#FFF8F8',
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
   plannedTitle: {
     fontFamily: 'Quicksand',
     fontWeight: '700',
     fontSize: 18,
     color: '#F49B9B',
     marginBottom: 8,
+  },
+  plannedTitleActive: {
+    color: '#E8797A',
+    fontSize: 20,
+  },
+  plannedCountdownLabel: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#4B3B36',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  plannedCountdownLabelActive: {
+    color: '#E8797A',
+    fontSize: 15,
+  },
+  plannedCountdown: {
+    fontFamily: 'Quicksand',
+    fontWeight: '700',
+    fontSize: 28,
+    color: '#F49B9B',
+    textAlign: 'center',
+    marginVertical: 8,
+    letterSpacing: 2,
+  },
+  plannedCountdownActive: {
+    color: '#E8797A',
+    fontSize: 32,
+  },
+  plannedDrinksCount: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 13,
+    color: '#7A6C66',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  warningBanner: {
+    backgroundColor: '#FFF3E0',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#FFB74D',
+  },
+  warningText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 13,
+    color: '#F57C00',
+    textAlign: 'center',
+  },
+  plannedDetailsSection: {
+    marginTop: 8,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F0D5D1',
   },
   plannedRow: {
     flexDirection: 'row',
@@ -918,6 +1289,110 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins',
     fontWeight: '600',
     color: '#4B3B36',
+  },
+  plannedCountdownInline: {
+    color: '#E8797A',
+    fontFamily: 'Quicksand',
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  planningTimeline: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F0D5D1',
+  },
+  planningTimelineTitle: {
+    fontFamily: 'Quicksand',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#4B3B36',
+    marginBottom: 12,
+  },
+  planningTimelineContent: {
+    width: '100%',
+    marginTop: 12,
+  },
+  planningTimelineItems: {
+    marginBottom: 12,
+  },
+  planningMomentRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  planningMomentTime: {
+    width: 60,
+    paddingTop: 4,
+  },
+  planningMomentTimeText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#4B3B36',
+  },
+  planningMomentIcon: {
+    width: 42,
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  planningMomentIconBubble: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFF4F2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  planningMomentIconText: {
+    fontSize: 20,
+  },
+  planningMomentDetails: {
+    flex: 1,
+  },
+  planningMomentLabel: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 16,
+    color: '#4B3B36',
+    marginBottom: 4,
+  },
+  planningMomentDescription: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#7A6C66',
+    lineHeight: 20,
+  },
+  planningTimelineToggle: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFF7F8',
+    borderRadius: 999,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#F6BFC4',
+  },
+  planningTimelineToggleText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 12,
+    color: '#F49B9B',
+    marginRight: 6,
+  },
+  planningTimelineToggleIcon: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 10,
+    color: '#F49B9B',
   },
   plannedDisclaimer: {
     marginTop: 10,
@@ -964,38 +1439,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
     color: '#7A6C66',
-  },
-  compactPlanCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#F0D5D1',
-  },
-  compactTitle: {
-    fontFamily: 'Quicksand',
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#4B3B36',
-    marginBottom: 6,
-  },
-  compactRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 2,
-  },
-  compactLabel: {
-    fontFamily: 'Poppins',
-    fontWeight: '500',
-    color: '#7A6C66',
-    fontSize: 12,
-  },
-  compactValue: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    color: '#4B3B36',
-    fontSize: 12,
   },
   // Plan Card Styles
   planCard: {

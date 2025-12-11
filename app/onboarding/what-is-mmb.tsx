@@ -2,14 +2,25 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Image
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { AnimatedBackground } from "../../src/components/AnimatedBackground";
+import { useState } from "react";
+import { useStore } from "../../src/state/store";
 
 const { width, height } = Dimensions.get('window');
 
 export default function WhatIsMMB() {
   const router = useRouter();
+  const { updateProfile } = useStore();
+  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
 
   const handleNext = () => {
-    router.push('/onboarding/how-it-works');
+    if (acceptedDisclaimer) {
+      // Save medical disclaimer consent
+      updateProfile({
+        medicalDisclaimerConsent: true,
+        consentTimestamp: new Date().toISOString(),
+      });
+      router.push('/onboarding/how-it-works');
+    }
   };
 
   return (
@@ -43,7 +54,7 @@ export default function WhatIsMMB() {
           <View style={styles.bulletPoint}>
             <Text style={styles.bullet}>•</Text>
             <Text style={styles.bulletText}>
-              <Text style={styles.bold}>Informatie & schattingen</Text> gebaseerd op gemiddelde alcoholafbraak
+              <Text style={styles.bold}>Indicaties gebaseerd op gemiddelden</Text> voor alcoholafbraak
             </Text>
           </View>
 
@@ -94,12 +105,35 @@ export default function WhatIsMMB() {
             </Text>
           </View>
 
+          {/* Link naar Hoe wij rekenen */}
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => router.push('/medical-info')}
+          >
+            <Text style={styles.linkText}>Lees meer over berekeningen en medische informatie</Text>
+          </TouchableOpacity>
+
           {/* Verdrietige Mimi binnen "Dit zijn wij niet" */}
           <Image
             source={require('../../assets/Mimi_karakters/4_nogniet_2.png')}
             style={styles.mimiSad}
             resizeMode="contain"
           />
+        </View>
+
+        {/* Consent Checkbox */}
+        <View style={styles.consentContainer}>
+          <TouchableOpacity
+            style={[styles.checkbox, acceptedDisclaimer && styles.checkboxActive]}
+            onPress={() => setAcceptedDisclaimer(!acceptedDisclaimer)}
+          >
+            <View style={[styles.checkboxBox, acceptedDisclaimer && styles.checkboxBoxActive]}>
+              {acceptedDisclaimer && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxText}>
+              Ik begrijp dat dit indicaties zijn, geen medisch advies, en dat alle keuzes mijn eigen verantwoordelijkheid zijn
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.footerText}>
@@ -109,8 +143,12 @@ export default function WhatIsMMB() {
       </ScrollView>
 
       {/* Continue Button */}
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Ik begrijp het</Text>
+      <TouchableOpacity
+        style={[styles.button, !acceptedDisclaimer && styles.buttonDisabled]}
+        onPress={handleNext}
+        disabled={!acceptedDisclaimer}
+      >
+        <Text style={[styles.buttonText, !acceptedDisclaimer && styles.buttonTextDisabled]}>Ik begrijp het</Text>
       </TouchableOpacity>
 
       {/* Bottom Line */}
@@ -122,7 +160,7 @@ export default function WhatIsMMB() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
@@ -251,6 +289,66 @@ const styles = StyleSheet.create({
     color: '#8B5A3C',
     textAlign: 'center',
   },
+  linkButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  linkText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#F49B9B',
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+  },
+  consentContainer: {
+    width: '100%',
+    maxWidth: 340,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  checkbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E6E6E6',
+    backgroundColor: '#F9F9F9',
+  },
+  checkboxActive: {
+    borderColor: '#F49B9B',
+    backgroundColor: '#FDF2F2',
+  },
+  checkboxBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#C7CED9',
+    marginRight: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxBoxActive: {
+    borderColor: '#F49B9B',
+    backgroundColor: '#F49B9B',
+  },
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  checkboxText: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#4B3B36',
+    flex: 1,
+  },
   footerText: {
     fontFamily: 'Poppins',
     fontWeight: '300',
@@ -278,6 +376,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 5,
   },
+  buttonDisabled: {
+    backgroundColor: '#E6E6E6',
+  },
   buttonText: {
     fontFamily: 'Poppins',
     fontWeight: '400',
@@ -285,6 +386,9 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFFFFF',
+  },
+  buttonTextDisabled: {
+    color: '#B3AFAF',
   },
   mimiHappy: {
     position: 'absolute',

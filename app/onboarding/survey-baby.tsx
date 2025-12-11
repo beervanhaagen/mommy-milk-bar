@@ -5,25 +5,23 @@ import Svg, { Path } from "react-native-svg";
 import { useStore } from "../../src/state/store";
 import Slider from '@react-native-community/slider';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
 export default function SurveyBaby() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
+  const { getActiveBaby, updateSettings } = useStore();
+  const activeBaby = getActiveBaby();
 
   // Default birthdate: 2 maanden geleden
   const defaultDate = new Date();
   defaultDate.setMonth(defaultDate.getMonth() - 2);
 
   const [babyBirthdate, setBabyBirthdate] = useState<Date>(
-    settings.babyBirthdate ? new Date(settings.babyBirthdate) : defaultDate
+    activeBaby?.birthdate ? new Date(activeBaby.birthdate) : defaultDate
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [babyWeight, setBabyWeight] = useState<number>(settings.babyWeightKg ?? 4.0);
-  const [babyLength, setBabyLength] = useState<number>(settings.babyLengthCm ?? 54);
-  const [weightUnknown, setWeightUnknown] = useState(settings.babyWeightKg === undefined);
-  const [lengthUnknown, setLengthUnknown] = useState(settings.babyLengthCm === undefined);
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
@@ -62,26 +60,13 @@ export default function SurveyBaby() {
   const handleNext = () => {
     updateSettings({
       babyBirthdate: babyBirthdate.toISOString(),
-      babyWeightKg: weightUnknown ? undefined : babyWeight,
-      babyLengthCm: lengthUnknown ? undefined : babyLength
     });
     router.replace('/onboarding/survey-feeding');
   };
 
   return (
     <View style={styles.container}>
-      <Svg
-        width={width}
-        height={504}
-        style={styles.onboardingShape}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
-      >
-        <Path
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z"
-          fill="#FFE2D8"
-        />
-      </Svg>
+      <AnimatedBackground variant="variant3" />
 
       {/* Fixed header with back button and progress bar */}
       <View style={styles.fixedHeader}>
@@ -132,41 +117,6 @@ export default function SurveyBaby() {
             </TouchableOpacity>
           )}
         </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Wat is het gewicht en de lengte van je baby?</Text>
-          <Text style={styles.metricLabel}>Gewicht: {weightUnknown ? 'Ik weet het niet' : babyWeight.toFixed(1) + ' kg'}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={2.0}
-            maximumValue={16.0}
-            step={0.1}
-            value={babyWeight}
-            onValueChange={(v) => { setBabyWeight(v); setWeightUnknown(false); }}
-            minimumTrackTintColor="#F49B9B"
-            maximumTrackTintColor="#E6E6E6"
-            thumbTintColor="#F49B9B"
-          />
-          <TouchableOpacity style={[styles.pill, weightUnknown && styles.pillActive]} onPress={() => setWeightUnknown(true)}>
-            <Text style={[styles.pillText, weightUnknown && styles.pillTextActive]}>Ik weet het niet</Text>
-          </TouchableOpacity>
-
-          <Text style={[styles.metricLabel, { marginTop: 16 }]}>Lengte: {lengthUnknown ? 'Ik weet het niet' : babyLength + ' cm'}</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={45}
-            maximumValue={95}
-            step={1}
-            value={babyLength}
-            onValueChange={(v) => { setBabyLength(v); setLengthUnknown(false); }}
-            minimumTrackTintColor="#F49B9B"
-            maximumTrackTintColor="#E6E6E6"
-            thumbTintColor="#F49B9B"
-          />
-          <TouchableOpacity style={[styles.pill, lengthUnknown && styles.pillActive, { marginTop: 8 }]} onPress={() => setLengthUnknown(true)}>
-            <Text style={[styles.pillText, lengthUnknown && styles.pillTextActive]}>Ik weet het niet</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={handleNext}>
@@ -181,17 +131,10 @@ export default function SurveyBaby() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   fixedHeader: {
     position: 'absolute',

@@ -22,9 +22,10 @@ export default function PrivacyConsent() {
   const { updateProfile } = useStore();
   const [acceptedAge, setAcceptedAge] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
-  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
+  const [acceptedMarketing, setAcceptedMarketing] = useState(false);
+  const [acceptedAnalytics, setAcceptedAnalytics] = useState(false);
 
-  const canContinue = acceptedAge && acceptedPrivacy && acceptedDisclaimer;
+  const canContinue = acceptedAge && acceptedPrivacy;
 
   const handleContinue = () => {
     if (canContinue) {
@@ -32,9 +33,10 @@ export default function PrivacyConsent() {
       updateProfile({
         consentVersion: '1.0.0',
         ageConsent: acceptedAge,
-        medicalDisclaimerConsent: acceptedDisclaimer,
         privacyPolicyConsent: acceptedPrivacy,
         consentTimestamp: new Date().toISOString(),
+        marketingConsent: acceptedMarketing,
+        analyticsConsent: acceptedAnalytics,
       });
 
       // Navigate to account creation after consent
@@ -103,28 +105,6 @@ export default function PrivacyConsent() {
           </TouchableOpacity>
         </View>
 
-        {/* Medical Disclaimer */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Medische disclaimer</Text>
-          <Text style={styles.cardText}>
-            Mommy Milk Bar is een <Text style={styles.bold}>informatieve tool</Text>, geen medisch advies.
-            De app geeft richtlijnen op basis van algemene informatie en wetenschappelijke bronnen.
-          </Text>
-          <Text style={[styles.cardText, { marginTop: 12 }]}>
-            Bij twijfel of vragen over jouw gezondheid of die van je baby, raadpleeg
-            altijd een arts, verloskundige of lactatiekundige.
-          </Text>
-          <TouchableOpacity
-            style={[styles.checkbox, acceptedDisclaimer && styles.checkboxActive]}
-            onPress={() => setAcceptedDisclaimer(!acceptedDisclaimer)}
-          >
-            <View style={[styles.checkboxBox, acceptedDisclaimer && styles.checkboxBoxActive]}>
-              {acceptedDisclaimer && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxText}>Ik begrijp dat dit geen medisch advies is</Text>
-          </TouchableOpacity>
-        </View>
-
         {/* Privacy */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Privacy & je data</Text>
@@ -150,6 +130,35 @@ export default function PrivacyConsent() {
             <Text style={styles.checkboxText}>
               Ik ga akkoord met het verzamelen en opslaan van deze data
             </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Optional marketing/analytics */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Voorkeuren</Text>
+          <Text style={styles.cardText}>
+            Kies of we je mogen benaderen voor updates en anonieme statistieken. Dit helpt ons de app te verbeteren,
+            maar is optioneel.
+          </Text>
+
+          <TouchableOpacity
+            style={[styles.checkbox, acceptedMarketing && styles.checkboxActive]}
+            onPress={() => setAcceptedMarketing(!acceptedMarketing)}
+          >
+            <View style={[styles.checkboxBox, acceptedMarketing && styles.checkboxBoxActive]}>
+              {acceptedMarketing && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxText}>Ik ontvang graag updates en tips van Mommy Milk Bar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.checkbox, acceptedAnalytics && styles.checkboxActive]}
+            onPress={() => setAcceptedAnalytics(!acceptedAnalytics)}
+          >
+            <View style={[styles.checkboxBox, acceptedAnalytics && styles.checkboxBoxActive]}>
+              {acceptedAnalytics && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxText}>Ik help mee via anonieme gebruiksstatistieken</Text>
           </TouchableOpacity>
         </View>
 
@@ -324,6 +333,18 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#4B3B36',
     flex: 1,
+  },
+  linkButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+  },
+  linkText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#E47C7C',
+    textDecorationLine: 'underline',
+    textAlign: 'center',
   },
   legalLinks: {
     flexDirection: 'row',

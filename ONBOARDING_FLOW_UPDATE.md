@@ -259,7 +259,7 @@ Voor users die eerst zonder account begonnen:
 ```typescript
 // In Settings screen, als niet authenticated:
 {!isAuthenticated && (
-  <TouchableOpacity onPress={() => router.push('/auth/register')}>
+  <TouchableOpacity onPress={() => router.push('/onboarding/CreateAccount')}>
     <Text>Maak account aan voor sync</Text>
   </TouchableOpacity>
 )}

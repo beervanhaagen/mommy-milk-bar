@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'expo-router';
 import { resetPassword } from '../../src/services/auth.service';
 import Svg, { Path } from 'react-native-svg';
+import { AnimatedBackground } from '../../src/components/AnimatedBackground';
 
 const { width, height } = Dimensions.get('window');
 
@@ -57,19 +58,7 @@ export default function ForgotPasswordScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Background Shape */}
-        <Svg
-          width={width}
-          height={504}
-          style={styles.backgroundShape}
-          viewBox="0 0 414 504"
-          preserveAspectRatio="xMinYMin slice"
-        >
-          <Path
-            d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z"
-            fill="#FFE2D8"
-          />
-        </Svg>
+        <AnimatedBackground variant="variant1" />
 
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
@@ -144,18 +133,11 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   scrollContent: {
     minHeight: height,
     position: 'relative',
-  },
-  backgroundShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   backButton: {
     position: 'absolute',

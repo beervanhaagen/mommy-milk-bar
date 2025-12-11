@@ -131,6 +131,18 @@ export const DrinkSelector: React.FC<DrinkSelectorProps> = ({
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Volume info for selected drink */}
+        <View style={styles.volumeInfo}>
+          <Text style={styles.volumeInfoIcon}>ℹ️</Text>
+          <Text style={styles.volumeInfoText}>
+            We gaan uit van standaard glazen ({
+              drinkType === 'WINE' ? '~105ml wijn' :
+              drinkType === 'BEER' ? '~250ml bier (geen vaas!)' :
+              drinkType === 'COCKTAIL' ? '~125ml cocktail' : '~35ml sterke drank'
+            }). Drink je grotere glazen? Bereken dan met meer drankjes voor een veilige schatting.
+          </Text>
+        </View>
       </View>
 
       {/* Pace with Timeline Visualization */}
@@ -276,6 +288,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  volumeInfo: {
+    backgroundColor: '#E8F0FF',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#9BB9F4',
+  },
+  volumeInfoIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  volumeInfoText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#4B3C33',
+    flex: 1,
   },
   typeOption: {
     flex: 1,

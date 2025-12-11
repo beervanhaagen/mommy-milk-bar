@@ -137,7 +137,11 @@ export default function Ready() {
 
         {/* Benefits of Account */}
         <View style={styles.benefitsCard}>
-          <Text style={styles.benefitsTitle}>Account aanmaken (optioneel)</Text>
+          {/* Nu gratis (pilot) ribbon op de kaart */}
+          <View style={styles.ribbon}>
+            <Text style={styles.ribbonText}>Nu gratis (pilot)</Text>
+          </View>
+          <Text style={styles.benefitsTitle}>Account aanmaken</Text>
           <Text style={styles.benefitsSubtitle}>Voordelen:</Text>
 
           <View style={styles.benefit}>
@@ -282,6 +286,8 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 3,
     marginTop: 24,
+    position: 'relative',
+    overflow: 'hidden',
   },
   benefitsTitle: {
     fontFamily: 'Poppins',
@@ -300,6 +306,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#8E8B88',
     marginBottom: 16,
+  },
+  ribbon: {
+    position: 'absolute',
+    top: -8,
+    right: -40,
+    backgroundColor: '#F49B9B',
+    paddingVertical: 6,
+    paddingHorizontal: 40,
+    transform: [{ rotate: '40deg' }],
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 10,
+  },
+  ribbonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '700',
+    fontSize: 11,
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
   benefit: {
     flexDirection: 'row',

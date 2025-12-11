@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { SafeIcon, WarningIcon, ClockIcon } from './icons/PlanningIcons';
+import { hoursPerStdDrink, Profile } from '../lib/alcohol';
 
 interface VeiligeTijdenCalculatorProps {
   drinks: PlannedDrink[];
   onSafeTimeChange: (safeTime: Date) => void;
+  profile: Profile;
 }
 
 interface PlannedDrink {
@@ -16,7 +18,8 @@ interface PlannedDrink {
 
 const VeiligeTijdenCalculator: React.FC<VeiligeTijdenCalculatorProps> = ({
   drinks,
-  onSafeTimeChange
+  onSafeTimeChange,
+  profile
 }) => {
   const [bufferTime, setBufferTime] = useState(30); // minutes
   const [confidenceLevel, setConfidenceLevel] = useState<'high' | 'medium' | 'low'>('high');
@@ -39,7 +42,7 @@ const VeiligeTijdenCalculator: React.FC<VeiligeTijdenCalculatorProps> = ({
       drink.time.getTime() > latest.time.getTime() ? drink : latest
     );
 
-    // Calculate alcohol clearance time (2 hours per standard drink)
+    // Calculate alcohol clearance time using precise LactMed nomogram based on weight
     const standardDrinks = normalized.reduce((total, drink) => {
       const drinkMultiplier = drink.type === 'WINE' ? 1.2 :
         drink.type === 'BEER' ? 0.8 :
@@ -47,14 +50,15 @@ const VeiligeTijdenCalculator: React.FC<VeiligeTijdenCalculatorProps> = ({
       return total + (drink.amount * drinkMultiplier);
     }, 0);
 
-    const clearanceHours = standardDrinks * 2;
+    const hoursPerDrink = hoursPerStdDrink(profile.weightKg) * (profile.conservativeFactor ?? 1.0);
+    const clearanceHours = standardDrinks * hoursPerDrink;
     const clearanceTime = new Date(lastDrink.time.getTime() + clearanceHours * 60 * 60 * 1000);
 
     // Add buffer time
     const safeTime = new Date(clearanceTime.getTime() + bufferTime * 60 * 1000);
 
     return safeTime;
-  }, [drinks, bufferTime]);
+  }, [drinks, bufferTime, profile]);
 
   const safeFeedTime = useMemo(() => calculateSafeFeedTime(), [calculateSafeFeedTime]);
   const extraSafeTime = useMemo(() => new Date(safeFeedTime.getTime() + 30 * 60 * 1000), [safeFeedTime]);

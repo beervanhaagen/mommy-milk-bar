@@ -223,7 +223,7 @@ export const resetPassword = async (email: string) => {
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         normalizedEmail,
         {
-          redirectTo: 'mommymilkbar://reset-password',
+          redirectTo: 'https://mommymilkbar.nl/reset-password',
         }
       );
       if (resetError) throw resetError;

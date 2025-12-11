@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     borderWidth: 1.5,
     borderColor: '#F49B9B',
     justifyContent: 'center',
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   optionalInput: {
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     borderRadius: 12,
     padding: 12,
     fontFamily: 'Poppins',
@@ -414,7 +414,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,

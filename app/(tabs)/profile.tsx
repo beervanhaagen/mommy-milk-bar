@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Modal, Dimensions, TextInput, Platform, Alert } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Modal, Dimensions, TextInput, Platform, Alert, Linking } from "react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "../../src/state/store";
+import { useAuth } from "../../src/contexts/AuthContext";
 import { exportUserData } from "../../src/lib/dataExport";
 import { deleteAccount as supabaseDeleteAccount, signOut } from "../../src/services/auth.service";
 import Svg, { Path } from "react-native-svg";
@@ -33,17 +34,6 @@ const calculateBabyAge = (birthdate?: string) => {
   } else {
     return `${weeks} ${weeks === 1 ? 'week' : 'weken'}`;
   }
-};
-
-// Helper function to calculate mother age from birthdate
-const calculateMotherAge = (birthdate?: string) => {
-  if (!birthdate) return 'Niet ingevuld';
-
-  const birth = new Date(birthdate);
-  const today = new Date();
-  const years = Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
-
-  return `${years} jaar`;
 };
 
 // Format birthdate
@@ -95,23 +85,21 @@ const SettingsIcon = () => (
   </Svg>
 );
 
-type EditModalType = 'mother' | 'baby' | 'feeding' | 'names' | null;
+type EditModalType = 'mother' | 'baby' | 'feeding' | null;
 
 export default function Profile() {
   const router = useRouter();
   const profile = useStore((state) => state.profile);
   const activeBaby = useStore((state) => state.getActiveBaby());
   const updateSettings = useStore((state) => state.updateSettings);
+  const resetProfile = useStore((state) => state.resetProfile);
+  const clearPersistedState = useStore((state) => state.clearPersistedState);
+  const { isAuthenticated } = useAuth();
 
   const settings = {
-    motherName: profile.motherName,
-    motherBirthdate: profile.motherBirthdate,
     weightKg: profile.weightKg,
-    heightCm: profile.heightCm,
     babyName: activeBaby?.name,
     babyBirthdate: activeBaby?.birthdate,
-    babyWeightKg: activeBaby?.weightKg,
-    babyLengthCm: activeBaby?.lengthCm,
     feedingType: activeBaby?.feedingType,
     pumpPreference: activeBaby?.pumpPreference,
     feedsPerDay: activeBaby?.feedsPerDay,
@@ -121,19 +109,12 @@ export default function Profile() {
 
   // Mother data
   const [motherWeight, setMotherWeight] = useState(settings.weightKg ?? 65);
-  const [motherHeight, setMotherHeight] = useState(settings.heightCm ?? 170);
-  const [motherBirthdate, setMotherBirthdate] = useState<Date>(
-    settings.motherBirthdate ? new Date(settings.motherBirthdate) : new Date(new Date().setFullYear(new Date().getFullYear() - 30))
-  );
-  const [showMotherDatePicker, setShowMotherDatePicker] = useState(false);
 
   // Baby data
   const [babyBirthdate, setBabyBirthdate] = useState<Date>(
     settings.babyBirthdate ? new Date(settings.babyBirthdate) : new Date()
   );
   const [showBabyDatePicker, setShowBabyDatePicker] = useState(false);
-  const [babyWeight, setBabyWeight] = useState(settings.babyWeightKg ?? 4.0);
-  const [babyLength, setBabyLength] = useState(settings.babyLengthCm ?? 54);
 
   // Feeding data
   const [feedingType, setFeedingType] = useState(settings.feedingType ?? 'breast');
@@ -142,18 +123,29 @@ export default function Profile() {
   const [typicalAmount, setTypicalAmount] = useState(settings.typicalAmountMl ?? 120);
 
   // Names
-  const [motherName, setMotherName] = useState(
-    settings.motherName === 'prefer_not_to_share' ? '' : settings.motherName ?? ''
-  );
   const [babyName, setBabyName] = useState(
     settings.babyName === 'prefer_not_to_share' ? '' : settings.babyName ?? ''
-  );
-  const [preferNotToShareMother, setPreferNotToShareMother] = useState(
-    settings.motherName === 'prefer_not_to_share'
   );
   const [preferNotToShareBaby, setPreferNotToShareBaby] = useState(
     settings.babyName === 'prefer_not_to_share'
   );
+  const syncToSupabase = useStore((state) => state.syncToSupabase);
+
+  useEffect(() => {
+    if (editModal === 'mother') {
+      setMotherWeight(settings.weightKg ?? 65);
+    }
+    if (editModal === 'baby') {
+      setBabyBirthdate(settings.babyBirthdate ? new Date(settings.babyBirthdate) : new Date());
+      setBabyName(settings.babyName === 'prefer_not_to_share' ? '' : settings.babyName ?? '');
+      setPreferNotToShareBaby(settings.babyName === 'prefer_not_to_share');
+    }
+  }, [
+    editModal,
+    settings.weightKg,
+    settings.babyBirthdate,
+    settings.babyName,
+  ]);
 
 
   const formatFeedingType = (type?: string) => {
@@ -176,26 +168,41 @@ export default function Profile() {
     return prefMap[pref] || pref;
   };
 
-  const handleSaveMotherData = () => {
+  const toggleBabyShare = () => {
+    setPreferNotToShareBaby((prev) => {
+      const next = !prev;
+      if (next) setBabyName('');
+      return next;
+    });
+  };
+
+  const syncProfileChanges = async () => {
+    try {
+      await syncToSupabase();
+    } catch (error: any) {
+      Alert.alert('Opslaan mislukt', 'We konden je wijzigingen niet opslaan in de cloud. Probeer het later opnieuw.');
+    }
+  };
+
+  const handleSaveMotherData = async () => {
     updateSettings({
       weightKg: motherWeight,
-      heightCm: motherHeight,
-      motherBirthdate: motherBirthdate.toISOString(),
     });
     setEditModal(null);
-    setShowMotherDatePicker(false);
+    await syncProfileChanges();
   };
 
-  const handleSaveBabyData = () => {
+  const handleSaveBabyData = async () => {
     updateSettings({
+      babyName: preferNotToShareBaby ? 'prefer_not_to_share' : (babyName || undefined),
       babyBirthdate: babyBirthdate.toISOString(),
-      babyWeightKg: babyWeight,
-      babyLengthCm: babyLength,
     });
     setEditModal(null);
+    setShowBabyDatePicker(false);
+    await syncProfileChanges();
   };
 
-  const handleSaveFeedingData = () => {
+  const handleSaveFeedingData = async () => {
     updateSettings({
       feedingType: feedingType as any,
       pumpPreference: pumpPref as any,
@@ -203,23 +210,7 @@ export default function Profile() {
       typicalAmountMl: pumpPref === 'yes' ? typicalAmount : undefined,
     });
     setEditModal(null);
-  };
-
-  const handleSaveNames = () => {
-    updateSettings({
-      motherName: preferNotToShareMother ? 'prefer_not_to_share' : (motherName || undefined),
-      babyName: preferNotToShareBaby ? 'prefer_not_to_share' : (babyName || undefined),
-    });
-    setEditModal(null);
-  };
-
-  const handleMotherDateChange = (event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowMotherDatePicker(false);
-    }
-    if (selectedDate) {
-      setMotherBirthdate(selectedDate);
-    }
+    await syncProfileChanges();
   };
 
   const handleBabyDateChange = (event: any, selectedDate?: Date) => {
@@ -233,7 +224,7 @@ export default function Profile() {
 
   const handleExportData = async () => {
     try {
-      await exportUserData(settings);
+      await exportUserData(profile, activeBaby);
     } catch (error) {
       console.error('Export failed:', error);
     }
@@ -251,19 +242,20 @@ export default function Profile() {
           onPress: async () => {
             const clearLegacySettings = () =>
               updateSettings({
-                motherBirthdate: undefined,
-                motherName: undefined,
                 babyBirthdate: undefined,
                 babyName: undefined,
                 weightKg: undefined,
-                heightCm: undefined,
-                babyWeightKg: undefined,
-                babyLengthCm: undefined,
                 feedingType: undefined,
                 pumpPreference: undefined,
                 feedsPerDay: undefined,
                 typicalAmountMl: undefined,
                 hasCompletedOnboarding: false,
+                ageConsent: false,
+                medicalDisclaimerConsent: false,
+                privacyPolicyConsent: false,
+                marketingConsent: false,
+                analyticsConsent: false,
+                safetyMode: 'cautious',
               });
 
             try {
@@ -295,24 +287,80 @@ export default function Profile() {
     );
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      'Uitloggen',
+      'Weet je zeker dat je wilt uitloggen?',
+      [
+        { text: 'Annuleren', style: 'cancel' },
+        {
+          text: 'Uitloggen',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+              resetProfile();
+              await clearPersistedState();
+              router.replace('/auth/login');
+            } catch (error: any) {
+              Alert.alert('Fout', error.message || 'Uitloggen mislukt, probeer later opnieuw.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push('/(tabs)')}
+        >
+          <Text style={styles.backButtonText}>← Terug</Text>
+        </TouchableOpacity>
+
         {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={styles.title}>Profiel</Text>
             <Text style={styles.subtitle}>
-              {settings.motherName === 'prefer_not_to_share' ? 'Mama' : settings.motherName || 'Mama'} & {settings.babyName === 'prefer_not_to_share' ? 'baby' : settings.babyName || 'baby'}
+              Mama & {settings.babyName === 'prefer_not_to_share' ? 'baby' : settings.babyName || 'baby'}
             </Text>
           </View>
           <TouchableOpacity
             style={styles.settingsButton}
-            onPress={() => setEditModal('names')}
+            onPress={() => router.push('/settings')}
           >
             <SettingsIcon />
           </TouchableOpacity>
         </View>
+
+        {/* Auth CTA for gasten zonder account */}
+        {!isAuthenticated && (
+          <View style={styles.authCard}>
+            <Text style={styles.authTitle}>Maak je profiel compleet</Text>
+            <Text style={styles.authSubtitle}>
+              Log in of maak een account aan om je gegevens veilig op te slaan en tussen apparaten te synchroniseren.
+            </Text>
+            <View style={styles.authButtonsRow}>
+              <TouchableOpacity
+                style={styles.authPrimaryButton}
+                onPress={() => router.push('/auth/login')}
+              >
+                <Text style={styles.authPrimaryButtonText}>Inloggen</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.authSecondaryButton}
+                onPress={() => router.push('/onboarding/CreateAccount')}
+              >
+                <Text style={styles.authSecondaryButtonText}>Account aanmaken</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         {/* Mother Data Card */}
         <View style={styles.card}>
@@ -330,26 +378,9 @@ export default function Profile() {
           </View>
 
           <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Geboortedatum:</Text>
-            <Text style={styles.dataValue}>{formatBirthdate(settings.motherBirthdate)}</Text>
-          </View>
-
-          <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Leeftijd:</Text>
-            <Text style={styles.dataValue}>{calculateMotherAge(settings.motherBirthdate)}</Text>
-          </View>
-
-          <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Gewicht:</Text>
             <Text style={styles.dataValue}>
               {settings.weightKg === undefined ? 'Niet ingevuld' : `${settings.weightKg} kg`}
-            </Text>
-          </View>
-
-          <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Lengte:</Text>
-            <Text style={styles.dataValue}>
-              {settings.heightCm === undefined ? 'Niet ingevuld' : `${settings.heightCm} cm`}
             </Text>
           </View>
 
@@ -381,22 +412,17 @@ export default function Profile() {
           </View>
 
           <View style={styles.dataRow}>
+            <Text style={styles.dataLabel}>Naam:</Text>
+            <Text style={styles.dataValue}>
+              {settings.babyName === 'prefer_not_to_share'
+                ? 'Liever niet delen'
+                : settings.babyName || 'Niet ingevuld'}
+            </Text>
+          </View>
+
+          <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Leeftijd:</Text>
             <Text style={styles.dataValue}>{calculateBabyAge(settings.babyBirthdate)}</Text>
-          </View>
-
-          <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Gewicht:</Text>
-            <Text style={styles.dataValue}>
-              {settings.babyWeightKg === undefined ? 'Niet ingevuld' : `${settings.babyWeightKg} kg`}
-            </Text>
-          </View>
-
-          <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Lengte:</Text>
-            <Text style={styles.dataValue}>
-              {settings.babyLengthCm === undefined ? 'Niet ingevuld' : `${settings.babyLengthCm} cm`}
-            </Text>
           </View>
 
           <View style={styles.microcopy}>
@@ -454,19 +480,40 @@ export default function Profile() {
           </View>
         </View>
 
-        {/* Account & Privacy Section - Removed non-functional buttons for MVP */}
-        {/* Will be implemented post-launch with:
-          - Account instellingen (link to settings)
-          - Notificaties (notification preferences)
-          - Privacy & data (privacy settings)
-          - Help & ondersteuning (help center)
-        */}
+        {/* Legal & Medical Information Section */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Informatie & Privacy</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.infoLinkRow}
+            onPress={() => router.push('/medical-info')}
+          >
+            <Text style={styles.infoLinkText}>Berekeningen & Medische Informatie</Text>
+            <Text style={styles.infoLinkArrow}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.infoLinkRow}
+            onPress={() => Linking.openURL('https://mommymilkbar.nl/privacy.html')}
+          >
+            <Text style={styles.infoLinkText}>Privacy Policy</Text>
+            <Text style={styles.infoLinkArrow}>→</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Bottom Actions */}
         <View style={styles.bottomSection}>
           <TouchableOpacity style={styles.bottomAction} onPress={handleExportData}>
             <Text style={styles.bottomActionText}>Data exporteren</Text>
           </TouchableOpacity>
+
+          {isAuthenticated && (
+            <TouchableOpacity style={styles.bottomAction} onPress={handleLogout}>
+              <Text style={styles.bottomActionText}>Uitloggen</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity style={styles.bottomAction} onPress={handleDeleteAccount}>
             <Text style={[styles.bottomActionText, styles.dangerText]}>Account verwijderen</Text>
@@ -475,73 +522,6 @@ export default function Profile() {
           <Text style={styles.versionText}>Versie 1.0.0</Text>
         </View>
       </ScrollView>
-
-      {/* Names Edit Modal */}
-      <Modal
-        visible={editModal === 'names'}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setEditModal(null)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Namen aanpassen</Text>
-
-            <Text style={styles.inputLabel}>Jouw naam</Text>
-            <TextInput
-              style={styles.textInput}
-              value={motherName}
-              onChangeText={setMotherName}
-              placeholder="Bijv. Sarah"
-              placeholderTextColor="#B3AFAF"
-              editable={!preferNotToShareMother}
-            />
-            <TouchableOpacity
-              style={styles.checkboxRow}
-              onPress={() => setPreferNotToShareMother(!preferNotToShareMother)}
-            >
-              <View style={[styles.checkbox, preferNotToShareMother && styles.checkboxChecked]}>
-                {preferNotToShareMother && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-              <Text style={styles.checkboxLabel}>Liever niet delen</Text>
-            </TouchableOpacity>
-
-            <Text style={[styles.inputLabel, { marginTop: 16 }]}>Naam van je baby</Text>
-            <TextInput
-              style={styles.textInput}
-              value={babyName}
-              onChangeText={setBabyName}
-              placeholder="Bijv. Emma"
-              placeholderTextColor="#B3AFAF"
-              editable={!preferNotToShareBaby}
-            />
-            <TouchableOpacity
-              style={styles.checkboxRow}
-              onPress={() => setPreferNotToShareBaby(!preferNotToShareBaby)}
-            >
-              <View style={[styles.checkbox, preferNotToShareBaby && styles.checkboxChecked]}>
-                {preferNotToShareBaby && <Text style={styles.checkmark}>✓</Text>}
-              </View>
-              <Text style={styles.checkboxLabel}>Liever niet delen</Text>
-            </TouchableOpacity>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setEditModal(null)}
-              >
-                <Text style={styles.cancelButtonText}>Annuleren</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleSaveNames}
-              >
-                <Text style={styles.saveButtonText}>Opslaan</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
 
       {/* Mother Data Edit Modal */}
       <Modal
@@ -555,43 +535,11 @@ export default function Profile() {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Over jou bewerken</Text>
 
-              <Text style={styles.inputLabel}>Geboortedatum</Text>
-              <TouchableOpacity
-                style={styles.dateButton}
-                onPress={() => setShowMotherDatePicker(true)}
-              >
-                <Text style={styles.dateButtonText}>
-                  {motherBirthdate.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </Text>
-                <Text style={styles.dateButtonSubtext}>{calculateMotherAge(motherBirthdate.toISOString())}</Text>
-              </TouchableOpacity>
-
-              {showMotherDatePicker && (
-                <>
-                  <DateTimePicker
-                    value={motherBirthdate}
-                    mode="date"
-                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onChange={handleMotherDateChange}
-                    maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 18))}
-                    minimumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 60))}
-                  />
-                  {Platform.OS === 'ios' && (
-                    <TouchableOpacity
-                      style={styles.doneButton}
-                      onPress={() => setShowMotherDatePicker(false)}
-                    >
-                      <Text style={styles.doneButtonText}>Klaar</Text>
-                    </TouchableOpacity>
-                  )}
-                </>
-              )}
-
-              <Text style={[styles.inputLabel, { marginTop: 16 }]}>Gewicht: {motherWeight} kg</Text>
+              <Text style={styles.inputLabel}>Gewicht: {motherWeight} kg</Text>
               <Slider
                 style={styles.slider}
                 minimumValue={40}
-                maximumValue={120}
+                maximumValue={200}
                 step={1}
                 value={motherWeight}
                 onValueChange={setMotherWeight}
@@ -600,26 +548,10 @@ export default function Profile() {
                 thumbTintColor="#F49B9B"
               />
 
-              <Text style={styles.inputLabel}>Lengte: {motherHeight} cm</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={140}
-                maximumValue={200}
-                step={1}
-                value={motherHeight}
-                onValueChange={setMotherHeight}
-                minimumTrackTintColor="#F49B9B"
-                maximumTrackTintColor="#E6E6E6"
-                thumbTintColor="#F49B9B"
-              />
-
               <View style={styles.modalButtons}>
                 <TouchableOpacity
                   style={styles.cancelButton}
-                  onPress={() => {
-                    setEditModal(null);
-                    setShowMotherDatePicker(false);
-                  }}
+                  onPress={() => setEditModal(null)}
                 >
                   <Text style={styles.cancelButtonText}>Annuleren</Text>
                 </TouchableOpacity>
@@ -646,6 +578,25 @@ export default function Profile() {
           <ScrollView contentContainerStyle={styles.modalScrollContent}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Over je baby bewerken</Text>
+
+              <Text style={styles.inputLabel}>Naam</Text>
+              <TextInput
+                style={styles.textInput}
+                value={babyName}
+                onChangeText={setBabyName}
+                placeholder="Bijv. Emma"
+                placeholderTextColor="#B3AFAF"
+                editable={!preferNotToShareBaby}
+              />
+              <TouchableOpacity
+                style={styles.checkboxRow}
+                onPress={toggleBabyShare}
+              >
+                <View style={[styles.checkbox, preferNotToShareBaby && styles.checkboxChecked]}>
+                  {preferNotToShareBaby && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+                <Text style={styles.checkboxLabel}>Liever niet delen</Text>
+              </TouchableOpacity>
 
               <Text style={styles.inputLabel}>Geboortedatum</Text>
               <TouchableOpacity
@@ -678,32 +629,6 @@ export default function Profile() {
                   )}
                 </>
               )}
-
-              <Text style={[styles.inputLabel, { marginTop: 16 }]}>Gewicht: {babyWeight.toFixed(1)} kg</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={2.0}
-                maximumValue={16.0}
-                step={0.1}
-                value={babyWeight}
-                onValueChange={setBabyWeight}
-                minimumTrackTintColor="#F49B9B"
-                maximumTrackTintColor="#E6E6E6"
-                thumbTintColor="#F49B9B"
-              />
-
-              <Text style={styles.inputLabel}>Lengte: {babyLength} cm</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={45}
-                maximumValue={95}
-                step={1}
-                value={babyLength}
-                onValueChange={setBabyLength}
-                minimumTrackTintColor="#F49B9B"
-                maximumTrackTintColor="#E6E6E6"
-                thumbTintColor="#F49B9B"
-              />
 
               <View style={styles.modalButtons}>
                 <TouchableOpacity
@@ -841,6 +766,77 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  authCard: {
+    marginHorizontal: 24,
+    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#F9F4F0',
+  },
+  authTitle: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 15,
+    color: '#4B3B36',
+    marginBottom: 6,
+  },
+  authSubtitle: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 13,
+    color: '#7A6C66',
+    marginBottom: 12,
+  },
+  authButtonsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  authPrimaryButton: {
+    flex: 1,
+    backgroundColor: '#F49B9B',
+    borderRadius: 24,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  authPrimaryButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  authSecondaryButton: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#F49B9B',
+  },
+  authSecondaryButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#F49B9B',
+  },
+  backButton: {
+  paddingHorizontal: 24,
+  paddingTop: 20,
+  paddingBottom: 8,
+  },
+  backButtonText: {
+  fontFamily: 'Poppins',
+  fontWeight: '500',
+  fontSize: 16,
+  color: '#F49B9B',
   },
   header: {
     flexDirection: 'row',
@@ -1195,5 +1191,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     color: '#FFFFFF',
+  },
+  infoLinkRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F5F5F5',
+  },
+  infoLinkText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#4B3B36',
+    flex: 1,
+  },
+  infoLinkArrow: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#7A6C66',
   },
 });

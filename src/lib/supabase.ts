@@ -61,6 +61,31 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+// Suppress console errors for auth issues that are handled gracefully
+const originalConsoleError = console.error;
+console.error = (...args: any[]) => {
+  const errorMessage = args[0]?.toString() || '';
+
+  // Suppress specific auth errors that are handled gracefully by our code
+  if (
+    errorMessage.includes('Invalid Refresh Token') ||
+    errorMessage.includes('Refresh Token Not Found') ||
+    errorMessage.includes('Auth session missing') ||
+    errorMessage.includes('AuthSessionMissingError') ||
+    errorMessage.includes('Failed to sync profile') ||
+    errorMessage.includes('Failed to sync all data') ||
+    errorMessage.includes('Sync error (non-critical)') ||
+    errorMessage.includes('Sign in error') ||
+    errorMessage.includes('Email not confirmed')
+  ) {
+    // These errors are handled by the UI with user-friendly messages
+    return;
+  }
+
+  // Pass through all other errors
+  originalConsoleError(...args);
+};
+
 /**
  * Helper to check if user is authenticated
  */

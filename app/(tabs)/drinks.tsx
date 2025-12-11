@@ -101,7 +101,7 @@ export default function Drinks() {
     // Auto-navigate naar home na 2.5 seconden
     setTimeout(() => {
       setShowSuccess(false);
-      router.push('/');
+      router.push('/(tabs)'); // Direct to home tab, avoid index routing logic
     }, 2500);
   };
 
@@ -145,14 +145,47 @@ export default function Drinks() {
                   onPress={() => setSelectedDrink(drink.id)}
                 >
                   <IconComponent size={32} />
-                  <Text style={styles.drinkName}>{drink.label}</Text>
-                  <Text style={[styles.drinkAlcohol, selectedDrink === drink.id && { color: '#FFFFFF' }] }>
+                  <Text
+                    style={[
+                      styles.drinkName,
+                      selectedDrink === drink.id && styles.drinkNameSelected,
+                    ]}
+                  >
+                    {drink.label}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.drinkAlcohol,
+                      selectedDrink === drink.id && styles.drinkAlcoholSelected,
+                    ]}
+                  >
                     {drink.isCustom ? 'Aangepast' : `${drink.abv}% alcohol`}
                   </Text>
+                  {!drink.isCustom && (
+                    <Text
+                      style={[
+                        styles.drinkVolume,
+                        selectedDrink === drink.id && styles.drinkVolumeSelected,
+                      ]}
+                    >
+                      ~{drink.standardVolumeMl}ml per glas
+                    </Text>
+                  )}
                 </TouchableOpacity>
               );
             })}
           </View>
+
+          {/* Volume Warning */}
+          {selectedDrink && !drinkTypes[selectedDrink]?.isCustom && (
+            <View style={styles.volumeWarning}>
+              <Text style={styles.volumeWarningText}>
+                <Text style={styles.volumeWarningBold}>Let op: </Text>
+                {drinkTypes[selectedDrink]?.volumeInfo}.
+                Drink je meer of minder? Kies dan "Overig" en vul het exacte volume in voor een veilige berekening.
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Custom Drink Input */}
@@ -193,9 +226,9 @@ export default function Drinks() {
 
         {/* Alcohol Warning - Show if > 3 drinks already logged */}
         {currentSession && currentSession.entries && currentSession.entries.length >= 3 && (
-          <View style={styles.warningContainer}>
-            <Text style={styles.warningTitle}>Let op</Text>
-            <Text style={styles.warningText}>
+          <View style={styles.tipContainer}>
+            <Text style={styles.tipText}>
+              <Text style={styles.tipBold}>Let op: </Text>
               Regelmatig veel alcohol kan melkproductie en baby-ontwikkeling beïnvloeden.
               Overweeg om te stoppen of minder te drinken. Raadpleeg bij twijfel een zorgverlener.
             </Text>
@@ -237,14 +270,6 @@ export default function Drinks() {
           </View>
         )}
 
-        {/* Info Card */}
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>💡 Wist je dat?</Text>
-          <Text style={styles.infoText}>
-            Richtlijn ~ 2–2,5 u/standaarddrank; licht gewicht → dichter bij 2,5–3 u.
-            We berekenen wanneer je weer veilig kunt voeden op basis van je gewicht en de LactMed-nomogram.
-          </Text>
-        </View>
       </ScrollView>
 
       {/* Success splash - vergelijkbaar met planning screen */}
@@ -401,7 +426,7 @@ const styles = StyleSheet.create({
   },
   drinkCardSelected: {
     borderColor: '#F49B9B',
-    backgroundColor: '#FDF2F2',
+    backgroundColor: '#F49B9B',
   },
   drinkIcon: {
     fontSize: 32,
@@ -415,12 +440,79 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     textAlign: 'center',
   },
+  drinkNameSelected: {
+    color: '#FFFFFF',
+  },
   drinkAlcohol: {
     fontFamily: 'Poppins',
     fontWeight: '400',
     fontSize: 12,
     color: '#8E8B88',
     textAlign: 'center',
+  },
+  drinkAlcoholSelected: {
+    color: '#FFFFFF',
+  },
+  drinkVolume: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 11,
+    color: '#F49B9B',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  drinkVolumeSelected: {
+    color: '#FFFFFF',
+  },
+  volumeWarning: {
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#F49B9B',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  volumeWarningIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  volumeWarningText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 20,
+    color: '#7A6C66',
+    flex: 1,
+  },
+  volumeWarningBold: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    color: '#4B3B36',
+  },
+  tipContainer: {
+    marginHorizontal: 24,
+    marginBottom: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#F49B9B',
+  },
+  tipText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 13,
+    lineHeight: 18,
+    color: '#7A6C66',
+  },
+  tipBold: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    color: '#4B3B36',
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -463,34 +555,7 @@ const styles = StyleSheet.create({
     color: '#8E8B88',
     textAlign: 'center',
   },
-  warningContainer: {
-    backgroundColor: '#FFF4E6',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9800',
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 24,
-    marginBottom: 20,
-    shadowColor: '#FF9800',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  warningTitle: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 16,
-    color: '#E65100',
-    marginBottom: 8,
-  },
-  warningText: {
-    fontFamily: 'Poppins',
-    fontWeight: '400',
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#8B4513',
-  },
+  // warningContainer / warningText replaced by tipContainer styles
   logButton: {
     backgroundColor: '#F49B9B',
     borderRadius: 38,

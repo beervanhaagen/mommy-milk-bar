@@ -10,7 +10,7 @@
 -- =====================================================
 
 -- Enable necessary extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Using pgcrypto's gen_random_uuid() instead of uuid-ossp for better compatibility
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- =====================================================
@@ -53,7 +53,7 @@ CREATE INDEX idx_profiles_last_active ON profiles(last_active_at);
 -- =====================================================
 
 CREATE TABLE babies (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
 
   -- Baby info (sensitive)
@@ -85,7 +85,7 @@ CREATE INDEX idx_babies_active ON babies(user_id, is_active) WHERE is_active = t
 -- =====================================================
 
 CREATE TABLE drink_sessions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   baby_id UUID REFERENCES babies(id) ON DELETE SET NULL,
 
@@ -114,7 +114,7 @@ CREATE INDEX idx_sessions_baby ON drink_sessions(baby_id, started_at DESC);
 -- =====================================================
 
 CREATE TABLE drinks (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   session_id UUID REFERENCES drink_sessions(id) ON DELETE CASCADE NOT NULL,
 
   -- Drink details
@@ -140,7 +140,7 @@ CREATE INDEX idx_drinks_type ON drinks(type); -- For analytics
 -- =====================================================
 
 CREATE TABLE feeding_logs (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   baby_id UUID REFERENCES babies(id) ON DELETE CASCADE NOT NULL,
 
   -- Feeding details
@@ -164,7 +164,7 @@ CREATE INDEX idx_feeding_baby_time ON feeding_logs(baby_id, fed_at DESC);
 -- =====================================================
 
 CREATE TABLE content_tips (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
 
   -- Content
   category TEXT NOT NULL CHECK (category IN ('safety', 'planning', 'health', 'general', 'milestone')),
@@ -194,7 +194,7 @@ CREATE INDEX idx_tips_baby_age ON content_tips(target_baby_age_min_days, target_
 -- =====================================================
 
 CREATE TABLE user_tip_interactions (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   tip_id UUID REFERENCES content_tips(id) ON DELETE CASCADE NOT NULL,
 
@@ -216,7 +216,7 @@ CREATE INDEX idx_interactions_tip ON user_tip_interactions(tip_id);
 -- =====================================================
 
 CREATE TABLE analytics_events (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE SET NULL, -- Nullable for anonymization
 
   -- Event data
@@ -240,7 +240,7 @@ CREATE INDEX idx_events_anonymize ON analytics_events(occurred_at) WHERE anonymi
 -- =====================================================
 
 CREATE TABLE data_requests (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
 
   -- Request details

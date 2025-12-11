@@ -175,6 +175,53 @@ Na het uitvoeren van deze migrations:
 3. Test of data sync werkt (lokaal → cloud)
 4. Implementeer real-time subscriptions (optioneel)
 
+## ✉️ Edge Function: Welkomstmail via Resend
+
+Nieuwe gebruikers ontvangen automatisch een welkomstmail via de Supabase Edge function
+[`send-welcome-email`](./functions/send-welcome-email/index.ts). Zo zet je 'm live:
+
+### Stap 1: Login bij Supabase CLI
+```bash
+supabase login
+```
+Volg de instructies om in te loggen met je access token (haal op via https://supabase.com/dashboard/account/tokens)
+
+### Stap 2: Link je project
+```bash
+supabase link --project-ref lqmnkdqyoxytyyxuglhx
+```
+
+### Stap 3: Set Secrets (Environment Variables)
+```bash
+# Verplicht: Resend API key
+supabase secrets set RESEND_API_KEY=re_xxxxxxxxxxxxx
+
+# Optioneel: branding & CTA links
+supabase secrets set RESEND_FROM_EMAIL="Mommy Milk Bar <welcome@mail.mommymilkbar.nl>"
+supabase secrets set WELCOME_CTA_URL=https://mommymilkbar.nl/app
+supabase secrets set APP_STORE_URL=https://mommymilkbar.nl/app
+supabase secrets set INSTAGRAM_URL=https://www.instagram.com/mommymilkbar/
+```
+
+**Waar vind je je Resend API key?**
+- Ga naar https://resend.com/api-keys
+- Kopieer je Production API key (begint met `re_`)
+
+### Stap 4: Deploy de Function
+```bash
+supabase functions deploy send-welcome-email --project-ref lqmnkdqyoxytyyxuglhx
+```
+
+### Stap 5: Test
+Vanuit de app triggert `signUp()` deze function automatisch. Je kunt ook handmatig testen:
+```bash
+supabase functions invoke send-welcome-email \
+  --project-ref lqmnkdqyoxytyyxuglhx \
+  --data '{"email":"test@example.com","motherName":"Mimi"}'
+```
+
+> Let op: de function gebruikt Resend alleen voor uitgaande mails. Ontvangen gebeurt via Gmail/Workspace.
+
 ## 📞 Support
 
 Vragen of problemen? Check:

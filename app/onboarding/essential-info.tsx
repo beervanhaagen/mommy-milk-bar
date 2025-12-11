@@ -1,19 +1,13 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import Slider from '@react-native-community/slider';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useStore } from "../../src/state/store";
 import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
-
-const BABY_AGE_OPTIONS: Array<{ label: string; value: '0-3mo' | '3-6mo' | '6-12mo' | '12mo+' }> = [
-  { label: '0-3 maanden', value: '0-3mo' },
-  { label: '3-6 maanden', value: '3-6mo' },
-  { label: '6-12 maanden', value: '6-12mo' },
-  { label: '12+ maanden', value: '12mo+' },
-];
 
 const FORMULA_OPTIONS: Array<{ label: string; value: 'yes' | 'no' }> = [
   { label: 'Ja, ik geef ook kunstvoeding', value: 'yes' },
@@ -28,30 +22,82 @@ const PRODUCTION_OPTIONS: Array<{ label: string; value: 'stable' | 'variable' | 
 
 export default function EssentialInfo() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
+  const { profile, getActiveBaby, addBaby, updateProfile, updateBaby } = useStore();
+  const activeBaby = getActiveBaby();
 
-  const [weight, setWeight] = useState<number>(settings.weightKg ?? 65);
-  const [babyAge, setBabyAge] = useState<typeof BABY_AGE_OPTIONS[number]['value']>('0-3mo');
+  const [weight, setWeight] = useState<number>(profile.weightKg ?? 65);
+  const defaultBabyDate = () => {
+    if (activeBaby?.birthdate) {
+      return new Date(activeBaby.birthdate);
+    }
+    const fallback = new Date();
+    fallback.setMonth(fallback.getMonth() - 2);
+    return fallback;
+  };
+  const [babyBirthdate, setBabyBirthdate] = useState<Date>(() => defaultBabyDate());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [breastfeedingWeeks, setBreastfeedingWeeks] = useState<number>(12);
   const [givesFormula, setGivesFormula] = useState<typeof FORMULA_OPTIONS[number]['value']>('no');
   const [productionStable, setProductionStable] = useState<typeof PRODUCTION_OPTIONS[number]['value']>('stable');
 
-  const handleNext = () => {
-    // Map baby age to existing format if needed
-    const babyAgeMapping = {
-      '0-3mo': '0-2mo',
-      '3-6mo': '4-6mo',
-      '6-12mo': '6-9mo',
-      '12mo+': '9+mo',
-    };
+  const handleDateChange = (_event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowDatePicker(false);
+    }
+    if (selectedDate) {
+      setBabyBirthdate(selectedDate);
+    }
+  };
 
-    updateSettings({
-      weightKg: weight,
-      babyAgeRange: babyAgeMapping[babyAge],
-      breastfeedingWeeks: breastfeedingWeeks,
-      givesFormula: givesFormula === 'yes',
-      milkProductionStable: productionStable,
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('nl-NL', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     });
+  };
+
+  const describeAge = (birthdate: Date) => {
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - birthdate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const weeks = Math.floor(diffDays / 7);
+    const months = Math.floor(diffDays / 30);
+
+    if (months === 0) {
+      return `${weeks} ${weeks === 1 ? 'week' : 'weken'} oud`;
+    }
+    if (months < 12) {
+      return `${months} ${months === 1 ? 'maand' : 'maanden'} oud`;
+    }
+    const years = Math.floor(months / 12);
+    return `${years} ${years === 1 ? 'jaar' : 'jaar'} oud`;
+  };
+
+  const handleNext = () => {
+    updateProfile({
+      weightKg: weight,
+    });
+
+    if (activeBaby) {
+      updateBaby(activeBaby.id, {
+        birthdate: babyBirthdate.toISOString(),
+        feedingType: givesFormula === 'yes' ? 'mix' : 'breast',
+        typicalAmountMl: undefined,
+        feedsPerDay: undefined,
+        pumpPreference: productionStable === 'stable' ? 'yes' : productionStable === 'variable' ? 'later' : 'no',
+      });
+    } else {
+      addBaby({
+        birthdate: babyBirthdate.toISOString(),
+        name: undefined,
+        feedingType: givesFormula === 'yes' ? 'mix' : 'breast',
+        feedsPerDay: undefined,
+        typicalAmountMl: undefined,
+        pumpPreference: productionStable === 'stable' ? 'yes' : productionStable === 'variable' ? 'later' : 'no',
+        isActive: true,
+      });
+    }
 
     router.push('/onboarding/ready');
   };
@@ -103,21 +149,35 @@ export default function EssentialInfo() {
           </View>
         </View>
 
-        {/* Baby Age */}
+        {/* Baby Birthdate */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Hoe oud is je baby?</Text>
-          <Text style={styles.cardSubtitle}>Voor context bij voedingsritme</Text>
+          <Text style={styles.cardTitle}>Wat is de geboortedatum van je baby?</Text>
+          <Text style={styles.cardSubtitle}>Zo kunnen we nauwkeurig je voedingsritme inschatten</Text>
 
-          {BABY_AGE_OPTIONS.map(opt => (
-            <TouchableOpacity
-              key={opt.value}
-              style={[styles.option, babyAge === opt.value && styles.optionActive]}
-              onPress={() => setBabyAge(opt.value)}
-            >
-              <Text style={styles.optionText}>{opt.label}</Text>
-              <View style={[styles.radio, babyAge === opt.value && styles.radioActive]} />
+          <TouchableOpacity
+            style={styles.dateButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateButtonText}>{formatDate(babyBirthdate)}</Text>
+            <Text style={styles.ageText}>{describeAge(babyBirthdate)}</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={babyBirthdate}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+              maximumDate={new Date()}
+              minimumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 3))}
+            />
+          )}
+
+          {Platform.OS === 'ios' && showDatePicker && (
+            <TouchableOpacity style={styles.doneButton} onPress={() => setShowDatePicker(false)}>
+              <Text style={styles.doneButtonText}>Klaar</Text>
             </TouchableOpacity>
-          ))}
+          )}
         </View>
 
         {/* Breastfeeding Duration */}
@@ -194,7 +254,7 @@ export default function EssentialInfo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
@@ -283,6 +343,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#8E8B88',
     marginBottom: 16,
+  },
+  dateButton: {
+    borderWidth: 1,
+    borderColor: '#F49B9B',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    backgroundColor: '#F9FBFF',
+    alignItems: 'center',
+  },
+  dateButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 18,
+    color: '#4B3B36',
+    marginBottom: 4,
+  },
+  ageText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#E47C7C',
+  },
+  doneButton: {
+    marginTop: 12,
+    backgroundColor: '#F49B9B',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  doneButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#FFFFFF',
   },
   metricValue: {
     fontFamily: 'Quicksand',

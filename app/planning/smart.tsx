@@ -8,9 +8,10 @@ import { useStore } from '../../src/state/store';
 import BabyRitmeTracker, { FeedPrediction } from '../../src/components/BabyRitmeTracker';
 import VisuelePlanningTimeline from '../../src/components/VisuelePlanningTimeline';
 import SlimmeDrankjePlanner, { PlannedDrink } from '../../src/components/SlimmeDrankjePlanner';
-import SlimmeVoorspellingen from '../../src/components/SlimmeVoorspellingen';
+import SlimmeVoorspellingen, { PlanningMoment } from '../../src/components/SlimmeVoorspellingen';
 import { PlanningTipCarousel } from '../../src/components/PlanningTipCarousel';
 import { AnimatedBackground } from '../../src/components/AnimatedBackground';
+import Svg, { Path } from 'react-native-svg';
 
 
 export default function SmartPlannerScreen() {
@@ -26,13 +27,15 @@ export default function SmartPlannerScreen() {
   const [tempStartTime, setTempStartTime] = useState(new Date());
   const [plannedDrinks, setPlannedDrinks] = useState<PlannedDrink[]>([]);
   const [predictedFeeds, setPredictedFeeds] = useState<FeedPrediction[]>([]);
-  const [safeFeedTime, setSafeFeedTime] = useState(new Date());
+  const [safeFeedTime, setSafeFeedTime] = useState<Date | null>(null);
   const [lastFeedTime, setLastFeedTime] = useState<Date>(() => {
     const d = new Date();
     d.setHours(d.getHours() - 1);
     return d;
   });
+  const [feedDurationMin, setFeedDurationMin] = useState(30);
   const [strategy, setStrategy] = useState<'minimal' | 'conservative'>('minimal');
+  const [planningMoments, setPlanningMoments] = useState<PlanningMoment[]>([]);
   
   // Animation state
   const [showConfetti, setShowConfetti] = useState(false);
@@ -57,8 +60,8 @@ export default function SmartPlannerScreen() {
     setPredictedFeeds(feeds);
   }, []);
 
-  const handleSafeTimeChange = useCallback((safeTime: Date) => {
-    setSafeFeedTime(safeTime);
+  const handleSafeTimeChange = useCallback((safeTime: Date | null) => {
+    setSafeFeedTime(safeTime ?? null);
   }, []);
 
 
@@ -106,13 +109,13 @@ export default function SmartPlannerScreen() {
     return slots;
   };
 
-  // Keep lastFeedTime tied initially to startTime (default: 30 min before)
+  // Keep lastFeedTime tied initially to startTime (default: feedDuration before start)
   useEffect(() => {
     if (!startTime) return;
     const t = new Date(startTime);
-    t.setMinutes(t.getMinutes() - 30);
+    t.setMinutes(t.getMinutes() - feedDurationMin);
     setLastFeedTime(t);
-  }, [startTime]);
+  }, [startTime, feedDurationMin]);
 
   // Prefill planner when editing from Home (if a planning exists)
   useFocusEffect(
@@ -127,7 +130,17 @@ export default function SmartPlannerScreen() {
           if (Array.isArray(parsed.plannedDrinks)) setPlannedDrinks(parsed.plannedDrinks);
           if (parsed.safeFeedTime) setSafeFeedTime(new Date(parsed.safeFeedTime));
           if (parsed.lastFeedTime) setLastFeedTime(new Date(parsed.lastFeedTime));
+          if (typeof parsed.feedDurationMin === 'number') setFeedDurationMin(parsed.feedDurationMin);
           if (parsed.strategy === 'minimal' || parsed.strategy === 'conservative') setStrategy(parsed.strategy);
+          if (Array.isArray(parsed.planningMoments)) {
+            const restored = parsed.planningMoments
+              .map((moment: Omit<PlanningMoment, 'time'> & { time: string }) => ({
+                ...moment,
+                time: new Date(moment.time),
+              }))
+              .filter((moment) => !isNaN(moment.time.getTime()));
+            setPlanningMoments(restored);
+          }
         } catch {}
       };
       loadExistingPlanning();
@@ -188,8 +201,13 @@ export default function SmartPlannerScreen() {
         startTime: startTime.toISOString(),
         safeFeedTime: safeFeedTime ? safeFeedTime.toISOString() : null,
         lastFeedTime: lastFeedTime ? lastFeedTime.toISOString() : null,
+        feedDurationMin,
         strategy,
         generatedAt: new Date().toISOString(),
+        planningMoments: planningMoments.map((moment) => ({
+          ...moment,
+          time: moment.time.toISOString(),
+        })),
       };
       await AsyncStorage.setItem('mmb:planned_schedule', JSON.stringify(payload));
     } catch (e) {
@@ -297,18 +315,22 @@ export default function SmartPlannerScreen() {
           <BabyRitmeTracker 
             onFeedsChange={handleFeedsChange} 
             defaultLastFeedTime={lastFeedTime}
+            defaultFeedDurationMin={feedDurationMin}
             onLastFeedTimeChange={(t: Date) => setLastFeedTime(t)}
+            onFeedDurationChange={(minutes: number) => setFeedDurationMin(minutes)}
           />
         </View>
 
         {/* Slimme Voorspellingen */}
         <View style={styles.section}>
-          <SlimmeVoorspellingen 
+          <SlimmeVoorspellingen
             plannedDrinks={plannedDrinks}
             predictedFeeds={predictedFeeds}
             startTime={startTime}
             lastFeedTime={lastFeedTime}
             strategy={strategy}
+            onSafeTimeChange={handleSafeTimeChange}
+            onPlanningMomentsChange={setPlanningMoments}
           />
         </View>
 
@@ -323,6 +345,70 @@ export default function SmartPlannerScreen() {
       <View style={styles.footer}>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
           <Text style={styles.saveButtonText}>Planning opslaan</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Bottom navigation (consistent with main app tabs) */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity
+          style={styles.bottomNavItem}
+          onPress={() => router.push('/(tabs)')}
+        >
+          <Svg width={24} height={24} viewBox="0 0 24 24">
+            <Path
+              d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+              fill="#8E8B88"
+              stroke="#8E8B88"
+              strokeWidth={2}
+            />
+            <Path
+              d="M9 22V12h6v10"
+              fill="none"
+              stroke="#8E8B88"
+              strokeWidth={2}
+            />
+          </Svg>
+          <Text style={styles.bottomNavLabel}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.bottomNavItem}
+          onPress={() => router.push('/(tabs)/drinks')}
+        >
+          <Svg width={24} height={24} viewBox="0 0 24 24">
+            <Path
+              d="M8 2h8v3l2 2v3H6V7l2-2V2z"
+              fill="#F49B9B"
+            />
+            <Path
+              d="M6 10h12v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z"
+              fill="none"
+              stroke="#F49B9B"
+              strokeWidth={2}
+            />
+          </Svg>
+          <Text style={[styles.bottomNavLabel, styles.bottomNavLabelActive]}>Drankjes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.bottomNavItem}
+          onPress={() => router.push('/(tabs)/profile')}
+        >
+          <Svg width={24} height={24} viewBox="0 0 24 24">
+            <Path
+              d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
+              fill="none"
+              stroke="#8E8B88"
+              strokeWidth={2}
+            />
+            <Path
+              d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"
+              fill="none"
+              stroke="#8E8B88"
+              strokeWidth={2}
+            />
+          </Svg>
+          <Text style={styles.bottomNavLabel}>Profiel</Text>
         </TouchableOpacity>
       </View>
 
@@ -447,7 +533,7 @@ export default function SmartPlannerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   scrollView: {
     flex: 1,
@@ -662,7 +748,7 @@ const styles = StyleSheet.create({
   },
   chipSelected: {
     borderColor: '#F49B9B',
-    backgroundColor: '#FDF2F2',
+    backgroundColor: '#F49B9B',
   },
   chipTopText: {
     fontFamily: 'Poppins',
@@ -670,7 +756,7 @@ const styles = StyleSheet.create({
     color: '#7A6C66',
   },
   chipTopTextSelected: {
-    color: '#4B3B36',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   chipBottomText: {
@@ -680,7 +766,7 @@ const styles = StyleSheet.create({
     color: '#4B3B36',
   },
   chipBottomTextSelected: {
-    color: '#F49B9B',
+    color: '#FFFFFF',
   },
   timePickerContainer: {
     backgroundColor: '#FFFFFF',
@@ -788,7 +874,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     overflow: 'hidden',
   },
   confettiPiece: {
@@ -840,5 +926,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#7A6C66',
     textAlign: 'center',
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: 80,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E6E6E6',
+    paddingBottom: 12,
+    paddingTop: 8,
+  },
+  bottomNavItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomNavLabel: {
+    marginTop: 4,
+    fontFamily: 'Poppins',
+    fontSize: 12,
+    color: '#8E8B88',
+  },
+  bottomNavLabelActive: {
+    color: '#F49B9B',
+    fontWeight: '600',
   },
 });

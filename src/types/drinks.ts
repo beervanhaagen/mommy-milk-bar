@@ -9,6 +9,8 @@ export interface DrinkType {
   abv: number;                 // % alcohol (informational)
   unitsPerGlass: number;      // standard drinks per glass
   gramsPerUnit: number;        // grams alcohol per unit
+  standardVolumeMl: number;    // standard volume in ml used in calculations
+  volumeInfo: string;          // user-friendly explanation of volume
   icon: React.ComponentType<{ size?: number; color?: string }>;
   isCustom?: boolean;         // Flag for custom drinks
 }

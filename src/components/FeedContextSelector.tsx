@@ -120,16 +120,16 @@ const styles = StyleSheet.create({
   strategyOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E8F0FF',
+    borderColor: '#F49B9B',
   },
   strategyOptionActive: {
-    backgroundColor: '#9BB9F4',
-    borderColor: '#7A9DE8',
+    backgroundColor: '#F49B9B',
+    borderColor: '#F49B9B',
   },
   strategyIcon: {
     fontSize: 20,

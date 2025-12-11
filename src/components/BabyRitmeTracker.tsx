@@ -5,8 +5,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 interface BabyRitmeTrackerProps {
   onFeedsChange: (feeds: FeedPrediction[]) => void;
   defaultLastFeedTime?: Date;
+  defaultFeedDurationMin?: number;
   onLastFeedTimeChange?: (t: Date) => void;
   onFeedIntervalChange?: (hours: number) => void;
+  onFeedDurationChange?: (minutes: number) => void;
 }
 
 export interface FeedPrediction {
@@ -16,14 +18,24 @@ export interface FeedPrediction {
   type: 'predicted' | 'manual';
 }
 
-const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defaultLastFeedTime, onLastFeedTimeChange, onFeedIntervalChange }) => {
+const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({
+  onFeedsChange,
+  defaultLastFeedTime,
+  defaultFeedDurationMin,
+  onLastFeedTimeChange,
+  onFeedIntervalChange,
+  onFeedDurationChange,
+}) => {
   const [lastFeedTime, setLastFeedTime] = useState(defaultLastFeedTime || new Date());
+  const [feedDurationMin, setFeedDurationMin] = useState(defaultFeedDurationMin ?? 30);
   const [feedInterval, setFeedInterval] = useState(3); // hours
   const [predictions, setPredictions] = useState<FeedPrediction[]>([]);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showIntervalPicker, setShowIntervalPicker] = useState(false);
+  const [showDurationPicker, setShowDurationPicker] = useState(false);
   const [tempTime, setTempTime] = useState(new Date());
   const [tempInterval, setTempInterval] = useState(3);
+  const [tempDuration, setTempDuration] = useState(defaultFeedDurationMin ?? 30);
 
   // Calculate predictions based on last feed
   const calculatePredictions = useCallback(() => {
@@ -62,6 +74,16 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defa
       prevDefaultMsRef.current = incomingMs;
     }
   }, [defaultLastFeedTime]);
+
+  const prevDurationRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (typeof defaultFeedDurationMin !== 'number') return;
+    if (prevDurationRef.current === null || prevDurationRef.current !== defaultFeedDurationMin) {
+      setFeedDurationMin(defaultFeedDurationMin);
+      setTempDuration(defaultFeedDurationMin);
+      prevDurationRef.current = defaultFeedDurationMin;
+    }
+  }, [defaultFeedDurationMin]);
 
   useEffect(() => {
     calculatePredictions();
@@ -105,7 +127,7 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defa
       {/* Laatste voeding tijd */}
       <View style={styles.section}>
         <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Laatste voeding tijd</Text>
+          <Text style={styles.sectionTitle}>Laatste voeding (eindtijd)</Text>
               <TouchableOpacity 
             style={styles.timeButton}
             onPress={() => {
@@ -121,12 +143,30 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defa
             </Text>
           </TouchableOpacity>
         </View>
+        <Text style={styles.helperText}>Dit is de tijd waarop je laatste voeding klaar was.</Text>
+      </View>
+
+      {/* Duur voeding */}
+      <View style={styles.section}>
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Duur voeding</Text>
+          <TouchableOpacity
+            style={styles.durationButton}
+            onPress={() => {
+              setTempDuration(feedDurationMin);
+              setShowDurationPicker(true);
+            }}
+          >
+            <Text style={styles.durationButtonText}>{feedDurationMin} min</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.helperText}>Standaard rekenen we met 30 minuten.</Text>
       </View>
 
       {/* Frequentie */}
       <View style={styles.section}>
         <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Frequentie</Text>
+          <Text style={styles.sectionTitle}>Frequentie (vanaf einde)</Text>
           <TouchableOpacity 
             style={styles.intervalButton}
             onPress={() => {
@@ -139,6 +179,7 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defa
             </Text>
           </TouchableOpacity>
         </View>
+        <Text style={styles.helperText}>Tijd vanaf het einde van je voeding tot de volgende start.</Text>
       </View>
 
       {/* Time Picker Modal */}
@@ -237,6 +278,55 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({ onFeedsChange, defa
           </View>
         </Modal>
       )}
+
+      {/* Duration Picker Modal */}
+      {showDurationPicker && (
+        <Modal
+          visible={showDurationPicker}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setShowDurationPicker(false)}
+        >
+          <View style={styles.pickerModal}>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerTitle}>Duur voeding instellen</Text>
+              <View style={styles.intervalPickerContainer}>
+                <TouchableOpacity
+                  style={styles.intervalPickerButton}
+                  onPress={() => setTempDuration(Math.max(10, tempDuration - 5))}
+                >
+                  <Text style={styles.intervalPickerButtonText}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.intervalPickerText}>{tempDuration} min</Text>
+                <TouchableOpacity
+                  style={styles.intervalPickerButton}
+                  onPress={() => setTempDuration(Math.min(90, tempDuration + 5))}
+                >
+                  <Text style={styles.intervalPickerButtonText}>+</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.pickerActions}>
+                <TouchableOpacity
+                  style={styles.pickerCancelButton}
+                  onPress={() => setShowDurationPicker(false)}
+                >
+                  <Text style={styles.pickerCancelText}>Annuleren</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.pickerConfirmButton}
+                  onPress={() => {
+                    setFeedDurationMin(tempDuration);
+                    if (onFeedDurationChange) onFeedDurationChange(tempDuration);
+                    setShowDurationPicker(false);
+                  }}
+                >
+                  <Text style={styles.pickerConfirmText}>Bevestigen</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -309,6 +399,22 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   intervalButtonText: {
+    fontSize: 14,
+    color: '#4B3B36',
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+  },
+  durationButton: {
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E8F0FF',
+    minWidth: 80,
+  },
+  durationButtonText: {
     fontSize: 14,
     color: '#4B3B36',
     fontFamily: 'Poppins',

@@ -1,32 +1,34 @@
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Dimensions, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Alert, SafeAreaView, ScrollView, Linking } from "react-native";
 import { useRouter } from "expo-router";
-import { useStore, getSettings } from "../src/state/store";
+import { useStore } from "../src/state/store";
 import { useAuth } from "../src/contexts/AuthContext";
 import { signOut, deleteAccount } from "../src/services/auth.service";
 import Svg, { Path } from "react-native-svg";
 
-const { width, height } = Dimensions.get('window');
-
 export default function Settings() {
   const router = useRouter();
-  const store = useStore();
-  const settings = getSettings();
-  const { updateSettings, resetProfile, clearPersistedState } = {
-    updateSettings: store.updateSettings,
-    resetProfile: store.resetProfile,
-    clearPersistedState: store.clearPersistedState,
-  };
+  const profile = useStore((state) => state.profile);
+  const updateSettings = useStore((state) => state.updateSettings);
+  const resetProfile = useStore((state) => state.resetProfile);
+  const clearPersistedState = useStore((state) => state.clearPersistedState);
+  const syncToSupabase = useStore((state) => state.syncToSupabase);
   const { isAuthenticated, user } = useAuth();
 
-  const toggleNotifications = () => {
-    updateSettings({ notificationsEnabled: !settings.notificationsEnabled });
+  const persistProfile = async () => {
+    try {
+      await syncToSupabase();
+    } catch (error: any) {
+      Alert.alert('Opslaan mislukt', error.message || 'Kon wijzigingen niet synchroniseren. Probeer later opnieuw.');
+    }
   };
 
-  const toggleSafetyMode = () => {
-    updateSettings({
-      safetyMode: settings.safetyMode === 'normal' ? 'cautious' : 'normal'
-    });
+  const toggleNotifications = async () => {
+    updateSettings({ notificationsEnabled: !profile.notificationsEnabled });
+    await persistProfile();
   };
+
+  // Safety mode is now a fixed conservative default (+15%) in the backend.
+  // We keep the label for transparency but no longer toggle modes.
 
   const handleLogout = async () => {
     Alert.alert(
@@ -40,7 +42,11 @@ export default function Settings() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace('/landing');
+              // Clear local state
+              resetProfile();
+              await clearPersistedState();
+              // Redirect to login so gebruikers direct kunnen inloggen
+              router.replace('/auth/login');
             } catch (error: any) {
               Alert.alert('Fout', error.message);
             }
@@ -51,6 +57,16 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = () => {
+    // Check if user is actually authenticated
+    if (!isAuthenticated || !user) {
+      Alert.alert(
+        'Niet ingelogd',
+        'Je bent niet ingelogd. Log eerst in om je account te verwijderen.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     Alert.alert(
       'Account verwijderen',
       'Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt en al je data wordt permanent verwijderd.',
@@ -75,6 +91,12 @@ export default function Settings() {
                 feedsPerDay: undefined,
                 typicalAmountMl: undefined,
                 hasCompletedOnboarding: false,
+                ageConsent: false,
+                medicalDisclaimerConsent: false,
+                privacyPolicyConsent: false,
+                marketingConsent: false,
+                analyticsConsent: false,
+                safetyMode: 'cautious',
               });
 
             try {
@@ -105,47 +127,27 @@ export default function Settings() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* SVG Background Shape */}
-      <Svg
-        width={width}
-        height={height * 0.3}
-        style={styles.svgBackground}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
+    <SafeAreaView style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButtonTop}
+        onPress={() => router.back()}
       >
-        <Path
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z"
-          fill="#FFE2D8"
-        />
-      </Svg>
+        <Text style={styles.backButtonTopText}>← Terug</Text>
+      </TouchableOpacity>
 
-      <View style={styles.content}>
-        {/* Mimi Character */}
-        <View style={styles.characterContainer}>
-          <Image 
-            source={require('../assets/Mimi_karakters/2_mimi_happy_2.png')} 
-            style={styles.mimiImage}
-            resizeMode="contain"
-          />
-        </View>
-
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Instellingen</Text>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Veiligheid</Text>
 
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Veiligheidsmodus</Text>
+              <Text style={styles.settingLabel}>Veiligheidsmarge</Text>
               <Text style={styles.settingDescription}>
-                {settings.safetyMode === 'normal' ? 'Normaal (2,5u per drankje)' : 'Voorzichtig (3u per drankje)'}
+                We voegen automatisch ~15% extra wachttijd toe bovenop de wetenschappelijke richtlijnen (LactMed).
               </Text>
             </View>
-            <TouchableOpacity onPress={toggleSafetyMode}>
-              <Text style={styles.toggleText}>
-                {settings.safetyMode === 'cautious' ? 'Voorzichtig' : 'Normaal'}
-              </Text>
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -160,12 +162,39 @@ export default function Settings() {
               </Text>
             </View>
             <Switch
-              value={settings.notificationsEnabled}
+              value={profile.notificationsEnabled}
               onValueChange={toggleNotifications}
-              trackColor={{ false: '#bdc3c7', true: '#3498db' }}
-              thumbColor={settings.notificationsEnabled ? '#ffffff' : '#f4f3f4'}
+              trackColor={{ false: '#bdc3c7', true: '#F49B9B' }}
+              thumbColor={profile.notificationsEnabled ? '#FFFFFF' : '#f4f3f4'}
             />
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Privacy & voorkeuren</Text>
+
+          <TouchableOpacity style={styles.settingRow} onPress={() => router.push('/settings/consents')}>
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Consentcentrum</Text>
+              <Text style={styles.settingDescription}>
+                Beheer marketing-, analytics- en privacyvoorkeuren op één plek.
+              </Text>
+            </View>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => router.push('/medical-info')}
+          >
+            <View style={styles.settingInfo}>
+              <Text style={styles.settingLabel}>Berekeningen & Medische Informatie</Text>
+              <Text style={styles.settingDescription}>
+                Lees meer over hoe onze berekeningen werken en belangrijke medische informatie.
+              </Text>
+            </View>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Account Section - Only show if authenticated */}
@@ -197,6 +226,38 @@ export default function Settings() {
             <Text style={styles.settingLabel}>Versie</Text>
             <Text style={styles.settingValue}>1.0.0</Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => router.push('/medical-info')}
+          >
+            <Text style={styles.settingLabel}>Berekeningen & Medische Informatie</Text>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('https://mommymilkbar.nl/privacy.html')}
+          >
+            <Text style={styles.settingLabel}>Privacy Policy</Text>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('https://mommymilkbar.nl/terms.html')}
+          >
+            <Text style={styles.settingLabel}>Algemene Voorwaarden</Text>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('mailto:info@mommymilkbar.nl')}
+          >
+            <Text style={styles.settingLabel}>Contact</Text>
+            <Text style={styles.settingValue}>→</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.disclaimer}>
@@ -204,12 +265,8 @@ export default function Settings() {
             Deze app geeft alleen algemene richtlijnen. Raadpleeg bij twijfel een zorgverlener.
           </Text>
         </View>
-      </View>
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/')}>
-        <Text style={styles.backButtonText}>← Terug naar home</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -218,43 +275,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FAF7F3',
   },
-  svgBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-  },
   content: {
-    flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 100,
-    paddingBottom: 200,
-  },
-  characterContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  mimiImage: {
-    width: 120,
-    height: 140,
+    paddingTop: 32,
+    paddingBottom: 80,
   },
   title: {
     fontSize: 30,
     fontWeight: '700',
     color: '#4B3B36',
-    textAlign: 'center',
-    marginBottom: 40,
+    textAlign: 'left',
+    marginBottom: 24,
     fontFamily: 'Poppins',
   },
   section: {
-    marginBottom: 32,
-    backgroundColor: '#F5F5F5',
+    marginBottom: 24,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 20,
@@ -269,7 +312,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E6E6E6',
+    borderBottomColor: '#F2E7E2',
   },
   settingInfo: {
     flex: 1,
@@ -301,34 +344,45 @@ const styles = StyleSheet.create({
     color: '#E74C3C',
   },
   disclaimer: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFF3F2',
     padding: 16,
     borderRadius: 16,
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 24,
   },
   disclaimerText: {
     fontSize: 12,
     color: '#7A6C66',
-    textAlign: 'center',
+    textAlign: 'left',
     lineHeight: 16,
     fontFamily: 'Poppins',
   },
+  backButtonTop: {
+  paddingHorizontal: 24,
+  paddingTop: 20,
+  paddingBottom: 8,
+  },
+  backButtonTopText: {
+  color: '#F49B9B',
+  fontSize: 16,
+  fontWeight: '500',
+  fontFamily: 'Poppins',
+  },
   backButton: {
+    marginHorizontal: 24,
+    marginBottom: 24,
     paddingVertical: 16,
-    paddingHorizontal: 32,
     borderRadius: 28,
-    borderWidth: 2,
-    borderColor: '#F49B9B',
-    marginBottom: 20,
+    backgroundColor: '#F49B9B',
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
   },
   backButtonText: {
-    color: '#F49B9B',
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',

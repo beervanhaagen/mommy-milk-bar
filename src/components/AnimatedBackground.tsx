@@ -1,57 +1,81 @@
-import { useEffect, useRef } from "react";
-import { View, StyleSheet, Dimensions, Animated } from "react-native";
+import { useEffect, useMemo, useRef } from "react";
+import { View, StyleSheet, Dimensions, Animated, ViewStyle } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get('window');
 
-type BlobVariant = 'default' | 'variant1' | 'variant2' | 'variant3' | 'variant4';
+type BlobVariant = 'default' | 'variant1' | 'variant2' | 'variant3' | 'variant4' | 'home';
 
 interface AnimatedBackgroundProps {
   variant?: BlobVariant;
 }
 
 export function AnimatedBackground({ variant = 'default' }: AnimatedBackgroundProps = {}) {
-  // Animation values for floating blobs
-  const blob1Anim = useRef(new Animated.Value(0)).current;
-  const blob2Anim = useRef(new Animated.Value(0)).current;
-  const blob3Anim = useRef(new Animated.Value(0)).current;
+  // Animation values for floating shapes
+  const softBlobAnim = useRef(new Animated.Value(0)).current;
+  const gradientAnim = useRef(new Animated.Value(0)).current;
+  const ellipseAnim = useRef(new Animated.Value(0)).current;
 
-  // Get blob configuration based on variant
-  const getBlobConfig = () => {
-    switch (variant) {
-      case 'variant1':
-        return {
-          blob1: { top: -width * 0.35, right: -width * 0.15, scale: 0.9 },
-          blob2: { top: height * 0.35, left: -width * 0.3, scale: 0.75 },
-          blob3: { bottom: height * 0.05, right: -width * 0.2, scale: 0.7 },
-        };
-      case 'variant2':
-        return {
-          blob1: { top: -width * 0.25, right: -width * 0.25, scale: 1.0 },
-          blob2: { top: height * 0.4, left: -width * 0.25, scale: 0.85 },
-          blob3: { bottom: -width * 0.1, right: -width * 0.1, scale: 0.8 },
-        };
-      case 'variant3':
-        return {
-          blob1: { top: -width * 0.4, right: -width * 0.1, scale: 0.85 },
-          blob2: { top: height * 0.3, left: -width * 0.35, scale: 0.7 },
-          blob3: { bottom: height * 0.08, right: width * 0.05, scale: 0.65 },
-        };
-      case 'variant4':
-        return {
-          blob1: { top: -width * 0.3, right: -width * 0.3, scale: 1.1 },
-          blob2: { top: height * 0.35, left: -width * 0.2, scale: 0.8 },
-          blob3: { bottom: -width * 0.05, right: -width * 0.25, scale: 0.75 },
-        };
-      default:
-        return {
-          blob1: { top: -width * 0.3, right: -width * 0.2, scale: 1.0 },
-          blob2: { top: height * 0.3, left: -width * 0.25, scale: 0.8 },
-          blob3: { bottom: height * 0.02, right: -width * 0.15, scale: 0.75 },
-        };
-    }
+  type ShapeLayout = Record<'softBlobTop' | 'veil', ViewStyle>;
+
+  const baseLayout: ShapeLayout = {
+    softBlobTop: {
+      width: width * 1.1,
+      height: width * 1.1,
+      top: -width * 0.35,
+      left: -width * 0.45,
+    },
+    veil: {
+      width: width * 1.05,
+      height: height * 0.45,
+      top: height * 0.47,
+      left: -width * 0.12,
+    },
   };
 
-  const blobConfig = getBlobConfig();
+  const variantOverrides: Partial<Record<BlobVariant, Partial<ShapeLayout>>> = {
+    variant1: {
+      softBlobTop: { top: -width * 0.46, left: -width * 0.58 },
+      veil: { top: height * 0.5, left: -width * 0.02 },
+    },
+    variant2: {
+      softBlobTop: { top: -width * 0.28, left: -width * 0.25 },
+      veil: { top: height * 0.42, left: -width * 0.18 },
+    },
+    variant3: {
+      softBlobTop: { top: -width * 0.38, left: -width * 0.1 },
+      veil: { top: height * 0.6, left: -width * 0.24 },
+    },
+    variant4: {
+      softBlobTop: { top: -width * 0.32, left: -width * 0.62 },
+      veil: { top: height * 0.5, left: -width * 0.1 },
+    },
+    home: {
+      softBlobTop: {
+        width: width * 0.85,
+        height: width * 0.85,
+        top: -width * 0.3,
+        left: -width * 0.22,
+      },
+      veil: {
+        width: width * 0.95,
+        height: height * 0.32,
+        top: height * 0.52,
+        left: -width * 0.05,
+      },
+    },
+  };
+
+  const shapeLayout = useMemo(() => {
+    const overrides = variantOverrides[variant] ?? {};
+    return Object.keys(baseLayout).reduce((acc, key) => {
+      acc[key as keyof ShapeLayout] = {
+        ...baseLayout[key as keyof ShapeLayout],
+        ...(overrides[key as keyof ShapeLayout] ?? {}),
+      };
+      return acc;
+    }, {} as ShapeLayout);
+  }, [variant]);
 
   // Start floating animations
   useEffect(() => {
@@ -73,9 +97,9 @@ export function AnimatedBackground({ variant = 'default' }: AnimatedBackgroundPr
       );
     };
 
-    const anim1 = createFloatingAnimation(blob1Anim, 8000, 0);
-    const anim2 = createFloatingAnimation(blob2Anim, 10000, 1000);
-    const anim3 = createFloatingAnimation(blob3Anim, 12000, 2000);
+    const anim1 = createFloatingAnimation(softBlobAnim, 9000, 0);
+    const anim2 = createFloatingAnimation(gradientAnim, 11000, 1200);
+    const anim3 = createFloatingAnimation(ellipseAnim, 13000, 2000);
 
     anim1.start();
     anim2.start();
@@ -88,94 +112,80 @@ export function AnimatedBackground({ variant = 'default' }: AnimatedBackgroundPr
     };
   }, []);
 
+  const isHomeVariant = variant === 'home';
+  const opacityScale = isHomeVariant ? 0.3 : 1;
+  const motionScale = isHomeVariant ? 0.6 : 1;
+  const blobScaleRange = isHomeVariant ? [0.985, 1.03] : [0.96, 1.05];
+
   return (
-    <View style={styles.backgroundContainer}>
-      {/* Large subtle organic blob - top right */}
+    <View style={styles.backgroundContainer} pointerEvents="none">
+      <View style={styles.baseLayer} />
+
+      {/* Soft blob */}
       <Animated.View
         style={[
-          styles.organicBlob,
-          styles.blob1,
+          styles.softBlob,
+          shapeLayout.softBlobTop,
           {
-            top: blobConfig.blob1.top,
-            right: blobConfig.blob1.right,
             transform: [
-              { scale: blobConfig.blob1.scale },
-              { scaleX: 1.3 },
-              { scaleY: 0.7 },
+              { rotate: '-155deg' },
               {
-                translateY: blob1Anim.interpolate({
+                translateY: softBlobAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -20],
+                  outputRange: [0, -18 * motionScale],
                 }),
               },
               {
-                translateX: blob1Anim.interpolate({
+                translateX: softBlobAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 15],
+                  outputRange: [0, 14 * motionScale],
+                }),
+              },
+              {
+                scale: softBlobAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [blobScaleRange[0], blobScaleRange[1]],
                 }),
               },
             ],
           },
+          { opacity: 0.55 * opacityScale },
         ]}
       />
 
-      {/* Medium subtle organic blob - left */}
+      {/* Veil */}
       <Animated.View
         style={[
-          styles.organicBlob,
-          styles.blob2,
+          styles.veilWrapper,
+          shapeLayout.veil,
           {
-            top: blobConfig.blob2.top,
-            left: blobConfig.blob2.left,
             transform: [
-              { scale: blobConfig.blob2.scale },
-              { scaleX: 1.2 },
-              { scaleY: 0.8 },
+              { rotate: '-165deg' },
               {
-                translateY: blob2Anim.interpolate({
+                translateY: gradientAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, 25],
+                  outputRange: [0, 22 * motionScale],
                 }),
               },
               {
-                translateX: blob2Anim.interpolate({
+                translateX: gradientAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -10],
+                  outputRange: [0, 12 * motionScale],
                 }),
               },
             ],
           },
+          { opacity: 0.45 * opacityScale },
         ]}
-      />
+      >
+        <LinearGradient
+          colors={['#FDE9E3', 'rgba(253, 233, 227, 0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.veil}
+        />
+      </Animated.View>
 
-      {/* Small accent blob - bottom */}
-      <Animated.View
-        style={[
-          styles.organicBlob,
-          styles.blob3,
-          {
-            bottom: blobConfig.blob3.bottom,
-            right: blobConfig.blob3.right,
-            transform: [
-              { scale: blobConfig.blob3.scale },
-              { scaleX: 1.4 },
-              { scaleY: 0.6 },
-              {
-                translateY: blob3Anim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, -15],
-                }),
-              },
-              {
-                translateX: blob3Anim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 20],
-                }),
-              },
-            ],
-          },
-        ]}
-      />
     </View>
   );
 }
@@ -188,27 +198,26 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     overflow: 'hidden',
+    backgroundColor: '#FEF8F6',
   },
-  organicBlob: {
+  baseLayer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#FEF8F6',
+  },
+  softBlob: {
     position: 'absolute',
-    opacity: 0.15,
+    borderRadius: width * 0.5,
+    backgroundColor: '#FFE6E7',
+    shadowColor: '#FFFFFF',
+    shadowOpacity: 0.45,
+    shadowRadius: 35,
   },
-  blob1: {
-    width: width * 0.8,
-    height: width * 0.8,
+  veilWrapper: {
+    position: 'absolute',
+  },
+  veil: {
+    width: '100%',
+    height: '100%',
     borderRadius: width * 0.4,
-    backgroundColor: '#F49B9B',
-  },
-  blob2: {
-    width: width * 0.6,
-    height: width * 0.6,
-    borderRadius: width * 0.3,
-    backgroundColor: '#FFB4A8',
-  },
-  blob3: {
-    width: width * 0.5,
-    height: width * 0.5,
-    borderRadius: width * 0.25,
-    backgroundColor: '#FDD0C7',
   },
 });

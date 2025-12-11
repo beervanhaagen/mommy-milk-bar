@@ -1,6 +1,6 @@
 // state/drinksReducer.ts - Drink session management
 import { DrinkState, DrinkSession, DrinkEntry } from '../types/drinks';
-import { nanoid } from 'nanoid/non-secure';
+import uuid from 'react-native-uuid';
 
 export type Action =
   | { type: 'START_SESSION' }
@@ -14,7 +14,7 @@ export const initialState: DrinkState = { sessions: {} };
 export function drinksReducer(state: DrinkState, action: Action): DrinkState {
   switch (action.type) {
     case 'START_SESSION': {
-      const id = nanoid();
+      const id = uuid.v4() as string;
       return {
         ...state,
         activeSessionId: id,
@@ -31,10 +31,10 @@ export function drinksReducer(state: DrinkState, action: Action): DrinkState {
       };
     }
     case 'ADD_ENTRY': {
-      const id = state.activeSessionId ?? nanoid();
+      const id = state.activeSessionId ?? uuid.v4() as string;
       const session: DrinkSession =
         state.sessions[id] ?? { id, startedAt: Date.now(), entries: [] };
-      const entry: DrinkEntry = { id: nanoid(), ts: action.payload.ts ?? Date.now(), ...action.payload };
+      const entry: DrinkEntry = { id: uuid.v4() as string, ts: action.payload.ts ?? Date.now(), ...action.payload };
       return {
         ...state,
         activeSessionId: id,

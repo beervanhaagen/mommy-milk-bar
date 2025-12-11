@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Animated, SafeAreaView } from "react-native";
 import { useRouter } from "expo-router";
 import { useStore } from "../../src/state/store";
+import { useAuth } from "../../src/contexts/AuthContext";
 import Svg, { Path } from "react-native-svg";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
@@ -40,8 +42,17 @@ const CloudIcon = () => (
 export default function Completion() {
   const router = useRouter();
   const { updateSettings } = useStore();
+  const { isAuthenticated } = useAuth();
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Redirect authenticated users away from this screen
+  // This screen is only for new accounts/guest mode
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
@@ -82,10 +93,7 @@ export default function Completion() {
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}> 
-      {/* Background shape */}
-      <Svg width={width} height={504} style={styles.onboardingShape} viewBox="0 0 414 504" preserveAspectRatio="xMinYMin slice">
-        <Path d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" fill="#FFE2D8" />
-      </Svg>
+      <AnimatedBackground variant="variant2" />
 
       {/* Confetti */}
       <View style={styles.confettiLayer} pointerEvents="none">
@@ -122,6 +130,11 @@ export default function Completion() {
           <Text style={styles.description}>Maak een account aan om je gegevens veilig op te slaan en persoonlijke adviezen te ontvangen.</Text>
 
           <View style={styles.benefitsCard}>
+            {/* Nu gratis (pilot) ribbon */}
+            <View style={styles.ribbon}>
+              <Text style={styles.ribbonText}>Nu gratis (pilot)</Text>
+            </View>
+
             <Text style={styles.benefitsTitle}>Met een account kun je:</Text>
             <View style={styles.benefitRow}><ChartIcon /><Text style={styles.benefitText}>Veilig-voeden momenten berekenen en meldingen ontvangen</Text></View>
             <View style={styles.benefitRow}><BottleIcon /><Text style={styles.benefitText}>Afgekolfde melk plannen en voorraad bijhouden</Text></View>
@@ -145,8 +158,7 @@ export default function Completion() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFCF4', position: 'relative', width, height },
-  onboardingShape: { position: 'absolute', width: '100%', height: 504, left: 0, top: 0 },
+  container: { flex: 1, backgroundColor: '#FAF7F3', position: 'relative', width, height },
   safeArea: { flex: 1 },
   confettiLayer: { position: 'absolute', width, height, zIndex: 20 },
   confetti: { position: 'absolute', width: 10, height: 10, borderRadius: 5, shadowColor: '#F49B9B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 3 },
@@ -156,7 +168,31 @@ const styles = StyleSheet.create({
   title: { fontFamily: 'Quicksand', fontWeight: '700', fontSize: 30, lineHeight: 38, textAlign: 'center', color: '#4B3B36', marginBottom: 8 },
   subtitle: { fontFamily: 'Poppins', fontWeight: '600', fontSize: 17, lineHeight: 24, textAlign: 'center', color: '#7A6C66', marginBottom: 12 },
   description: { fontFamily: 'Poppins', fontWeight: '300', fontSize: 14, lineHeight: 20, textAlign: 'center', color: '#8E8B88', maxWidth: 320, marginBottom: 20 },
-  benefitsCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, width: '100%', maxWidth: 340, shadowColor: '#F49B9B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2, borderWidth: 1, borderColor: '#F9F4F0' },
+  benefitsCard: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 20, width: '100%', maxWidth: 340, shadowColor: '#F49B9B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2, borderWidth: 1, borderColor: '#F9F4F0', position: 'relative', overflow: 'hidden' },
+  ribbon: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: '#F49B9B',
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    borderRadius: 0,
+    transform: [{ rotate: '45deg' }, { translateX: 25 }, { translateY: -10 }],
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    zIndex: 10,
+  },
+  ribbonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '700',
+    fontSize: 11,
+    color: '#FFFFFF',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   benefitsTitle: { fontFamily: 'Poppins', fontWeight: '600', fontSize: 14, color: '#4B3B36', marginBottom: 12 },
   benefitRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10, gap: 10 },
   benefitText: { fontFamily: 'Poppins', fontWeight: '400', fontSize: 13, lineHeight: 20, color: '#7A6C66', flex: 1 },

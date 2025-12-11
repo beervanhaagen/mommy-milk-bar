@@ -3,11 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Animated, 
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
+import { hoursPerStdDrink } from "../../src/lib/alcohol";
+import { useStore } from "../../src/state/store";
 
 const { width, height } = Dimensions.get('window');
 
 export default function Demo() {
   const router = useRouter();
+  const { getProfile } = useStore();
+  const profile = getProfile();
   const [glasses, setGlasses] = useState(1);
   const [startTime, setStartTime] = useState(new Date());
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -17,9 +22,9 @@ export default function Demo() {
   const [alcoholInBlood, setAlcoholInBlood] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  // Algorithm: 2.5 hours per glass (high estimate for MVP)
+  // Use precise LactMed nomogram calculation based on user's weight
   const calculateEndTime = (start: Date, glasses: number) => {
-    const hoursPerGlass = 2.5;
+    const hoursPerGlass = hoursPerStdDrink(profile.weightKg) * (profile.conservativeFactor ?? 1.0);
     const totalHours = glasses * hoursPerGlass;
     const end = new Date(start.getTime() + totalHours * 60 * 60 * 1000);
     return end;
@@ -106,19 +111,7 @@ export default function Demo() {
 
   return (
     <View style={styles.container}>
-      {/* SVG Background Shape */}
-      <Svg 
-        width={width} 
-        height={504} 
-        style={styles.onboardingShape}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
-      >
-        <Path 
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" 
-          fill="#FFE2D8"
-        />
-      </Svg>
+      <AnimatedBackground variant="variant4" />
 
       {/* Fixed header with back button */}
       <View style={styles.fixedHeader}>
@@ -258,17 +251,10 @@ export default function Demo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   // removed progress bar styles
   warningLabelInCard: {

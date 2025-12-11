@@ -4,6 +4,8 @@ import Svg, { Circle, Path, Rect, SvgUri } from 'react-native-svg';
 import { PlannedDrink } from './SlimmeDrankjePlanner';
 import { FeedPrediction } from './BabyRitmeTracker';
 import { drinkTypes } from '../data/drinkTypes';
+import { hoursPerStdDrink } from '../lib/alcohol';
+import { useStore } from '../state/store';
 
 interface SlimmeVoorspellingenProps {
   plannedDrinks: PlannedDrink[];
@@ -11,9 +13,11 @@ interface SlimmeVoorspellingenProps {
   startTime: Date;
   lastFeedTime?: Date;
   strategy?: 'minimal' | 'conservative';
+  onSafeTimeChange?: (safeTime: Date | null) => void;
+  onPlanningMomentsChange?: (moments: PlanningMoment[]) => void;
 }
 
-interface PlanningMoment {
+export interface PlanningMoment {
   time: Date;
   type: 'drink' | 'feed' | 'pump' | 'safe';
   label: string;
@@ -121,10 +125,15 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
   startTime,
   lastFeedTime,
   strategy: propStrategy = 'minimal',
+  onSafeTimeChange,
+  onPlanningMomentsChange,
 }) => {
+  const { getProfile } = useStore();
+  const profile = getProfile();
   const [planningMoments, setPlanningMoments] = useState<PlanningMoment[]>([]);
   const [strategy, setStrategy] = useState<'minimal' | 'conservative'>(propStrategy);
-  const [safetyMarginMin, setSafetyMarginMin] = useState<number>(30);
+  // Extra marge bovenop LactMed + eventuele 15% cautious-factor
+  const [safetyMarginMin, setSafetyMarginMin] = useState<number>(0);
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Sync strategy from prop
@@ -157,16 +166,23 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
       return total + (amount * drinkMultiplier);
     }, 0);
 
-    const clearanceHours = totalStandardDrinks * 2;
+    // Use precise LactMed nomogram calculation based on user's weight
+    const hoursPerDrink = hoursPerStdDrink(profile.weightKg) * (profile.conservativeFactor ?? 1.0);
+    const clearanceHours = totalStandardDrinks * hoursPerDrink;
     const safeTime = new Date(lastDrink.time.getTime() + clearanceHours * 60 * 60 * 1000 + safetyMarginMin * 60 * 1000);
 
     return safeTime;
-  }, [safetyMarginMin]);
+  }, [safetyMarginMin, profile]);
 
   // Generate planning moments
   const generatePlanningMoments = useCallback(() => {
     const moments: PlanningMoment[] = [];
     const safeFeedTime = calculateSafeFeedTime(plannedDrinks);
+
+    // Notify parent of safe feed time change
+    if (onSafeTimeChange) {
+      onSafeTimeChange(safeFeedTime);
+    }
 
     if (startTime) {
       const lastFeedBefore = lastFeedTime ? new Date(lastFeedTime) : new Date(startTime.getTime() - 60 * 60 * 1000);
@@ -357,11 +373,14 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
 
     moments.sort((a, b) => a.time.getTime() - b.time.getTime());
     setPlanningMoments(moments);
-  }, [plannedDrinks, predictedFeeds, calculateSafeFeedTime, startTime, lastFeedTime, strategy]);
+    if (onPlanningMomentsChange) {
+      onPlanningMomentsChange(moments);
+    }
+  }, [plannedDrinks, predictedFeeds, calculateSafeFeedTime, startTime, lastFeedTime, strategy, onSafeTimeChange, onPlanningMomentsChange]);
 
   useEffect(() => {
     generatePlanningMoments();
-  }, [generatePlanningMoments, plannedDrinks, predictedFeeds, strategy, safetyMarginMin]);
+  }, [plannedDrinks, predictedFeeds, strategy, safetyMarginMin, startTime, lastFeedTime]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('nl-NL', {
@@ -416,13 +435,27 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
           style={[styles.strategyButton, strategy === 'minimal' && styles.strategyButtonActive]}
           onPress={() => setStrategy('minimal')}
         >
-          <Text style={[styles.strategyText, strategy === 'minimal' && styles.strategyTextActive]}>Zo min mogelijk Kolven</Text>
+          <Text
+            style={[
+              styles.strategyText,
+              strategy === 'minimal' && styles.strategyTextActive,
+            ]}
+          >
+            Zo min mogelijk Kolven
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.strategyButton, strategy === 'conservative' && styles.strategyButtonActive]}
           onPress={() => setStrategy('conservative')}
         >
-          <Text style={[styles.strategyText, strategy === 'conservative' && styles.strategyTextActive]}>Beste voor Productie</Text>
+          <Text
+            style={[
+              styles.strategyText,
+              strategy === 'conservative' && styles.strategyTextActive,
+            ]}
+          >
+            Beste voor Productie
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -464,26 +497,26 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
                       <>
                         <View style={styles.safetyMarginButtons}>
                           <TouchableOpacity
-                            style={[styles.marginButton, safetyMarginMin === 30 && styles.marginButtonActive]}
-                            onPress={() => setSafetyMarginMin(30)}
+                            style={[styles.marginButton, safetyMarginMin === 0 && styles.marginButtonActive]}
+                            onPress={() => setSafetyMarginMin(0)}
                           >
-                            <Text style={[styles.marginButtonText, safetyMarginMin === 30 && styles.marginButtonTextActive]}>
+                            <Text style={[styles.marginButtonText, safetyMarginMin === 0 && styles.marginButtonTextActive]}>
                               Standaard
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            style={[styles.marginButton, safetyMarginMin === 45 && styles.marginButtonActive]}
-                            onPress={() => setSafetyMarginMin(45)}
+                            style={[styles.marginButton, safetyMarginMin === 15 && styles.marginButtonActive]}
+                            onPress={() => setSafetyMarginMin(15)}
                           >
-                            <Text style={[styles.marginButtonText, safetyMarginMin === 45 && styles.marginButtonTextActive]}>
+                            <Text style={[styles.marginButtonText, safetyMarginMin === 15 && styles.marginButtonTextActive]}>
                               +15 min
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            style={[styles.marginButton, safetyMarginMin === 60 && styles.marginButtonActive]}
-                            onPress={() => setSafetyMarginMin(60)}
+                            style={[styles.marginButton, safetyMarginMin === 30 && styles.marginButtonActive]}
+                            onPress={() => setSafetyMarginMin(30)}
                           >
-                            <Text style={[styles.marginButtonText, safetyMarginMin === 60 && styles.marginButtonTextActive]}>
+                            <Text style={[styles.marginButtonText, safetyMarginMin === 30 && styles.marginButtonTextActive]}>
                               +30 min
                             </Text>
                           </TouchableOpacity>
@@ -565,22 +598,22 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E1E1E6',
+    borderColor: '#F49B9B',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
   strategyButtonActive: {
     borderColor: '#F49B9B',
-    backgroundColor: '#FFECEF',
+    backgroundColor: '#F49B9B',
   },
   strategyText: {
     fontFamily: 'Poppins',
     fontWeight: '600',
     fontSize: 12,
-    color: '#7A6C66',
+    color: '#4B3C33',
   },
   strategyTextActive: {
-    color: '#F49B9B',
+    color: '#FFFFFF',
   },
   momentsList: {
     width: '100%',

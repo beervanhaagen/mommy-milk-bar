@@ -8,8 +8,8 @@
  */
 
 import { Share, Alert, Platform } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import { Settings } from '../state/store';
+import * as FileSystem from 'expo-file-system/legacy';
+import { MotherProfile, Baby } from '../state/store';
 
 export type ExportData = {
   version: string;
@@ -17,18 +17,13 @@ export type ExportData = {
   appName: string;
   userData: {
     profile: {
-      motherName?: string;
-      motherBirthdate?: string;
-      motherAge?: number;
       weightKg?: number;
-      heightCm?: number;
+      email?: string;
     };
     baby: {
       babyName?: string;
       babyBirthdate?: string;
       babyAge?: string;
-      babyWeightKg?: number;
-      babyLengthCm?: number;
     };
     feeding: {
       feedingType?: string;
@@ -87,35 +82,30 @@ const calculateBabyAge = (birthdate?: string): string | undefined => {
 /**
  * Prepare user data for export
  */
-export const prepareExportData = (settings: Settings): ExportData => {
+export const prepareExportData = (profile: MotherProfile, baby?: Baby): ExportData => {
   return {
     version: '1.0.0',
     exportDate: new Date().toISOString(),
     appName: 'Mommy Milk Bar',
     userData: {
       profile: {
-        motherName: settings.motherName === 'prefer_not_to_share' ? undefined : settings.motherName,
-        motherBirthdate: settings.motherBirthdate,
-        motherAge: calculateAge(settings.motherBirthdate),
-        weightKg: settings.weightKg,
-        heightCm: settings.heightCm,
+        weightKg: profile.weightKg,
+        email: profile.email,
       },
       baby: {
-        babyName: settings.babyName === 'prefer_not_to_share' ? undefined : settings.babyName,
-        babyBirthdate: settings.babyBirthdate,
-        babyAge: calculateBabyAge(settings.babyBirthdate),
-        babyWeightKg: settings.babyWeightKg,
-        babyLengthCm: settings.babyLengthCm,
+        babyName: baby?.name === 'prefer_not_to_share' ? undefined : baby?.name,
+        babyBirthdate: baby?.birthdate,
+        babyAge: calculateBabyAge(baby?.birthdate),
       },
       feeding: {
-        feedingType: settings.feedingType,
-        feedsPerDay: settings.feedsPerDay,
-        pumpPreference: settings.pumpPreference,
-        typicalAmountMl: settings.typicalAmountMl,
+        feedingType: baby?.feedingType,
+        feedsPerDay: baby?.feedsPerDay,
+        pumpPreference: baby?.pumpPreference,
+        typicalAmountMl: baby?.typicalAmountMl,
       },
       preferences: {
-        safetyMode: settings.safetyMode,
-        notificationsEnabled: settings.notificationsEnabled,
+        safetyMode: profile.safetyMode,
+        notificationsEnabled: profile.notificationsEnabled,
       },
     },
     disclaimer: 'Deze data behoort tot jou. Mommy Milk Bar deelt nooit je persoonlijke informatie met derden.',
@@ -126,9 +116,9 @@ export const prepareExportData = (settings: Settings): ExportData => {
  * Export user data as JSON file
  * Supports both iOS and Android
  */
-export const exportUserData = async (settings: Settings): Promise<void> => {
+export const exportUserData = async (profile: MotherProfile, baby?: Baby): Promise<void> => {
   try {
-    const exportData = prepareExportData(settings);
+    const exportData = prepareExportData(profile, baby);
     const jsonString = JSON.stringify(exportData, null, 2);
     const fileName = `mommy-milk-bar-export-${new Date().getTime()}.json`;
 
@@ -185,7 +175,9 @@ export const exportUserData = async (settings: Settings): Promise<void> => {
  * Shows confirmation dialog before deletion
  */
 export const deleteAllUserData = async (
-  clearStore: () => void
+  clearStore: () => void,
+  resetProfile?: () => void,
+  clearPersistedState?: () => Promise<void>
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     Alert.alert(
@@ -202,8 +194,12 @@ export const deleteAllUserData = async (
           style: 'destructive',
           onPress: async () => {
             try {
-              // Clear all data from store
+              // Clear all data from store and persistence
               clearStore();
+              resetProfile?.();
+              if (clearPersistedState) {
+                await clearPersistedState();
+              }
 
               Alert.alert(
                 'Data verwijderd',

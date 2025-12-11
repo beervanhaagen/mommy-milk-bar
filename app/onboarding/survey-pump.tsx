@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { useStore } from "../../src/state/store";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
@@ -14,8 +15,9 @@ const PUMP: Array<{ label: string; value: 'yes' | 'no' | 'later' }>= [
 
 export default function SurveyPump() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
-  const [pump, setPump] = useState<typeof PUMP[number]['value']>(settings.pumpPreference ?? 'later');
+  const { getActiveBaby, updateSettings } = useStore();
+  const activeBaby = getActiveBaby();
+  const [pump, setPump] = useState<typeof PUMP[number]['value']>(activeBaby?.pumpPreference ?? 'later');
 
   const handleNext = () => {
     updateSettings({ pumpPreference: pump });
@@ -24,18 +26,7 @@ export default function SurveyPump() {
 
   return (
     <View style={styles.container}>
-      <Svg 
-        width={width} 
-        height={504} 
-        style={styles.onboardingShape}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
-      >
-        <Path 
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" 
-          fill="#FFE2D8"
-        />
-      </Svg>
+      <AnimatedBackground variant="variant3" />
 
       <View style={styles.progressBarContainer}>
         <View style={styles.progressBarTrack}>
@@ -70,17 +61,10 @@ export default function SurveyPump() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   progressBarContainer: {
     position: 'absolute',
@@ -178,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 3,
     borderColor: '#F49B9B',
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
   },
   radioActive: {
     backgroundColor: '#FAD2D2',

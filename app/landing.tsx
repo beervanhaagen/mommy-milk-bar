@@ -8,16 +8,16 @@ const { width, height } = Dimensions.get('window');
 
 export default function Landing() {
   const router = useRouter();
-  const { settings } = useStore();
+  const profile = useStore((state) => state.profile);
   const { isAuthenticated } = useAuth();
 
   const handleGetStarted = () => {
     // If authenticated and onboarded, go to app
-    if (isAuthenticated && settings.hasCompletedOnboarding) {
+    if (isAuthenticated && profile.hasCompletedOnboarding) {
       router.replace('/(tabs)');
     } else {
       // Not authenticated or onboarding not complete - start onboarding
-      router.push('/onboarding/welcome');
+      router.push('/onboarding/usp-1');
     }
   };
 
@@ -46,12 +46,7 @@ export default function Landing() {
 
       {/* Description */}
       <Text style={styles.description}>
-        De app voor mama's die borstvoeding geven én af en toe een glas willen drinken.
-      </Text>
-
-      {/* Subtle Disclaimer */}
-      <Text style={styles.disclaimer}>
-        Deze app geeft algemene richtlijnen, geen medisch advies.
+        De tracking app voor moeders die borstvoeding geven en willen genieten.
       </Text>
 
       {/* Get Started Button */}
@@ -130,24 +125,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFF8F2',
   },
-  disclaimer: {
-    position: 'absolute',
-    width: 280,
-    left: (width - 280) / 2,
-    top: 690,
-    fontFamily: 'Poppins',
-    fontWeight: '300',
-    fontSize: 12,
-    lineHeight: 18,
-    textAlign: 'center',
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
   button: {
     position: 'absolute',
     width: 374,
     height: 63,
     left: (width - 374) / 2,
-    top: 769,
+    top: 690,
     backgroundColor: '#E47C7C',
     borderRadius: 38,
     justifyContent: 'center',
@@ -163,7 +146,7 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     position: 'absolute',
-    top: 850,
+    top: 770,
     alignSelf: 'center',
   },
   loginLinkText: {

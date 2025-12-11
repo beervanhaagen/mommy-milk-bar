@@ -44,11 +44,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((error) => {
+        // Handle invalid refresh token or other auth errors gracefully
+        console.log('Session restoration failed:', error.message);
+        // Clear invalid session state
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+
+        // Clear stored auth data if it's corrupted
+        if (error.message?.includes('Refresh Token')) {
+          supabase.auth.signOut().catch(() => {
+            // Silent fail - already clearing state above
+          });
+        }
+      });
 
     // Listen to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

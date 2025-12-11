@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimens
 import { useRouter } from "expo-router";
 import { useStore } from "../../src/state/store";
 import Svg, { Path } from "react-native-svg";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
@@ -40,11 +41,9 @@ export default function SurveyNames() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Background shape */}
-      <Svg width={width} height={504} style={styles.onboardingShape} viewBox="0 0 414 504" preserveAspectRatio="xMinYMin slice">
-        <Path d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" fill="#FFE2D8" />
-      </Svg>
+    <View style={styles.container}>
+      <AnimatedBackground variant="variant1" />
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
 
       <View style={styles.content}>
         {/* Fixed header with back button and progress bar */}
@@ -136,22 +135,19 @@ export default function SurveyNames() {
           <Text style={styles.continueButtonText}>Doorgaan</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
   },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
+  scrollView: {
+    flex: 1,
   },
   content: {
     flex: 1,

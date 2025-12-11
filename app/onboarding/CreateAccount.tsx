@@ -19,7 +19,6 @@ import {
   Platform,
   ScrollView,
   ActivityIndicator,
-  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useStore } from '../../src/state/store';
@@ -31,11 +30,9 @@ const { width, height } = Dimensions.get('window');
 
 export default function CreateAccount() {
   const router = useRouter();
-  const motherName = useStore((state) => state.profile.motherName);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
@@ -62,18 +59,12 @@ export default function CreateAccount() {
       return;
     }
 
-    if (!acceptedTerms) {
-      Alert.alert('Oeps', 'Je moet akkoord gaan met de voorwaarden en privacy policy.');
-      return;
-    }
-
     setLoading(true);
     try {
       // Create account with Supabase, including onboarding data
       await signUp({
         email,
         password,
-        motherName: motherName || undefined,
         consentVersion: '1.0.0',
         analyticsConsent: true,
         marketingConsent: false,
@@ -91,26 +82,6 @@ export default function CreateAccount() {
   const handleLogin = () => {
     // Navigate to login screen
     router.push('/auth/login');
-  };
-
-  const openTerms = async () => {
-    const url = 'https://mommymilkbar.nl/terms.html';
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      Linking.openURL(url);
-    } else {
-      Alert.alert('Oeps', 'Kan voorwaarden niet openen. Bezoek mommymilkbar.nl voor meer info.');
-    }
-  };
-
-  const openPrivacyPolicy = async () => {
-    const url = 'https://mommymilkbar.nl/privacy.html';
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      Linking.openURL(url);
-    } else {
-      Alert.alert('Oeps', 'Kan privacy policy niet openen. Bezoek mommymilkbar.nl voor meer info.');
-    }
   };
 
   return (
@@ -193,39 +164,10 @@ export default function CreateAccount() {
             />
           </View>
 
-          {/* Terms Checkbox */}
-          <View style={styles.checkboxContainer}>
-            <TouchableOpacity
-              style={styles.checkbox}
-              onPress={() => setAcceptedTerms(!acceptedTerms)}
-              disabled={loading}
-            >
-              <View style={[styles.checkboxBox, acceptedTerms && styles.checkboxChecked]}>
-                {acceptedTerms && (
-                  <Svg width={16} height={16} viewBox="0 0 24 24">
-                    <Path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#FFFFFF" />
-                  </Svg>
-                )}
-              </View>
-            </TouchableOpacity>
-            <View style={styles.checkboxLabelContainer}>
-              <Text style={styles.checkboxLabel}>
-                Ik ga akkoord met de{' '}
-                <Text style={styles.link} onPress={openTerms}>
-                  voorwaarden
-                </Text>
-                {' '}en{' '}
-                <Text style={styles.link} onPress={openPrivacyPolicy}>
-                  privacy policy
-                </Text>
-              </Text>
-            </View>
-          </View>
-
           {/* Privacy Note */}
           <View style={styles.privacyNote}>
             <Text style={styles.privacyText}>
-              🔒 Je data wordt veilig opgeslagen en nooit gedeeld met derden.
+              Je data wordt veilig opgeslagen en nooit gedeeld met derden.
             </Text>
           </View>
 
@@ -333,45 +275,6 @@ const styles = StyleSheet.create({
     color: '#4B3B36',
     borderWidth: 1,
     borderColor: '#E8E5E1',
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  checkbox: {
-    marginRight: 12,
-  },
-  checkboxBox: {
-    width: 24,
-    height: 24,
-    borderWidth: 2,
-    borderColor: '#E8E5E1',
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  checkboxChecked: {
-    backgroundColor: '#F49B9B',
-    borderColor: '#F49B9B',
-  },
-  checkboxLabelContainer: {
-    flex: 1,
-    paddingTop: 2,
-  },
-  checkboxLabel: {
-    fontFamily: 'Poppins',
-    fontWeight: '400',
-    fontSize: 13,
-    color: '#8E8B88',
-    lineHeight: 20,
-  },
-  link: {
-    color: '#F49B9B',
-    fontWeight: '600',
-    textDecorationLine: 'underline',
   },
   privacyNote: {
     backgroundColor: '#FFF8F2',

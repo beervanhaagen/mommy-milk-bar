@@ -4,18 +4,20 @@ import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import Slider from '@react-native-community/slider';
 import { useStore } from "../../src/state/store";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
 export default function SurveyFeeding() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
-  const [feedingType, setFeedingType] = useState<typeof settings.feedingType>(settings.feedingType ?? 'breast');
-  const [pumpPref, setPumpPref] = useState<typeof settings.pumpPreference>(settings.pumpPreference ?? 'later');
-  const [feedsPerDay, setFeedsPerDay] = useState<number>(settings.feedsPerDay ?? 6);
-  const [amountMl, setAmountMl] = useState<number>(settings.typicalAmountMl ?? 90);
-  const [feedsUnknown, setFeedsUnknown] = useState(settings.feedsPerDay === undefined);
-  const [amountUnknown, setAmountUnknown] = useState(settings.typicalAmountMl === undefined);
+  const { getActiveBaby, updateSettings } = useStore();
+  const activeBaby = getActiveBaby();
+  const [feedingType, setFeedingType] = useState<'breast' | 'formula' | 'mix'>(activeBaby?.feedingType ?? 'breast');
+  const [pumpPref, setPumpPref] = useState<'yes' | 'no' | 'later'>(activeBaby?.pumpPreference ?? 'later');
+  const [feedsPerDay, setFeedsPerDay] = useState<number>(activeBaby?.feedsPerDay ?? 6);
+  const [amountMl, setAmountMl] = useState<number>(activeBaby?.typicalAmountMl ?? 90);
+  const [feedsUnknown, setFeedsUnknown] = useState(activeBaby?.feedsPerDay === undefined);
+  const [amountUnknown, setAmountUnknown] = useState(activeBaby?.typicalAmountMl === undefined);
 
   const handleNext = () => {
     updateSettings({
@@ -36,9 +38,7 @@ export default function SurveyFeeding() {
 
   return (
     <View style={styles.container}>
-      <Svg width={width} height={504} style={styles.onboardingShape} viewBox="0 0 414 504" preserveAspectRatio="xMinYMin slice">
-        <Path d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" fill="#FFE2D8"/>
-      </Svg>
+      <AnimatedBackground variant="variant4" />
 
       {/* Fixed header with back button and progress bar */}
       <View style={styles.fixedHeader}>
@@ -99,8 +99,7 @@ export default function SurveyFeeding() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFCF4', position: 'relative', width, height },
-  onboardingShape: { position: 'absolute', width: '100%', height: 504, left: 0, top: 0 },
+  container: { flex: 1, backgroundColor: '#FAF7F3', position: 'relative', width, height },
   fixedHeader: {
     position: 'absolute',
     top: 50,
@@ -121,7 +120,7 @@ const styles = StyleSheet.create({
   option: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#C7CED9', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 16, marginBottom: 12 },
   optionActive: { borderColor: '#A7B4C7', backgroundColor: '#F9FBFF' },
   optionText: { fontFamily: 'Poppins', fontWeight: '500', fontSize: 16, color: '#4B3B36', flexShrink: 1, paddingRight: 12 },
-  radio: { marginLeft: 'auto', width: 28, height: 28, borderRadius: 14, borderWidth: 3, borderColor: '#F49B9B', backgroundColor: '#FFFCF4' },
+  radio: { marginLeft: 'auto', width: 28, height: 28, borderRadius: 14, borderWidth: 3, borderColor: '#F49B9B', backgroundColor: '#FAF7F3' },
   radioActive: { backgroundColor: '#FAD2D2' },
   metricLabel: { fontFamily: 'Poppins', fontWeight: '500', fontSize: 16, color: '#4B3B36' },
   slider: { width: '100%', height: 40 },

@@ -240,11 +240,31 @@ const SlimmeDrankjePlanner: React.FC<SlimmeDrankjePlannerProps> = ({ onDrinksCha
       <Text style={styles.title}>Wat drink je?</Text>
       {NEW_PLANNER_UI && (
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
-          <TouchableOpacity onPress={() => setMode('per')} style={[styles.segment, mode === 'per' && styles.segmentActive]}>
-            <Text style={[styles.segmentText, mode === 'per' && styles.segmentTextActive]}>Per drankje</Text>
+          <TouchableOpacity
+            onPress={() => setMode('per')}
+            style={[styles.segment, mode === 'per' && styles.segmentActive]}
+          >
+            <Text
+              style={[
+                styles.segmentText,
+                mode === 'per' && styles.segmentTextActive,
+              ]}
+            >
+              Per drankje
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMode('bulk')} style={[styles.segment, mode === 'bulk' && styles.segmentActive]}>
-            <Text style={[styles.segmentText, mode === 'bulk' && styles.segmentTextActive]}>Meerdere drankjes</Text>
+          <TouchableOpacity
+            onPress={() => setMode('bulk')}
+            style={[styles.segment, mode === 'bulk' && styles.segmentActive]}
+          >
+            <Text
+              style={[
+                styles.segmentText,
+                mode === 'bulk' && styles.segmentTextActive,
+              ]}
+            >
+              Meerdere drankjes
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -264,18 +284,32 @@ const SlimmeDrankjePlanner: React.FC<SlimmeDrankjePlannerProps> = ({ onDrinksCha
                 onPress={() => setSelectedType(drink.id)}
               >
                 <IconComponent size={24} />
-                <Text style={[
-                  styles.drinkTypeText,
-                  selectedType === drink.id && styles.drinkTypeTextSelected
-                ]}>
+                <Text
+                  style={[
+                    styles.drinkTypeText,
+                    selectedType === drink.id && styles.drinkTypeTextSelected,
+                  ]}
+                >
                   {drink.label}
                 </Text>
-                <Text style={[
-                  styles.drinkAlcohol,
-                  selectedType === drink.id && { color: '#FFFFFF' }
-                ]}>
+                <Text
+                  style={[
+                    styles.drinkAlcohol,
+                    selectedType === drink.id && styles.drinkAlcoholSelected,
+                  ]}
+                >
                   {drink.isCustom ? 'Custom' : `${drink.abv}% alcohol`}
                 </Text>
+                {!drink.isCustom && (
+                  <Text
+                    style={[
+                      styles.drinkVolume,
+                      selectedType === drink.id && styles.drinkVolumeSelected,
+                    ]}
+                  >
+                    ~{drink.standardVolumeMl}ml per glas
+                  </Text>
+                )}
               </TouchableOpacity>
             );
           })}
@@ -325,10 +359,20 @@ const SlimmeDrankjePlanner: React.FC<SlimmeDrankjePlannerProps> = ({ onDrinksCha
             {Array.from({ length: 20 }, (_, i) => i + 1).map(n => (
               <TouchableOpacity
                 key={n}
-                onPress={() => setBulkCount(n)}
-                style={[styles.intervalButton, bulkCount === n && styles.intervalButtonSelected]}
+                  onPress={() => setBulkCount(n)}
+                style={[
+                  styles.intervalButton,
+                  bulkCount === n && styles.intervalButtonSelected,
+                ]}
               >
-                <Text style={[styles.intervalText, bulkCount === n && styles.intervalTextSelected]}>{n}</Text>
+                <Text
+                  style={[
+                    styles.intervalText,
+                    bulkCount === n && styles.intervalTextSelected,
+                  ]}
+                >
+                  {n}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -340,9 +384,17 @@ const SlimmeDrankjePlanner: React.FC<SlimmeDrankjePlannerProps> = ({ onDrinksCha
               <TouchableOpacity
                 key={min}
                 onPress={() => setBulkIntervalMin(min)}
-                style={[styles.intervalButton, bulkIntervalMin === min && styles.intervalButtonSelected]}
+                style={[
+                  styles.intervalButton,
+                  bulkIntervalMin === min && styles.intervalButtonSelected,
+                ]}
               >
-                <Text style={[styles.intervalText, bulkIntervalMin === min && styles.intervalTextSelected]}>
+                <Text
+                  style={[
+                    styles.intervalText,
+                    bulkIntervalMin === min && styles.intervalTextSelected,
+                  ]}
+                >
                   {min === 60 ? '60 min' : min === 90 ? '90 min' : `${min} min`}
                 </Text>
               </TouchableOpacity>
@@ -604,22 +656,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E1E1E6',
+    borderColor: '#F49B9B',
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
   segmentActive: {
     borderColor: '#F49B9B',
-    backgroundColor: '#FFECEF',
+    backgroundColor: '#F49B9B',
   },
   segmentText: {
     fontFamily: 'Poppins',
     fontWeight: '600',
     fontSize: 12,
-    color: '#7A6C66',
+    color: '#4B3B36',
   },
   segmentTextActive: {
-    color: '#F49B9B',
+    color: '#FFFFFF',
   },
   summary: {
     paddingTop: 12,
@@ -728,6 +780,20 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginTop: 2,
     textAlign: 'center',
+  },
+  drinkAlcoholSelected: {
+    color: '#FFFFFF',
+  },
+  drinkVolume: {
+    fontSize: 11,
+    color: '#F49B9B',
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  drinkVolumeSelected: {
+    color: '#FFFFFF',
   },
   timeButton: {
     backgroundColor: '#F5F5F9',

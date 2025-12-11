@@ -19,51 +19,69 @@ export interface Database {
       profiles: {
         Row: {
           id: string;
-          mother_name: string | null;
-          mother_birthdate: string | null;
+          email: string | null;
+          email_verified: boolean;
+          email_verification_token: string | null;
+          email_verification_sent_at: string | null;
+          email_verified_at: string | null;
           weight_kg: number | null;
-          height_cm: number | null;
           safety_mode: 'normal' | 'cautious';
           notifications_enabled: boolean;
           has_completed_onboarding: boolean;
           onboarding_completed_at: string | null;
           consent_version: string;
+          age_consent: boolean;
+          medical_disclaimer_consent: boolean;
+          privacy_policy_consent: boolean;
           marketing_consent: boolean;
           analytics_consent: boolean;
+          consent_timestamp: string | null;
           created_at: string;
           updated_at: string;
           last_active_at: string;
         };
         Insert: {
           id: string;
-          mother_name?: string | null;
-          mother_birthdate?: string | null;
+          email?: string | null;
+          email_verified?: boolean;
+          email_verification_token?: string | null;
+          email_verification_sent_at?: string | null;
+          email_verified_at?: string | null;
           weight_kg?: number | null;
-          height_cm?: number | null;
           safety_mode?: 'normal' | 'cautious';
           notifications_enabled?: boolean;
           has_completed_onboarding?: boolean;
           onboarding_completed_at?: string | null;
           consent_version?: string;
+          age_consent?: boolean;
+          medical_disclaimer_consent?: boolean;
+          privacy_policy_consent?: boolean;
           marketing_consent?: boolean;
           analytics_consent?: boolean;
+          consent_timestamp?: string | null;
           created_at?: string;
           updated_at?: string;
           last_active_at?: string;
         };
         Update: {
           id?: string;
-          mother_name?: string | null;
-          mother_birthdate?: string | null;
+          email?: string | null;
+          email_verified?: boolean;
+          email_verification_token?: string | null;
+          email_verification_sent_at?: string | null;
+          email_verified_at?: string | null;
           weight_kg?: number | null;
-          height_cm?: number | null;
           safety_mode?: 'normal' | 'cautious';
           notifications_enabled?: boolean;
           has_completed_onboarding?: boolean;
           onboarding_completed_at?: string | null;
           consent_version?: string;
+          age_consent?: boolean;
+          medical_disclaimer_consent?: boolean;
+          privacy_policy_consent?: boolean;
           marketing_consent?: boolean;
           analytics_consent?: boolean;
+          consent_timestamp?: string | null;
           updated_at?: string;
           last_active_at?: string;
         };
@@ -72,10 +90,8 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
-          name: string | null;
+          display_label: string;
           birthdate: string;
-          weight_kg: number | null;
-          length_cm: number | null;
           feeding_type: 'breast' | 'formula' | 'mix' | null;
           feeds_per_day: number | null;
           typical_amount_ml: number | null;
@@ -87,10 +103,8 @@ export interface Database {
         Insert: {
           id?: string;
           user_id: string;
-          name?: string | null;
+          display_label?: string;
           birthdate: string;
-          weight_kg?: number | null;
-          length_cm?: number | null;
           feeding_type?: 'breast' | 'formula' | 'mix' | null;
           feeds_per_day?: number | null;
           typical_amount_ml?: number | null;
@@ -100,10 +114,8 @@ export interface Database {
           updated_at?: string;
         };
         Update: {
-          name?: string | null;
+          display_label?: string;
           birthdate?: string;
-          weight_kg?: number | null;
-          length_cm?: number | null;
           feeding_type?: 'breast' | 'formula' | 'mix' | null;
           feeds_per_day?: number | null;
           typical_amount_ml?: number | null;

@@ -12,7 +12,7 @@ export default function Feedings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     paddingHorizontal: 24,
     paddingTop: 20,
   },

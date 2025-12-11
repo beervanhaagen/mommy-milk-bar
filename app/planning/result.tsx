@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } fr
 import Slider from '@react-native-community/slider';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { DrinkPlan } from '../../src/types/planning';
+import { hoursPerStdDrink } from '../../src/lib/alcohol';
+import { useStore } from '../../src/state/store';
 
 // Helper function to format time
 const formatTime = (date: Date | undefined) => {
@@ -13,6 +15,8 @@ const formatTime = (date: Date | undefined) => {
 export default function PlanResultScreen() {
   const router = useRouter();
   const { planData } = useLocalSearchParams();
+  const { getProfile } = useStore();
+  const profile = getProfile();
   const [plan, setPlan] = useState<Partial<DrinkPlan>>({});
   const [extraDrinks, setExtraDrinks] = useState(0);
   const [result, setResult] = useState<{
@@ -50,9 +54,10 @@ export default function PlanResultScreen() {
       microPumpTargetMl: planData.microPumpTargetMl
     };
 
-    // Simple calculation - estimate safe feed time
-    const hoursToProcess = (fullPlan.drinks * 2); // 2 hours per drink
-    const safeFeedAt = new Date(fullPlan.startAt.getTime() + hoursToProcess * 60 * 60 * 1000);
+    // Use precise LactMed nomogram calculation based on user's weight
+    const hoursPerDrink = hoursPerStdDrink(profile.weightKg) * (profile.conservativeFactor ?? 1.0);
+    const totalHours = fullPlan.drinks * hoursPerDrink;
+    const safeFeedAt = new Date(fullPlan.startAt.getTime() + totalHours * 60 * 60 * 1000);
     const advice = { tips: ['Drink water tussen de drankjes door', 'Eet iets voor je begint'] };
 
     setResult({ safeFeedAt, advice });

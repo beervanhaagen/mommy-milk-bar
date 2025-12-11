@@ -20,12 +20,12 @@ type ConfettiPiece = {
 
 export default function AccountDone() {
   const router = useRouter();
-  const store = useStore();
-  const { updateSettings, getProfile, getBabies } = {
-    updateSettings: store.updateSettings,
-    getProfile: store.getProfile,
-    getBabies: store.getBabies,
-  };
+
+  // Select only the pieces of state we need to avoid undefined helpers
+  const profile = useStore((state) => state.profile);
+  const babies = useStore((state) => state.babies);
+  const updateSettings = useStore((state) => state.updateSettings);
+
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -61,12 +61,8 @@ export default function AccountDone() {
     setIsSyncing(true);
 
     try {
-      // Get current profile and babies from store
-      const profile = getProfile();
-      const babies = getBabies();
-
-      // Sync all onboarding data to Supabase before entering app
-      await syncAllDataToSupabase(profile, babies);
+      // Sync all onboarding data (profile + babies) to Supabase before entering app
+      await syncAllDataToSupabase(profile as any, babies as any);
 
       // Mark onboarding as completed
       updateSettings({ hasCompletedOnboarding: true });
@@ -109,7 +105,7 @@ export default function AccountDone() {
         <View style={styles.content}>
           <Text style={styles.title}>Welkom bij Mommy Milk Bar</Text>
           <Text style={styles.subtitle}>Je account is aangemaakt en je profiel is opgeslagen.</Text>
-          <Text style={styles.body}>We hebben je antwoorden bewaard. Je kunt ze altijd aanpassen in je instellingen.</Text>
+          <Text style={styles.body}>We hebben je antwoorden bewaard. Je kunt ze altijd aanpassen in je profiel.</Text>
         </View>
       </SafeAreaView>
 

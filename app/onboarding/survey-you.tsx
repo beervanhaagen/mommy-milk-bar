@@ -5,70 +5,27 @@ import Svg, { Path } from "react-native-svg";
 import Slider from '@react-native-community/slider';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useStore } from "../../src/state/store";
+import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 
 const { width, height } = Dimensions.get('window');
 
 export default function SurveyYou() {
   const router = useRouter();
-  const { settings, updateSettings } = useStore();
+  const profile = useStore((state) => state.profile);
+  const updateSettings = useStore((state) => state.updateSettings);
 
-  // Default birthdate: 30 years ago
-  const defaultDate = new Date();
-  defaultDate.setFullYear(defaultDate.getFullYear() - 30);
-
-  const [motherBirthdate, setMotherBirthdate] = useState<Date>(
-    settings.motherBirthdate ? new Date(settings.motherBirthdate) : defaultDate
-  );
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [weight, setWeight] = useState<number>(settings.weightKg ?? 65);
-  const [heightCm, setHeightCm] = useState<number>(settings.heightCm ?? 170);
-
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    if (selectedDate) {
-      setMotherBirthdate(selectedDate);
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('nl-NL', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
-  const calculateAge = (birthdate: Date) => {
-    const today = new Date();
-    const years = Math.floor((today.getTime() - birthdate.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
-    return `${years} jaar oud`;
-  };
+  const [weight, setWeight] = useState<number>(profile.weightKg ?? 65);
 
   const handleNext = () => {
     updateSettings({
-      motherBirthdate: motherBirthdate.toISOString(),
       weightKg: weight,
-      heightCm
     });
     router.replace('/onboarding/survey-baby');
   };
 
   return (
     <View style={styles.container}>
-      <Svg 
-        width={width} 
-        height={504} 
-        style={styles.onboardingShape}
-        viewBox="0 0 414 504"
-        preserveAspectRatio="xMinYMin slice"
-      >
-        <Path 
-          d="M0 -1V381.053C0 381.053 32.2351 449.788 115.112 441.811C197.989 433.835 215.177 390.876 315.243 470.049C315.243 470.049 350.543 503.185 415 501.967V-1H0Z" 
-          fill="#FFE2D8"
-        />
-      </Svg>
+      <AnimatedBackground variant="variant2" />
 
       {/* Fixed header with back button and progress bar */}
       <View style={styles.fixedHeader}>
@@ -89,41 +46,9 @@ export default function SurveyYou() {
         <Text style={styles.title}>Even over jou…</Text>
         <Text style={styles.subtitle}>zodat we beter kunnen berekenen hoe snel je lichaam alcohol afbreekt.</Text>
 
-        {/* Birthdate picker */}
+        {/* Weight slider */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Wat is je geboortedatum?</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.dateButtonText}>{formatDate(motherBirthdate)}</Text>
-            <Text style={styles.ageText}>{calculateAge(motherBirthdate)}</Text>
-          </TouchableOpacity>
-
-          {showDatePicker && (
-            <DateTimePicker
-              value={motherBirthdate}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleDateChange}
-              maximumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 18))}
-              minimumDate={new Date(new Date().setFullYear(new Date().getFullYear() - 60))}
-            />
-          )}
-
-          {Platform.OS === 'ios' && showDatePicker && (
-            <TouchableOpacity
-              style={styles.doneButton}
-              onPress={() => setShowDatePicker(false)}
-            >
-              <Text style={styles.doneButtonText}>Klaar</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Weight and Height sliders */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Wat is je gewicht en lengte?</Text>
+          <Text style={styles.cardTitle}>Wat is je gewicht?</Text>
 
           <Text style={styles.metricLabel}>Gewicht: {weight} kg</Text>
           <Slider
@@ -133,19 +58,6 @@ export default function SurveyYou() {
             step={1}
             value={weight}
             onValueChange={setWeight}
-            minimumTrackTintColor="#F49B9B"
-            maximumTrackTintColor="#E6E6E6"
-            thumbTintColor="#F49B9B"
-          />
-
-          <Text style={[styles.metricLabel, { marginTop: 16 }]}>Lengte: {heightCm} cm</Text>
-          <Slider
-            style={styles.slider}
-            minimumValue={150}
-            maximumValue={205}
-            step={1}
-            value={heightCm}
-            onValueChange={setHeightCm}
             minimumTrackTintColor="#F49B9B"
             maximumTrackTintColor="#E6E6E6"
             thumbTintColor="#F49B9B"
@@ -165,17 +77,10 @@ export default function SurveyYou() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCF4',
+    backgroundColor: '#FAF7F3',
     position: 'relative',
     width: width,
     height: height,
-  },
-  onboardingShape: {
-    position: 'absolute',
-    width: '100%',
-    height: 504,
-    left: 0,
-    top: 0,
   },
   fixedHeader: {
     position: 'absolute',
