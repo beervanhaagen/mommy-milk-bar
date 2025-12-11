@@ -86,9 +86,8 @@ export default function Completion() {
   };
 
   const handleContinue = () => {
-    // Mark onboarding as completed
-    updateSettings({ hasCompletedOnboarding: true });
-    router.push('/(tabs)');
+    // Navigate to anonymous consent screen first
+    router.push('/onboarding/anonymous-consent');
   };
 
   return (

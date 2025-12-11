@@ -118,11 +118,15 @@ export default function Home() {
   const [activePlanningSafeTime, setActivePlanningSafeTime] = useState<number | null>(null);
   const [isPlanningExpanded, setIsPlanningExpanded] = useState(true);
   const [safetyMarginMin, setSafetyMarginMin] = useState(0);
+  const [showPlanningReminder, setShowPlanningReminder] = useState(false);
 
   // ZZZ Animation refs
   const zzz1Anim = useRef(new Animated.Value(0)).current;
   const zzz2Anim = useRef(new Animated.Value(0)).current;
   const zzz3Anim = useRef(new Animated.Value(0)).current;
+
+  // Shake animation ref for planning button
+  const shakeAnim = useRef(new Animated.Value(0)).current;
 
   // Check for active sessions and update time
   useEffect(() => {
@@ -423,6 +427,28 @@ export default function Home() {
       return 'Goedemiddag';
     } else {
       return 'Goedeavond';
+    }
+  };
+
+  // Shake animation for planning button
+  const triggerShake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
+  };
+
+  // Handle planning button press with validation
+  const handlePlanningPress = () => {
+    if (!hasLoggedDrinkToday) {
+      setShowPlanningReminder(true);
+      triggerShake();
+      // Hide reminder after 3 seconds
+      setTimeout(() => setShowPlanningReminder(false), 3000);
+    } else {
+      router.push('/planning/smart');
     }
   };
 
@@ -742,28 +768,37 @@ export default function Home() {
           )}
 
           {/* Section: Plannen */}
-          <TouchableOpacity 
-            style={styles.planCard}
-            onPress={mainChoices[1].onPress}
-          >
-            {/* Left Section - Icon */}
-            <View style={styles.planCardLeft}>
-              <Image 
-                source={require('../../assets/MMB_other/clock_13240955.png')} 
-                style={styles.planIcon}
-                resizeMode="contain"
-              />
-            </View>
-            
-            {/* Right Section - Text and Button */}
-            <View style={styles.planCardRight}>
-              <Text style={styles.planTitle}>{mainChoices[1].title}</Text>
-              <Text style={styles.planSubtitle}>Plan je voeding en voel je zeker om veilig te kunnen genieten van een drankje.</Text>
-              <TouchableOpacity style={styles.planButton} onPress={mainChoices[1].onPress}>
-              <Text style={styles.planButtonText}>Drankje plannen</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+          <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
+            {showPlanningReminder && (
+              <View style={styles.planningReminderBanner}>
+                <Text style={styles.planningReminderText}>
+                  Je hebt nog geen drankje gelogd
+                </Text>
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.planCard}
+              onPress={handlePlanningPress}
+            >
+              {/* Left Section - Icon */}
+              <View style={styles.planCardLeft}>
+                <Image
+                  source={require('../../assets/MMB_other/clock_13240955.png')}
+                  style={styles.planIcon}
+                  resizeMode="contain"
+                />
+              </View>
+
+              {/* Right Section - Text and Button */}
+              <View style={styles.planCardRight}>
+                <Text style={styles.planTitle}>{mainChoices[1].title}</Text>
+                <Text style={styles.planSubtitle}>Plan je voeding en voel je zeker om veilig te kunnen genieten van een drankje.</Text>
+                <TouchableOpacity style={styles.planButton} onPress={handlePlanningPress}>
+                <Text style={styles.planButtonText}>Drankje plannen</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Animated.View>
 
         </View>
 
@@ -1457,7 +1492,7 @@ const styles = StyleSheet.create({
   planCardLeft: {
     width: 100,
     height: 142,
-    backgroundColor: '#FAD6D6',
+    backgroundColor: '#F49B9B',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     justifyContent: 'center',
@@ -1512,6 +1547,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: '#A8A5A2',
+    textAlign: 'center',
+  },
+  planningReminderBanner: {
+    backgroundColor: '#FFF3E0',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#FFB74D',
+    alignItems: 'center',
+  },
+  planningReminderText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 13,
+    color: '#F57C00',
     textAlign: 'center',
   },
 });

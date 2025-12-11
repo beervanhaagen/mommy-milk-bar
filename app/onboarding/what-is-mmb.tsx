@@ -2,25 +2,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Image
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import { AnimatedBackground } from "../../src/components/AnimatedBackground";
-import { useState } from "react";
-import { useStore } from "../../src/state/store";
 
 const { width, height } = Dimensions.get('window');
 
 export default function WhatIsMMB() {
   const router = useRouter();
-  const { updateProfile } = useStore();
-  const [acceptedDisclaimer, setAcceptedDisclaimer] = useState(false);
 
   const handleNext = () => {
-    if (acceptedDisclaimer) {
-      // Save medical disclaimer consent
-      updateProfile({
-        medicalDisclaimerConsent: true,
-        consentTimestamp: new Date().toISOString(),
-      });
-      router.push('/onboarding/how-it-works');
-    }
+    router.push('/onboarding/how-it-works');
   };
 
   return (
@@ -121,21 +110,6 @@ export default function WhatIsMMB() {
           />
         </View>
 
-        {/* Consent Checkbox */}
-        <View style={styles.consentContainer}>
-          <TouchableOpacity
-            style={[styles.checkbox, acceptedDisclaimer && styles.checkboxActive]}
-            onPress={() => setAcceptedDisclaimer(!acceptedDisclaimer)}
-          >
-            <View style={[styles.checkboxBox, acceptedDisclaimer && styles.checkboxBoxActive]}>
-              {acceptedDisclaimer && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-            <Text style={styles.checkboxText}>
-              Ik begrijp dat dit indicaties zijn, geen medisch advies, en dat alle keuzes mijn eigen verantwoordelijkheid zijn
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         <Text style={styles.footerText}>
           Alle berekeningen zijn gebaseerd op algemene metabolisme-modellen.
           Raadpleeg bij twijfel altijd een arts of verloskundige.
@@ -144,11 +118,10 @@ export default function WhatIsMMB() {
 
       {/* Continue Button */}
       <TouchableOpacity
-        style={[styles.button, !acceptedDisclaimer && styles.buttonDisabled]}
+        style={styles.button}
         onPress={handleNext}
-        disabled={!acceptedDisclaimer}
       >
-        <Text style={[styles.buttonText, !acceptedDisclaimer && styles.buttonTextDisabled]}>Ik begrijp het</Text>
+        <Text style={styles.buttonText}>Ik begrijp het</Text>
       </TouchableOpacity>
 
       {/* Bottom Line */}

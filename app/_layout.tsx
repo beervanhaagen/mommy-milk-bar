@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator, LogBox } from "react-native";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { hydrateStore } from "../src/state/store";
 import { AuthProvider } from "../src/contexts/AuthContext";
 
@@ -39,18 +40,20 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="landing" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="onboarding" />
-        <Stack.Screen name="result" />
-        <Stack.Screen name="plan" />
-        <Stack.Screen name="planning" />
-        <Stack.Screen name="settings" />
-      </Stack>
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="landing" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="onboarding" />
+          <Stack.Screen name="result" />
+          <Stack.Screen name="plan" />
+          <Stack.Screen name="planning" />
+          <Stack.Screen name="settings" />
+        </Stack>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

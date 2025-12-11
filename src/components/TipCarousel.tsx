@@ -57,6 +57,16 @@ export function TipCarousel() {
     setActiveIndex(index);
   };
 
+  // Auto-rotate carousel every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (activeIndex + 1) % TIPS.length;
+      scrollToIndex(nextIndex);
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [activeIndex]);
+
   return (
     <View style={styles.wrapper}>
       <ScrollView

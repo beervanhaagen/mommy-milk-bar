@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mommy Milk Bar - Drink je een glaasje? Weet precies wanneer je weer veilig borstvoeding kunt geven.">
+    <meta name="keywords" content="borstvoeding, alcohol, veilig, app, moeder, baby">
+    <title>Mommy Milk Bar - Geniet met vertrouwen</title>
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="assets/images/app_icon.png" alt="Mommy Milk Bar" class="logo">
+                <span class="logo-text">Mommy Milk Bar</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Geniet met vertrouwen</h1>
+            <p class="hero-subtitle">
+                Drink je een glaasje? Weet precies wanneer je weer<br>veilig borstvoeding kunt geven.
+            </p>
+
+            <a href="#" class="btn-download" id="downloadBtn">
+                <svg class="apple-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                Download voor iPhone
+            </a>
+            <p class="availability">Binnenkort beschikbaar in de App Store</p>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="demo-section">
+        <div class="demo-content">
+            <h2 class="demo-title">Zo werkt het</h2>
+            <p class="demo-subtitle">Sleep de tijdlijn en zie hoe Mimi verandert</p>
+
+            <div class="demo-container">
+                <div class="demo-visual">
+                    <div class="mimi-container">
+                        <img src="assets/images/closed_mimi.png" alt="Mimi gesloten" class="mimi-state" id="mimiClosed">
+                        <img src="assets/images/open_mimi.png" alt="Mimi open" class="mimi-state mimi-hidden" id="mimiOpen">
+                    </div>
+
+                    <div class="status-badge" id="statusBadge">
+                        <span class="status-icon">🔴</span>
+                        <span class="status-text">Nog niet veilig</span>
+                    </div>
+                </div>
+
+                <div class="timeline-controls">
+                    <div class="timeline-labels">
+                        <span class="timeline-label">Nu</span>
+                        <span class="timeline-label timeline-value" id="timeValue">1.5 uur</span>
+                        <span class="timeline-label">3+ uur</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="timeline-slider" id="timelineSlider">
+                    <div class="timeline-track">
+                        <div class="timeline-progress" id="timelineProgress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-content">
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3 class="feature-title">Realtime tracking</h3>
+                <p class="feature-text">Zie direct wanneer je weer veilig kunt voeden</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔔</div>
+                <h3 class="feature-title">Slimme herinneringen</h3>
+                <p class="feature-text">Krijg een melding wanneer het veilig is</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Overzicht & planning</h3>
+                <p class="feature-text">Plan vooruit en houd alles bij</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Klaar om te beginnen?</h2>
+            <p class="cta-text">Download Mommy Milk Bar en geniet met vertrouwen</p>
+            <a href="#" class="btn-download btn-download-large" id="downloadBtn2">
+                <svg class="apple-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                </svg>
+                Download voor iPhone
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-main">
+                <img src="assets/images/app_icon.png" alt="Mommy Milk Bar" class="footer-logo">
+                <p class="footer-text">
+                    Voor vragen: <a href="mailto:info@mommymilkbar.nl">info@mommymilkbar.nl</a>
+                </p>
+            </div>
+            <p class="footer-disclaimer">
+                Deze app is bedoeld als hulpmiddel. Raadpleeg altijd een zorgprofessional bij vragen over borstvoeding en alcoholgebruik.
+            </p>
+            <p class="footer-copyright">© 2025 Mommy Milk Bar</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

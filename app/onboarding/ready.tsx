@@ -85,8 +85,8 @@ export default function Ready() {
   const { updateSettings } = useStore();
 
   const handleSkip = () => {
-    updateSettings({ hasCompletedOnboarding: true });
-    router.replace('/(tabs)');
+    // Navigate to anonymous consent screen first
+    router.push('/onboarding/anonymous-consent');
   };
 
   const handleCreateAccount = () => {

@@ -22,10 +22,11 @@ export default function PrivacyConsent() {
   const { updateProfile } = useStore();
   const [acceptedAge, setAcceptedAge] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
+  const [acceptedMedicalDisclaimer, setAcceptedMedicalDisclaimer] = useState(false);
   const [acceptedMarketing, setAcceptedMarketing] = useState(false);
   const [acceptedAnalytics, setAcceptedAnalytics] = useState(false);
 
-  const canContinue = acceptedAge && acceptedPrivacy;
+  const canContinue = acceptedAge && acceptedPrivacy && acceptedMedicalDisclaimer;
 
   const handleContinue = () => {
     if (canContinue) {
@@ -34,6 +35,7 @@ export default function PrivacyConsent() {
         consentVersion: '1.0.0',
         ageConsent: acceptedAge,
         privacyPolicyConsent: acceptedPrivacy,
+        medicalDisclaimerConsent: acceptedMedicalDisclaimer,
         consentTimestamp: new Date().toISOString(),
         marketingConsent: acceptedMarketing,
         analyticsConsent: acceptedAnalytics,
@@ -129,6 +131,31 @@ export default function PrivacyConsent() {
             </View>
             <Text style={styles.checkboxText}>
               Ik ga akkoord met het verzamelen en opslaan van deze data
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Medical Disclaimer */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Medische disclaimer</Text>
+          <Text style={styles.cardText}>
+            Mommy Milk Bar geeft indicaties op basis van wetenschappelijke bronnen,
+            maar dit is <Text style={styles.bold}>geen medisch advies</Text>.
+          </Text>
+          <Text style={[styles.cardText, { marginTop: 12 }]}>
+            Alle keuzes rondom alcohol en borstvoeding zijn je eigen verantwoordelijkheid.
+            Bij twijfel raadpleeg altijd een arts, verloskundige of lactatiekundige.
+          </Text>
+
+          <TouchableOpacity
+            style={[styles.checkbox, acceptedMedicalDisclaimer && styles.checkboxActive]}
+            onPress={() => setAcceptedMedicalDisclaimer(!acceptedMedicalDisclaimer)}
+          >
+            <View style={[styles.checkboxBox, acceptedMedicalDisclaimer && styles.checkboxBoxActive]}>
+              {acceptedMedicalDisclaimer && <Text style={styles.checkmark}>✓</Text>}
+            </View>
+            <Text style={styles.checkboxText}>
+              Ik begrijp dat dit indicaties zijn, geen medisch advies, en dat alle keuzes mijn eigen verantwoordelijkheid zijn
             </Text>
           </TouchableOpacity>
         </View>
