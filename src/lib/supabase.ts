@@ -9,12 +9,28 @@ import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!;
+// CRITICAL: Use fallback values instead of throwing during module initialization
+// to prevent native crashes on TestFlight. The app will handle missing credentials
+// gracefully at runtime.
+//
+// Try multiple sources in order of preference:
+// 1. process.env (works in development with .env file)
+// 2. Constants.expoConfig.extra (works in production builds via app.config.js)
+const supabaseUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  Constants.expoConfig?.extra?.supabaseUrl ||
+  '';
+
+const supabaseAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  Constants.expoConfig?.extra?.supabaseAnonKey ||
+  '';
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Check your .env file.');
+  console.warn('⚠️ Missing Supabase environment variables. Auth features will be disabled.');
+  console.warn('Make sure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set.');
 }
 
 /**
