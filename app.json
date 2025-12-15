@@ -2,7 +2,7 @@
   "expo": {
     "name": "Mommy Milk Bar",
     "slug": "mommy-milk-bar",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/MMB_other/app_icon2.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.milkbar.app",
-      "buildNumber": "4"
+      "buildNumber": "5"
     },
     "android": {
       "adaptiveIcon": {
