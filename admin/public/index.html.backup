@@ -3,126 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mommy Milk Bar - Drink je een glaasje? Weet precies wanneer je weer veilig borstvoeding kunt geven.">
+    <meta name="description" content="Mommy Milk Bar - Je avond uit en borstvoeding gaan WEL samen">
     <meta name="keywords" content="borstvoeding, alcohol, veilig, app, moeder, baby">
-    <title>Mommy Milk Bar - Geniet met vertrouwen</title>
-    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <title>Mommy Milk Bar - Je avond uit en borstvoeding gaan WEL samen</title>
+    <link rel="icon" type="image/png" href="assets/images/MMB_app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <img src="assets/images/app_icon.png" alt="Mommy Milk Bar" class="logo">
-                <span class="logo-text">Mommy Milk Bar</span>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <img src="assets/images/MMB_app_icon.png" alt="Mommy Milk Bar Icon" class="logo-img">
+                    </div>
+                    <span class="logo-text">Mommy Milk Bar</span>
+                </div>
+                <nav class="nav">
+                    <a href="privacy.html" class="nav-link">Privacy</a>
+                    <a href="terms.html" class="nav-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="nav-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="nav-link">Contact</a>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Geniet met vertrouwen</h1>
-            <p class="hero-subtitle">
-                Drink je een glaasje? Weet precies wanneer je weer<br>veilig borstvoeding kunt geven.
-            </p>
-
-            <a href="#" class="btn-download" id="downloadBtn">
-                <svg class="apple-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                </svg>
-                Download voor iPhone
-            </a>
-            <p class="availability">Binnenkort beschikbaar in de App Store</p>
+        <div class="container">
+            <h1 class="hero-title">Je avond uit en borstvoeding gaan <span class="wel-highlight-no-underline">wel</span> samen</h1>
+            <h3 class="hero-subtitle">De tracking app voor moeders die borstvoeding geven en bewust omgaan met alcohol</h3>
         </div>
     </section>
 
-    <!-- Interactive Demo Section -->
-    <section class="demo-section">
-        <div class="demo-content">
-            <h2 class="demo-title">Zo werkt het</h2>
-            <p class="demo-subtitle">Sleep de tijdlijn en zie hoe Mimi verandert</p>
+    <!-- iPhone Mockups Section -->
+    <section class="phones-section">
+        <div class="container">
+            <div class="hero-visual-container">
+                <img src="assets/images/hero visual.png" alt="Mommy Milk Bar App Screens" class="hero-visual-img">
+            </div>
 
-            <div class="demo-container">
-                <div class="demo-visual">
-                    <div class="mimi-container">
-                        <img src="assets/images/closed_mimi.png" alt="Mimi gesloten" class="mimi-state" id="mimiClosed">
-                        <img src="assets/images/open_mimi.png" alt="Mimi open" class="mimi-state mimi-hidden" id="mimiOpen">
-                    </div>
+            <!-- Download Button -->
+            <div class="download-cta">
+                <a href="#download" class="download-link">
+                    <img src="assets/images/appdownloadios.png" alt="Download de app voor iOS" class="download-img">
+                </a>
+            </div>
+        </div>
+    </section>
 
-                    <div class="status-badge" id="statusBadge">
-                        <span class="status-icon">🔴</span>
-                        <span class="status-text">Nog niet veilig</span>
-                    </div>
-                </div>
+    <!-- Features Section Header -->
+    <section class="features-header">
+        <div class="container">
+            <h2 class="features-title">Meer grip en duidelijkheid tijdens een drankje</h2>
+            <h3 class="features-subtitle">Zo doen we dat!</h3>
 
-                <div class="timeline-controls">
-                    <div class="timeline-labels">
-                        <span class="timeline-label">Nu</span>
-                        <span class="timeline-label timeline-value" id="timeValue">1.5 uur</span>
-                        <span class="timeline-label">3+ uur</span>
-                    </div>
-                    <input type="range" min="0" max="100" value="50" class="timeline-slider" id="timelineSlider">
-                    <div class="timeline-track">
-                        <div class="timeline-progress" id="timelineProgress"></div>
-                    </div>
-                </div>
+            <!-- Science Badge -->
+            <div style="max-width: 700px; margin: 30px auto; padding: 25px; background: #FFF8F2; border-radius: 16px; border: 2px solid #F49B9B; text-align: center;">
+                <p style="font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 15px; line-height: 24px; color: #333; margin: 0;">
+                    Onze berekeningen zijn gebaseerd op wetenschappelijke richtlijnen van LactMed (NIH), CDC en de American Academy of Pediatrics.
+                    <a href="how-we-calculate.html" style="color: #E47C7C; font-weight: 600; text-decoration: underline;">Lees meer →</a>
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="features">
-        <div class="features-content">
-            <div class="feature">
-                <div class="feature-icon">⏱️</div>
-                <h3 class="feature-title">Realtime tracking</h3>
-                <p class="feature-text">Zie direct wanneer je weer veilig kunt voeden</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🔔</div>
-                <h3 class="feature-title">Slimme herinneringen</h3>
-                <p class="feature-text">Krijg een melding wanneer het veilig is</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">📊</div>
-                <h3 class="feature-title">Overzicht & planning</h3>
-                <p class="feature-text">Plan vooruit en houd alles bij</p>
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <!-- Feature 1: Visuele planning (links) -->
+                <div class="feature-card">
+                    <div class="feature-banner feature-banner-medium">
+                        <img src="assets/images/Planningsoverzichtbanner.png" alt="Planningsoverzicht banner" class="feature-banner-img">
+                    </div>
+                    <div class="feature-badge">Visuele planning</div>
+                    <p class="feature-description">
+                        De tijdlijn geeft direct overzicht van je avond, helpt je rekenen en zorgt voor een relaxter gevoel tijdens je avond uit.
+                    </p>
+                </div>
+
+                <!-- Feature 2: Interactieve Countdown (midden) -->
+                <div class="feature-card feature-card-interactive">
+                    <div class="feature-banner interactive-banner-new">
+                        <!-- Exact zoals onboarding screen -->
+                        <div class="onboarding-demo">
+                            <!-- Mimi Container -->
+                            <div class="mimi-display">
+                                <img src="assets/images/closed_mimi.png" alt="Mimi" class="mimi-char" id="mimiChar">
+                            </div>
+
+                            <!-- Status Card -->
+                            <div class="status-card" id="statusCard">
+                                <div class="status-text">Bijna daar</div>
+                                <div class="status-countdown" id="statusCountdown">00:25</div>
+                                <div class="status-subtext">Nog eventjes geduld</div>
+                            </div>
+
+                            <!-- Slider Section -->
+                            <div class="slider-section">
+                                <div class="slider-title">Tijd sinds laatste drankje</div>
+                                <div class="slider-controls">
+                                    <div class="slider-labels">
+                                        <span class="slider-label">Nu</span>
+                                        <span class="slider-label">1u</span>
+                                        <span class="slider-label">2u</span>
+                                        <span class="slider-label">3u</span>
+                                    </div>
+                                    <input type="range" min="0" max="180" value="95" class="demo-slider" id="demoSlider">
+                                    <div class="slider-track-bg">
+                                        <div class="slider-progress-fill" id="sliderProgress"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-badge">Interactieve Countdown</div>
+                    <p class="feature-description">
+                        Mimi telt met je mee en geeft een snelle indicatie wanneer het meestal weer oké is om te voeden.
+                    </p>
+                </div>
+
+                <!-- Feature 3: Plannen of loggen (rechts) -->
+                <div class="feature-card">
+                    <div class="feature-banner feature-banner-large">
+                        <img src="assets/images/plannenloggenbanner_v2.png" alt="Plannen of loggen banner" class="feature-banner-img">
+                    </div>
+                    <div class="feature-badge">Plannen of loggen</div>
+                    <p class="feature-description">
+                        Plan vooruit of log in het moment; zo houd je overzicht en weet je wanneer je waarschijnlijk weer kunt voeden.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2 class="cta-title">Klaar om te beginnen?</h2>
-            <p class="cta-text">Download Mommy Milk Bar en geniet met vertrouwen</p>
-            <a href="#" class="btn-download btn-download-large" id="downloadBtn2">
-                <svg class="apple-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                </svg>
-                Download voor iPhone
+    <!-- Disclaimer Section -->
+    <section class="disclaimer-section">
+        <div class="container">
+            <h2 class="disclaimer-title">Geen advies, maar een hulpmiddel</h2>
+            <h3 class="disclaimer-subtitle">Lees dit goed.</h3>
+        </div>
+    </section>
+
+    <!-- What We Are / Are Not Section -->
+    <section class="values-section">
+        <div class="container">
+            <div class="values-grid">
+                <!-- What We Are -->
+                <div class="values-column values-positive">
+                    <div class="values-header">
+                        <img src="assets/images/landing_page_happy_mimi.png" alt="Happy Mimi" class="values-mimi">
+                        <h3 class="values-title values-title-green">Waar zijn we wel van</h3>
+                    </div>
+                    <ul class="values-list">
+                        <li class="values-item">
+                            <span class="check-icon">✓</span>
+                            <span class="values-text">Algemene informatie op basis van gemiddelden</span>
+                        </li>
+                        <li class="values-item">
+                            <span class="check-icon">✓</span>
+                            <span class="values-text">Indicatieve tijd voor afbraak</span>
+                        </li>
+                        <li class="values-item">
+                            <span class="check-icon">✓</span>
+                            <span class="values-text">Rust, overzicht en meer duidelijkheid</span>
+                        </li>
+                        <li class="values-item">
+                            <span class="check-icon">✓</span>
+                            <span class="values-text">Jou helpen plannen met meer vertrouwen.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- What We Are Not -->
+                <div class="values-column values-negative">
+                    <div class="values-header">
+                        <img src="assets/images/landing_page_sad_mimi.png" alt="Sad Mimi" class="values-mimi">
+                        <h3 class="values-title values-title-pink">Waar zijn we niet van</h3>
+                    </div>
+                    <ul class="values-list">
+                        <li class="values-item">
+                            <span class="cross-icon">✗</span>
+                            <span class="values-text">Geen medisch advies of een vervanging daarvoor</span>
+                        </li>
+                        <li class="values-item">
+                            <span class="cross-icon">✗</span>
+                            <span class="values-text">Geen diagnose</span>
+                        </li>
+                        <li class="values-item">
+                            <span class="cross-icon">✗</span>
+                            <span class="values-text">Geen metingen in je lichaam</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Disclaimer Text -->
+            <div class="disclaimer-text-container">
+                <p class="disclaimer-text">
+                    MMB is een informatieve tool, geen medisch hulpmiddel. We geven geen persoonlijk advies, doen geen voorspellingen en meten geen alcohol in je bloed of melk. MMB indicaties zijn gebaseerd op algemene richtlijnen en jouw invoer, maar jij blijft altijd degene die bepaalt wat goed voelt voor jou en je baby. We zijn er om je te helpen met overzicht, rust en duidelijkheid, zodat jij met vertrouwen kunt genieten, zonder oordeel en zonder medische claims.
+                </p>
+                <p class="disclaimer-text" style="margin-top: 20px;">
+                    <a href="how-we-calculate.html" style="color: #E47C7C; font-weight: 600; text-decoration: underline;">Lees meer over hoe wij rekenen →</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download-section">
+        <div class="container">
+            <h3 class="download-title">Download de app!</h3>
+            <a href="#download" class="download-link">
+                <img src="assets/images/appdownloadios.png" alt="Download de app voor iOS" class="download-img">
             </a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-main">
-                <img src="assets/images/app_icon.png" alt="Mommy Milk Bar" class="footer-logo">
-                <p class="footer-text">
-                    Voor vragen: <a href="mailto:info@mommymilkbar.nl">info@mommymilkbar.nl</a>
-                </p>
+        <div class="container">
+            <div class="footer-divider"></div>
+            <div class="footer-content">
+                <nav class="footer-nav">
+                    <a href="privacy.html" class="footer-link">Privacy</a>
+                    <a href="terms.html" class="footer-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="footer-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="footer-link">Contact</a>
+                </nav>
+                <div class="footer-social">
+                    <a href="https://instagram.com/mommymilkbar" target="_blank" rel="noopener noreferrer" class="social-link">
+                        <img src="assets/images/Instagram_logo.png" alt="Instagram" class="social-icon">
+                    </a>
+                </div>
             </div>
-            <p class="footer-disclaimer">
-                Deze app is bedoeld als hulpmiddel. Raadpleeg altijd een zorgprofessional bij vragen over borstvoeding en alcoholgebruik.
-            </p>
-            <p class="footer-copyright">© 2025 Mommy Milk Bar</p>
         </div>
     </footer>
 
     <script src="script.js"></script>
+
+    <!-- Simple analytics tracking -->
+    <script>
+        (function() {
+            const SUPABASE_URL = 'https://lqmnkdqyoxytyyxuglhx.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxbW5rZHF5b3h5dHl5eHVnbGh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE5MjU4NzYsImV4cCI6MjA0NzUwMTg3Nn0.N8jNi4LiMSyBdZMMWznHmvWWW9L-bADJvD7d1Hbe_cE';
+
+            // Track page view
+            fetch(`${SUPABASE_URL}/rest/v1/page_views`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({
+                    page: window.location.pathname,
+                    referrer: document.referrer || null,
+                    user_agent: navigator.userAgent
+                })
+            }).catch(() => {}); // Silently fail if tracking doesn't work
+        })();
+    </script>
 </body>
 </html>

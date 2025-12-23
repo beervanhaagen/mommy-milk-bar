@@ -15,32 +15,32 @@ import {
 const navigation = [
   {
     name: 'Dashboard',
-    href: '/dashboard',
+    href: '/admin',
     icon: LayoutDashboard,
   },
   {
     name: 'Assumptions',
-    href: '/dashboard/assumptions',
+    href: '/admin/assumptions',
     icon: Target,
   },
   {
     name: 'Experiments',
-    href: '/dashboard/experiments',
+    href: '/admin/experiments',
     icon: FlaskConical,
   },
   {
     name: 'OKRs',
-    href: '/dashboard/okrs',
+    href: '/admin/okrs',
     icon: Crosshair,
   },
   {
     name: 'Weekly Review',
-    href: '/dashboard/weekly-review',
+    href: '/admin/weekly-review',
     icon: Calendar,
   },
   {
     name: 'Settings',
-    href: '/dashboard/settings',
+    href: '/admin/settings',
     icon: Settings,
   },
 ];

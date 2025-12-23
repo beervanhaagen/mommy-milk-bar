@@ -247,5 +247,41 @@
     </footer>
 
     <script src="script.js"></script>
+    <!-- Simple analytics tracking -->
+    <script>
+        (function() {
+            const SUPABASE_URL = 'https://lqmnkdqyoxytyyxuglhx.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxbW5rZHF5b3h5dHl5eHVnbGh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE5MjU4NzYsImV4cCI6MjA0NzUwMTg3Nn0.N8jNi4LiMSyBdZMMWznHmvWWW9L-bADJvD7d1Hbe_cE';
+
+            function trackEvent(page) {
+                fetch(`${SUPABASE_URL}/rest/v1/page_views`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        page: page,
+                        referrer: document.referrer || null,
+                        user_agent: navigator.userAgent
+                    })
+                }).catch(() => {}); // Silently fail if tracking doesn't work
+            }
+
+            // Track page view
+            trackEvent(window.location.pathname);
+
+            // Track download button clicks
+            document.addEventListener('DOMContentLoaded', function() {
+                const downloadLinks = document.querySelectorAll('a[href="#download"], .download-link');
+                downloadLinks.forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        trackEvent('/download-click');
+                    });
+                });
+            });
+        })();
+    </script>
 </body>
 </html>

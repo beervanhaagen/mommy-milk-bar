@@ -1,4 +1,4 @@
-import { Users, TrendingUp, BarChart3, Star, MessageSquare, Target } from 'lucide-react';
+import { Users, TrendingUp, BarChart3, Star, MessageSquare, Target, Eye } from 'lucide-react';
 import { HeroStatTile } from '@/components/dashboard/HeroStatTile';
 import { CockpitGuidance } from '@/components/dashboard/CockpitGuidance';
 import { GlassCard } from '@/components/ui/glass-card';
@@ -41,6 +41,17 @@ export default async function DashboardPage() {
     `)
     .eq('status', 'active')
     .limit(3);
+
+  // Get page views count
+  const { count: pageViewsCount } = await supabase
+    .from('page_views')
+    .select('*', { count: 'exact', head: true });
+
+  // Get download button clicks count
+  const { count: downloadClicksCount } = await supabase
+    .from('page_views')
+    .select('*', { count: 'exact', head: true })
+    .eq('page', '/download-click');
 
   // Determine status based on thresholds
   const getActivationStatus = () => {
@@ -111,6 +122,18 @@ export default async function DashboardPage() {
           icon={Star}
           status={getRatingStatus()}
           suffix="/5"
+        />
+        <HeroStatTile
+          label="Site Visits"
+          value={pageViewsCount || 0}
+          icon={Eye}
+          status="good"
+        />
+        <HeroStatTile
+          label="Download Clicks"
+          value={downloadClicksCount || 0}
+          icon={TrendingUp}
+          status="good"
         />
       </div>
 
