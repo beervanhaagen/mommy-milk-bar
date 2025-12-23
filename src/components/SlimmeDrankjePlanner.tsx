@@ -15,6 +15,13 @@ const EditIcon = ({ size = 16, color = '#F49B9B' }: { size?: number; color?: str
     />
   </Svg>
 );
+
+const WineIcon = ({ size = 20 }: { size?: number }) => (
+  <Svg width={size} height={size} viewBox="0 0 24 24">
+    <Path d="M8 2h8v3l2 2v3H6V7l2-2V2z" fill="#F49B9B"/>
+    <Path d="M6 10h12v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10z" fill="none" stroke="#F49B9B" strokeWidth={2}/>
+  </Svg>
+);
 import { drinkTypes } from '../data/drinkTypes';
 import { CustomDrinkInput } from './CustomDrinkInput';
 
@@ -219,7 +226,7 @@ const SlimmeDrankjePlanner: React.FC<SlimmeDrankjePlannerProps> = ({ onDrinksCha
   const getDrinkIcon = (type: string) => {
     const drinkType = drinkTypes[type];
     const IconComponent = drinkType?.icon;
-    return IconComponent ? <IconComponent size={20} /> : '🍷';
+    return IconComponent ? <IconComponent size={20} /> : <WineIcon size={20} />;
   };
 
   const getDrinkName = (type: string) => {

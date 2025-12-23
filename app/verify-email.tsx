@@ -87,7 +87,7 @@ export default function VerifyEmailScreen() {
             <Text style={styles.statusIcon}>✓</Text>
           )}
           {status === 'error' && (
-            <Text style={styles.statusIcon}>⚠</Text>
+            <Text style={styles.statusIcon}>!</Text>
           )}
         </View>
 

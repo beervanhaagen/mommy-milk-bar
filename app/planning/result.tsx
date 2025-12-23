@@ -202,7 +202,7 @@ export default function PlanResultScreen() {
         {/* Disclaimer */}
         <View style={styles.disclaimer}>
           <Text style={styles.disclaimerText}>
-            ⚠️ Deze tijden zijn indicatief en conservatief ingeschat. Twijfel je? Kies extra marge en/of raadpleeg een professional.
+            Deze tijden zijn indicatief en conservatief ingeschat. Twijfel je? Kies extra marge en/of raadpleeg een professional.
           </Text>
         </View>
       </ScrollView>

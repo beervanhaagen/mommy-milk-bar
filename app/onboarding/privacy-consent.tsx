@@ -81,12 +81,12 @@ export default function PrivacyConsent() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: 60 }]} />
+          <View style={[styles.progressBarFill, { width: 300 }]} />
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Privacy & Voorwaarden</Text>
+        <Text style={styles.title}>Nog even dit...</Text>
         <Text style={styles.subtitle}>Voordat we beginnen, even een paar belangrijke punten.</Text>
 
         {/* Age Gate */}
@@ -210,7 +210,6 @@ export default function PrivacyConsent() {
         </Text>
       </TouchableOpacity>
 
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -417,13 +416,5 @@ const styles = StyleSheet.create({
   },
   buttonTextDisabled: {
     color: '#B3AFAF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

@@ -94,7 +94,8 @@ export default function Profile() {
   const updateSettings = useStore((state) => state.updateSettings);
   const resetProfile = useStore((state) => state.resetProfile);
   const clearPersistedState = useStore((state) => state.clearPersistedState);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  const hasCompletedOnboarding = profile.hasCompletedOnboarding;
 
   const settings = {
     weightKg: profile.weightKg,
@@ -339,7 +340,7 @@ export default function Profile() {
         </View>
 
         {/* Auth CTA for gasten zonder account */}
-        {!isAuthenticated && (
+        {!isAuthenticated && !loading && !hasCompletedOnboarding && (
           <View style={styles.authCard}>
             <Text style={styles.authTitle}>Maak je profiel compleet</Text>
             <Text style={styles.authSubtitle}>
@@ -377,7 +378,7 @@ export default function Profile() {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.dataRow}>
+          <View style={[styles.dataRow, { borderBottomWidth: 0 }]}>
             <Text style={styles.dataLabel}>Gewicht:</Text>
             <Text style={styles.dataValue}>
               {settings.weightKg === undefined ? 'Niet ingevuld' : `${settings.weightKg} kg`}
@@ -386,7 +387,7 @@ export default function Profile() {
 
           <View style={styles.microcopy}>
             <Text style={styles.microcopyText}>
-              💡 Deze data helpt ons je veilige voedmomenten te berekenen na een drankje.
+              Deze data helpt ons je veilige voedmomenten te berekenen na een drankje.
             </Text>
           </View>
         </View>
@@ -411,23 +412,14 @@ export default function Profile() {
             <Text style={styles.dataValue}>{formatBirthdate(settings.babyBirthdate)}</Text>
           </View>
 
-          <View style={styles.dataRow}>
-            <Text style={styles.dataLabel}>Naam:</Text>
-            <Text style={styles.dataValue}>
-              {settings.babyName === 'prefer_not_to_share'
-                ? 'Liever niet delen'
-                : settings.babyName || 'Niet ingevuld'}
-            </Text>
-          </View>
-
-          <View style={styles.dataRow}>
+          <View style={[styles.dataRow, { borderBottomWidth: 0 }]}>
             <Text style={styles.dataLabel}>Leeftijd:</Text>
             <Text style={styles.dataValue}>{calculateBabyAge(settings.babyBirthdate)}</Text>
           </View>
 
           <View style={styles.microcopy}>
             <Text style={styles.microcopyText}>
-              💡 Bijhouden hoe je baby groeit helpt bij voedingsschema.
+              Bijhouden hoe je baby groeit helpt bij voedingsschema.
             </Text>
           </View>
         </View>
@@ -457,7 +449,7 @@ export default function Profile() {
             <Text style={styles.dataValue}>{formatPumpPreference(settings.pumpPreference)}</Text>
           </View>
 
-          <View style={styles.dataRow}>
+          <View style={[styles.dataRow, settings.pumpPreference !== 'yes' && { borderBottomWidth: 0 }]}>
             <Text style={styles.dataLabel}>Voedingen/dag:</Text>
             <Text style={styles.dataValue}>
               {settings.feedsPerDay === undefined ? 'Niet ingevuld' : `${settings.feedsPerDay} keer`}
@@ -465,7 +457,7 @@ export default function Profile() {
           </View>
 
           {settings.pumpPreference === 'yes' && (
-            <View style={styles.dataRow}>
+            <View style={[styles.dataRow, { borderBottomWidth: 0 }]}>
               <Text style={styles.dataLabel}>Hoeveelheid:</Text>
               <Text style={styles.dataValue}>
                 {settings.typicalAmountMl === undefined ? 'Niet ingevuld' : `${settings.typicalAmountMl} ml`}
@@ -475,7 +467,7 @@ export default function Profile() {
 
           <View style={styles.microcopy}>
             <Text style={styles.microcopyText}>
-              💡 Dit bepaalt wanneer je weer veilig kunt voeden.
+              Dit bepaalt wanneer je weer veilig kunt voeden.
             </Text>
           </View>
         </View>
@@ -509,7 +501,7 @@ export default function Profile() {
             <Text style={styles.bottomActionText}>Data exporteren</Text>
           </TouchableOpacity>
 
-          {isAuthenticated && (
+          {(isAuthenticated || hasCompletedOnboarding) && (
             <TouchableOpacity style={styles.bottomAction} onPress={handleLogout}>
               <Text style={styles.bottomActionText}>Uitloggen</Text>
             </TouchableOpacity>
@@ -578,25 +570,6 @@ export default function Profile() {
           <ScrollView contentContainerStyle={styles.modalScrollContent}>
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Over je baby bewerken</Text>
-
-              <Text style={styles.inputLabel}>Naam</Text>
-              <TextInput
-                style={styles.textInput}
-                value={babyName}
-                onChangeText={setBabyName}
-                placeholder="Bijv. Emma"
-                placeholderTextColor="#B3AFAF"
-                editable={!preferNotToShareBaby}
-              />
-              <TouchableOpacity
-                style={styles.checkboxRow}
-                onPress={toggleBabyShare}
-              >
-                <View style={[styles.checkbox, preferNotToShareBaby && styles.checkboxChecked]}>
-                  {preferNotToShareBaby && <Text style={styles.checkmark}>✓</Text>}
-                </View>
-                <Text style={styles.checkboxLabel}>Liever niet delen</Text>
-              </TouchableOpacity>
 
               <Text style={styles.inputLabel}>Geboortedatum</Text>
               <TouchableOpacity

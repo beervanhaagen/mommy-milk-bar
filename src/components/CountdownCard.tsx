@@ -99,6 +99,11 @@ export const CountdownCard: React.FC<CountdownCardProps> = ({
             Laatste drankje: {new Date(info.last.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             {' '}({info.last.glasses} glas{info.last.glasses > 1 ? 'en' : ''})
           </Text>
+          {!statusSafe && hasDrinks && (
+            <Text style={styles.meta}>
+              Veilig voeden om {new Date(now + ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          )}
           <Text style={styles.meta}>Totaal vandaag: {info.totalGlasses} glas{info.totalGlasses !== 1 ? 'en' : ''}</Text>
         </>
       )}

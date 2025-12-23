@@ -1,12 +1,5 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Linking } from "react-native";
 import { useRouter } from "expo-router";
-import Svg, { Path } from "react-native-svg";
-
-const BackIcon = () => (
-  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-    <Path d="M15 18l-6-6 6-6" stroke="#4B3B36" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-  </Svg>
-);
 
 export default function MedicalInfo() {
   const router = useRouter();
@@ -17,7 +10,7 @@ export default function MedicalInfo() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <BackIcon />
+            <Text style={styles.backButtonText}>← Terug</Text>
           </TouchableOpacity>
           <Text style={styles.title}>Berekeningen & Medische Informatie</Text>
         </View>
@@ -27,14 +20,14 @@ export default function MedicalInfo() {
           <Text style={styles.sectionTitle}>Hoe werken de berekeningen?</Text>
           
           <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>🔬 Wetenschappelijke basis</Text>
+            <Text style={styles.infoTitle}>Wetenschappelijke basis</Text>
             <Text style={styles.infoText}>
               Onze app gebruikt het LactMed-nomogram, een wetenschappelijk model ontwikkeld door het National Institutes of Health (NIH) en de National Library of Medicine (NLM). Dit model is gebaseerd op uitgebreid onderzoek naar alcoholafbraak in moedermelk.
             </Text>
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>⚖️ Gewichtsaanpassing</Text>
+            <Text style={styles.infoTitle}>Gewichtsaanpassing</Text>
             <Text style={styles.infoText}>
               De berekeningen worden aangepast aan jouw lichaamsgewicht. Over het algemeen geldt: hoe zwaarder je bent, hoe sneller je lichaam alcohol afbreekt. We gebruiken specifieke meetpunten:
             </Text>
@@ -47,14 +40,14 @@ export default function MedicalInfo() {
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>🛡️ Veiligheidsmarge</Text>
+            <Text style={styles.infoTitle}>Veiligheidsmarge</Text>
             <Text style={styles.infoText}>
               We voegen automatisch ongeveer 15% extra wachttijd toe bovenop de wetenschappelijke richtlijnen. Dit zorgt voor een extra veiligheidsbuffer, omdat individuele factoren (zoals metabolisme, voedselinname, en algemene gezondheid) kunnen variëren.
             </Text>
           </View>
 
           <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>🍷 Standaardglazen</Text>
+            <Text style={styles.infoTitle}>Standaardglazen</Text>
             <Text style={styles.infoText}>
               We berekenen op basis van standaardglazen (10 gram pure alcohol per glas, conform Nederlandse/Europese normen). Verschillende dranktypes worden omgerekend:
             </Text>
@@ -69,9 +62,9 @@ export default function MedicalInfo() {
           <Text style={styles.sectionTitle}>Medische disclaimer</Text>
           
           <View style={styles.warningCard}>
-            <Text style={styles.warningTitle}>⚠️ Belangrijke informatie</Text>
+            <Text style={styles.warningTitle}>Belangrijke informatie</Text>
             <Text style={styles.warningText}>
-              Deze app geeft alleen algemene richtlijnen en indicaties op basis van wetenschappelijke modellen. De berekeningen zijn indicatief en niet bedoeld als vervanging van medisch advies. Mama Milk Bar geeft geen medisch advies en alle keuzes die je maakt zijn volledig je eigen verantwoordelijkheid.
+              Deze app geeft alleen algemene richtlijnen en indicaties op basis van wetenschappelijke modellen. De berekeningen zijn indicatief en niet bedoeld als vervanging van medisch advies. Mommy Milk Bar geeft geen medisch advies en alle keuzes die je maakt zijn volledig je eigen verantwoordelijkheid.
             </Text>
           </View>
 
@@ -93,9 +86,9 @@ export default function MedicalInfo() {
           <Text style={styles.sectionTitle}>Aansprakelijkheid & Juridische Disclaimer</Text>
           
           <View style={styles.liabilityCard}>
-            <Text style={styles.liabilityTitle}>⚠️ Belangrijke Juridische Informatie</Text>
+            <Text style={styles.liabilityTitle}>Belangrijke Juridische Informatie</Text>
             <Text style={styles.liabilityText}>
-              <Text style={styles.bold}>Geen medisch advies:</Text> Mama Milk Bar (MMB) is uitsluitend een informatief hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Alle informatie, berekeningen en indicaties die door deze app worden verstrekt, zijn bedoeld voor algemene informatieve doeleinden en vormen geen vervanging voor professioneel medisch advies van een gekwalificeerde zorgverlener.
+              <Text style={styles.bold}>Geen medisch advies:</Text> Mommy Milk Bar (MMB) is uitsluitend een informatief hulpmiddel en biedt geen medisch advies, diagnose of behandeling. Alle informatie, berekeningen en indicaties die door deze app worden verstrekt, zijn bedoeld voor algemene informatieve doeleinden en vormen geen vervanging voor professioneel medisch advies van een gekwalificeerde zorgverlener.
             </Text>
             <Text style={styles.liabilityText}>
               <Text style={styles.bold}>Indicatief karakter:</Text> De berekeningen en tijdsindicaties die deze app verstrekt, zijn uitsluitend indicatief en gebaseerd op algemene wetenschappelijke modellen. Deze kunnen niet worden gebruikt als absolute waarheid en zijn niet gegarandeerd nauwkeurig voor individuele situaties. Alcoholafbraak varieert per persoon en kan worden beïnvloed door tal van factoren die niet door deze app kunnen worden voorspeld of gemeten.
@@ -104,10 +97,10 @@ export default function MedicalInfo() {
               <Text style={styles.bold}>Eigen verantwoordelijkheid:</Text> Als gebruiker van deze app aanvaard je volledige verantwoordelijkheid voor alle beslissingen die je neemt met betrekking tot borstvoeding en alcoholgebruik. Je erkent dat deze beslissingen persoonsgebonden zijn en volledig op jouw eigen oordeel, kennis en risico zijn gebaseerd.
             </Text>
             <Text style={styles.liabilityText}>
-              <Text style={styles.bold}>Geen aansprakelijkheid:</Text> Mama Milk Bar, haar eigenaren, ontwikkelaars, medewerkers en gelieerde partijen zijn op geen enkele wijze aansprakelijk voor enige directe, indirecte, incidentele, gevolg- of strafschade, inclusief maar niet beperkt tot letsel, verlies of schade aan jezelf, je baby of derden, voortvloeiend uit of gerelateerd aan het gebruik van of het vertrouwen op de informatie, berekeningen of functionaliteiten van deze app.
+              <Text style={styles.bold}>Geen aansprakelijkheid:</Text> Mommy Milk Bar, haar eigenaren, ontwikkelaars, medewerkers en gelieerde partijen zijn op geen enkele wijze aansprakelijk voor enige directe, indirecte, incidentele, gevolg- of strafschade, inclusief maar niet beperkt tot letsel, verlies of schade aan jezelf, je baby of derden, voortvloeiend uit of gerelateerd aan het gebruik van of het vertrouwen op de informatie, berekeningen of functionaliteiten van deze app.
             </Text>
             <Text style={styles.liabilityText}>
-              <Text style={styles.bold}>Geen rechtsvordering:</Text> Door gebruik te maken van deze app, ga je ermee akkoord dat je Mama Milk Bar of haar gelieerde partijen niet zult aanklagen, aansprakelijk zult stellen of op andere wijze juridische stappen zult ondernemen voor enige beslissing die je neemt op basis van de informatie of berekeningen van deze app. Alle keuzes die je maakt zijn onherroepelijk persoonlijk en kunnen niet worden teruggevoerd op Mama Milk Bar.
+              <Text style={styles.bold}>Geen rechtsvordering:</Text> Door gebruik te maken van deze app, ga je ermee akkoord dat je Mommy Milk Bar of haar gelieerde partijen niet zult aanklagen, aansprakelijk zult stellen of op andere wijze juridische stappen zult ondernemen voor enige beslissing die je neemt op basis van de informatie of berekeningen van deze app. Alle keuzes die je maakt zijn onherroepelijk persoonlijk en kunnen niet worden teruggevoerd op Mommy Milk Bar.
             </Text>
             <Text style={styles.liabilityText}>
               <Text style={styles.bold}>Raadpleeg altijd een professional:</Text> Bij twijfel, vragen of zorgen over borstvoeding en alcoholgebruik, raadpleeg altijd een gekwalificeerde zorgverlener (zoals je verloskundige, lactatiekundige, huisarts of kinderarts). Deze app is geen vervanging voor professioneel medisch advies en mag niet worden gebruikt als enige basis voor medische beslissingen.
@@ -127,8 +120,10 @@ export default function MedicalInfo() {
             style={styles.sourceLink}
             onPress={() => Linking.openURL('https://www.ncbi.nlm.nih.gov/books/NBK501469/')}
           >
-            <Text style={styles.sourceTitle}>1. LactMed - Drugs and Lactation Database</Text>
-            <Text style={styles.sourceSubtitle}>National Library of Medicine (NLM), National Institutes of Health (NIH)</Text>
+            <View style={styles.sourceTextContainer}>
+              <Text style={styles.sourceTitle}>1. LactMed - Drugs and Lactation Database</Text>
+              <Text style={styles.sourceSubtitle}>National Library of Medicine (NLM), National Institutes of Health (NIH)</Text>
+            </View>
             <Text style={styles.sourceArrow}>→</Text>
           </TouchableOpacity>
 
@@ -136,8 +131,10 @@ export default function MedicalInfo() {
             style={styles.sourceLink}
             onPress={() => Linking.openURL('https://www.cdc.gov/breastfeeding/breastfeeding-special-circumstances/vaccinations-medications-drugs/alcohol.html')}
           >
-            <Text style={styles.sourceTitle}>2. CDC - Alcohol and Breastfeeding</Text>
-            <Text style={styles.sourceSubtitle}>Centers for Disease Control and Prevention</Text>
+            <View style={styles.sourceTextContainer}>
+              <Text style={styles.sourceTitle}>2. CDC - Alcohol and Breastfeeding</Text>
+              <Text style={styles.sourceSubtitle}>Centers for Disease Control and Prevention</Text>
+            </View>
             <Text style={styles.sourceArrow}>→</Text>
           </TouchableOpacity>
 
@@ -145,8 +142,10 @@ export default function MedicalInfo() {
             style={styles.sourceLink}
             onPress={() => Linking.openURL('https://www.healthychildren.org/English/ages-stages/baby/breastfeeding/Pages/Drinking-Alcohol-and-Breastfeeding.aspx')}
           >
-            <Text style={styles.sourceTitle}>3. AAP - Drinking Alcohol and Breastfeeding</Text>
-            <Text style={styles.sourceSubtitle}>American Academy of Pediatrics</Text>
+            <View style={styles.sourceTextContainer}>
+              <Text style={styles.sourceTitle}>3. AAP - Drinking Alcohol and Breastfeeding</Text>
+              <Text style={styles.sourceSubtitle}>American Academy of Pediatrics</Text>
+            </View>
             <Text style={styles.sourceArrow}>→</Text>
           </TouchableOpacity>
         </View>
@@ -179,23 +178,18 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'column',
     marginBottom: 24,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    shadowColor: '#F49B9B',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 16,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 16,
+    color: '#F49B9B',
   },
   title: {
     fontSize: 24,
@@ -315,31 +309,36 @@ const styles = StyleSheet.create({
   },
   sourceLink: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     paddingVertical: 16,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#F2E7E2',
     marginBottom: 8,
+  },
+  sourceTextContainer: {
+    flex: 1,
+    marginRight: 12,
   },
   sourceTitle: {
     fontSize: 14,
     fontWeight: '500',
     color: '#4B3B36',
     fontFamily: 'Poppins',
-    flex: 1,
-    marginRight: 8,
+    marginBottom: 4,
+    flexWrap: 'wrap',
   },
   sourceSubtitle: {
     fontSize: 12,
     color: '#8E8B88',
     fontFamily: 'Poppins',
-    marginTop: 4,
+    flexWrap: 'wrap',
   },
   sourceArrow: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#F49B9B',
     fontFamily: 'Poppins',
+    lineHeight: 18,
   },
   contactSection: {
     backgroundColor: '#FDF2F2',

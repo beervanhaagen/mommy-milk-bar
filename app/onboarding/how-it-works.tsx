@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, Animated } from "react-native";
 import { useRouter } from "expo-router";
 import Svg, { Path } from "react-native-svg";
 import Slider from '@react-native-community/slider';
@@ -10,6 +10,28 @@ const { width, height } = Dimensions.get('window');
 export default function HowItWorks() {
   const router = useRouter();
   const [timeRemaining, setTimeRemaining] = useState(180); // In minutes, 0-180 (3 hours)
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Pulse animation to encourage interaction
+  useEffect(() => {
+    if (!hasInteracted) {
+      const pulse = Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.05,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ]);
+
+      Animated.loop(pulse).start();
+    }
+  }, [hasInteracted]);
 
   // Function to get Mimi state based on time remaining
   const getMimiState = (minutes: number) => {
@@ -49,7 +71,7 @@ export default function HowItWorks() {
   const currentState = getMimiState(timeRemaining);
 
   const handleNext = () => {
-    router.push('/onboarding/essential-info');
+    router.push('/onboarding/usp-1');
   };
 
   return (
@@ -68,7 +90,7 @@ export default function HowItWorks() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: 180 }]} />
+          <View style={[styles.progressBarFill, { width: 112.5 }]} />
         </View>
       </View>
 
@@ -100,7 +122,7 @@ export default function HowItWorks() {
         </View>
 
         {/* Interactive Card with Slider */}
-        <View style={styles.interactiveCard}>
+        <Animated.View style={[styles.interactiveCard, { transform: [{ scale: pulseAnim }] }]}>
           {/* Slider with Time Annotations */}
           <View style={styles.sliderContainer}>
             <Text style={styles.cardTitle}>Tijd sinds laatste drankje</Text>
@@ -110,7 +132,10 @@ export default function HowItWorks() {
               maximumValue={180}
               step={1}
               value={180 - timeRemaining}
-              onValueChange={(value) => setTimeRemaining(180 - value)}
+              onValueChange={(value) => {
+                setHasInteracted(true);
+                setTimeRemaining(180 - value);
+              }}
               minimumTrackTintColor="#E6E6E6"
               maximumTrackTintColor="#F49B9B"
               thumbTintColor="#F49B9B"
@@ -124,7 +149,7 @@ export default function HowItWorks() {
               <Text style={styles.annotationLabel}>3u</Text>
             </View>
           </View>
-        </View>
+        </Animated.View>
       </View>
 
       {/* Continue Button */}
@@ -133,7 +158,6 @@ export default function HowItWorks() {
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -320,13 +344,5 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFFFFF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

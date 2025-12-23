@@ -194,7 +194,6 @@ export default function CreateAccount() {
         </View>
 
         {/* Bottom Line */}
-        <View style={styles.bottomLine} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -322,13 +321,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
     color: '#F49B9B',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 20,
-    backgroundColor: '#E6E6E6',
   },
 });

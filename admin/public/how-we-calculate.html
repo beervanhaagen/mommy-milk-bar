@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hoe Mommy Milk Bar de veilige wachttijd berekent - wetenschappelijke onderbouwing">
+    <title>Hoe wij rekenen - Mommy Milk Bar</title>
+    <link rel="icon" type="image/png" href="assets/images/MMB_app_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .science-section {
+            background: #FFFCF4;
+            padding: 80px 20px;
+        }
+        .science-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .science-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 36px;
+            color: #E47C7C;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .science-subtitle {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 18px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .science-intro {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #FFF;
+            border-radius: 16px;
+            border-left: 4px solid #E47C7C;
+        }
+        .section-heading {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 24px;
+            color: #E47C7C;
+            margin: 40px 0 20px 0;
+        }
+        .section-text {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background: #FFF8F2;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: 2px solid #F49B9B;
+        }
+        .highlight-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #E47C7C;
+            margin-bottom: 15px;
+        }
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .bullet-list li {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 28px;
+            color: #333;
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+        }
+        .bullet-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #E47C7C;
+            font-weight: 600;
+        }
+        .sources-section {
+            background: #F49B9B;
+            padding: 40px;
+            border-radius: 16px;
+            margin-top: 60px;
+        }
+        .sources-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 20px;
+            color: #FFF;
+            margin-bottom: 20px;
+        }
+        .source-link {
+            display: block;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 24px;
+            color: #FFFCF4;
+            margin-bottom: 10px;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .source-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        .disclaimer-box {
+            background: #FFE6E6;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 40px;
+            border-left: 4px solid #E47C7C;
+        }
+        .disclaimer-box-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            color: #D45A5A;
+            margin-bottom: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            color: #E47C7C;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .back-link:hover {
+            opacity: 0.7;
+        }
+        .quote-container {
+            position: relative;
+            min-height: 150px;
+        }
+        .quote-slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .quote-slide.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+    <script>
+        // Quote carousel rotation
+        document.addEventListener('DOMContentLoaded', function() {
+            const quotes = document.querySelectorAll('.quote-slide');
+            let currentIndex = 0;
+
+            function showNextQuote() {
+                // Hide current quote
+                quotes[currentIndex].classList.remove('active');
+
+                // Move to next quote (loop back to start if at end)
+                currentIndex = (currentIndex + 1) % quotes.length;
+
+                // Show next quote
+                quotes[currentIndex].classList.add('active');
+            }
+
+            // Rotate every 40 seconds
+            setInterval(showNextQuote, 40000);
+        });
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <img src="assets/images/MMB_app_icon.png" alt="Mommy Milk Bar Icon" class="logo-img">
+                    </div>
+                    <span class="logo-text">Mommy Milk Bar</span>
+                </div>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="privacy.html" class="nav-link">Privacy</a>
+                    <a href="terms.html" class="nav-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="nav-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="nav-link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Science Section -->
+    <section class="science-section">
+        <div class="science-content">
+            <h1 class="science-title">Hoe wij rekenen</h1>
+            <p class="science-subtitle">Wetenschappelijke onderbouwing van ons rekenmodel</p>
+
+            <div class="science-intro">
+                Mommy Milk Bar gebruikt een rekenmodel om in te schatten hoelang je na het drinken van alcohol moet wachten voordat je weer veilig borstvoeding kunt geven. Deze berekening is gebaseerd op gerenommeerde wetenschappelijke bronnen en richtlijnen van gezondheidsinstanties. Belangrijk: alle uitkomsten zijn <strong>indicaties</strong>, geen persoonlijk medisch advies.
+            </div>
+
+            <h2 class="section-heading">Uitgangspunten</h2>
+            <p class="section-text">
+                De veiligste keuze is om geen alcohol te drinken als je borstvoeding geeft. Als je wel af en toe een drankje wilt, raden gezondheidsinstanties aan dit met mate te doen. Zowel het Amerikaanse CDC als de American Academy of Pediatrics stellen dat matige consumptie (maximaal 1 standaarddrankje per dag) niet bekend schadelijk is voor de baby, mits je meer dan 2 uur wacht per drankje voordat je weer voedt.
+            </p>
+
+            <div class="highlight-box">
+                <h3 class="highlight-title">De algemene vuistregel</h3>
+                <p class="section-text">
+                    Veel bronnen hanteren als vuistregel dat het ongeveer <strong>2 tot 3 uur</strong> duurt voordat één standaardglas alcohol is uitgescheiden uit de moedermelk, afhankelijk van lichaamsgewicht en andere factoren. Het geneesmiddelendatabank LactMed (van de Amerikaanse gezondheidsbibliotheek) adviseert 2 tot 3 uur wachten per standaarddrankje bij incidenteel alcoholgebruik.
+                </p>
+            </div>
+
+            <h2 class="section-heading">Hoe werkt onze berekening?</h2>
+
+            <p class="section-text">
+                Uit onderzoek blijkt dat de belangrijkste factoren voor hoelang alcohol in de moedermelk blijft, de <strong>gedronken hoeveelheid alcohol</strong> en het <strong>lichaamsgewicht</strong> van de moeder zijn. Ons model houdt rekening met deze twee inputs:
+            </p>
+
+            <ul class="bullet-list">
+                <li><strong>Standaarddrankje:</strong> We definiëren één drankje als één standaardglas alcohol (ongeveer 10 gram pure alcohol in NL/EU).</li>
+                <li><strong>Gewichtsaanpassing:</strong> We gebruiken het LactMed nomogram met specifieke meetpunten:
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>54 kg → 2,5 uur per standaarddrankje</li>
+                        <li>68 kg → 2,25 uur per standaarddrankje</li>
+                        <li>82 kg → 2,0 uur per standaarddrankje</li>
+                    </ul>
+                </li>
+                <li><strong>Lineaire interpolatie:</strong> Voor gewichten tussen deze punten berekenen we de tijd proportioneel.</li>
+                <li><strong>Veiligheidsmarge:</strong> We bouwen een conservatieve factor in om individuele variatie op te vangen.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <h3 class="highlight-title">Concreet voorbeeld</h3>
+                <p class="section-text">
+                    Een moeder van ~70 kg die één standaarddrank (bijv. 1 glas wijn) drinkt, zou volgens ons model ongeveer 2 uur en 15 minuten moeten wachten. Weegt zij 55 kg, dan kan het richting 2 uur 30 worden; weegt zij 85 kg, dan ongeveer 2 uur voor dat ene glas.
+                </p>
+                <p class="section-text">
+                    Bij meerdere drankjes tellen we de tijden op. Twee drankjes voor een gemiddelde vrouw komt uit op ongeveer 4-5 uur wachttijd.
+                </p>
+            </div>
+
+            <h2 class="section-heading">Wetenschappelijke basis</h2>
+            <p class="section-text">
+                Ons model is gebaseerd op onderzoek gepubliceerd in <em>Biology of the Neonate</em> (Ho et al. 2001), waarin bijvoorbeeld een zeer lichte vrouw (40 kg) na 3 drankjes ~8,5 uur nodig had tot haar melk alcoholvrij was, terwijl een zwaardere vrouw (95 kg) voor dezelfde hoeveelheid ongeveer 5,5 uur moest wachten. Dit toont aan: meer gewicht = kortere tijd per drankje, minder gewicht = langere tijd.
+            </p>
+
+            <h2 class="section-heading">Waarom een veiligheidsmarge?</h2>
+            <p class="section-text">
+                Omdat iedereen alcohol anders verwerkt, bouwen we een veiligheidsmarge in. Factoren zoals hoe snel je gedronken hebt, of je genoeg gegeten hebt, je hydratatie, hormonale toestand, medicijnen, en genetische verschillen kunnen de afbraaksnelheid beïnvloeden. Het is onmogelijk al deze individuele factoren mee te wegen in één simpel model.
+            </p>
+            <p class="section-text">
+                Daarom kiezen we voor een voorzichtige schatting die aan de veilige kant zit voor vrijwel iedereen. Liever geven we tien minuten te lang aan dan tien minuten te kort.
+            </p>
+
+            <div class="highlight-box" style="background: #FFF; border-left: 4px solid #E47C7C; margin-top: 30px;">
+                <h3 class="highlight-title" style="color: #E47C7C; margin-bottom: 15px;">Expert Perspectief</h3>
+                <p class="section-text" style="font-style: italic; color: #555; margin-bottom: 10px;">
+                    "Blood alcohol levels and the length of time alcohol can be detected in breast milk is correlated with how much alcohol has been consumed, how fast it's consumed, body weight, whether it was consumed with food, and how fast it's broken down by the mother's body."
+                </p>
+                <p class="section-text" style="font-weight: 600; color: #666; font-size: 14px;">
+                    — Dr. Kecia Gaither, dubbel board-gecertificeerd in OB-GYN en Maternal-Fetal Medicine
+                </p>
+                <p class="section-text" style="margin-top: 15px; font-size: 15px;">
+                    Dit onderstreept waarom onze berekeningen indicatief zijn: vele factoren spelen een rol die we niet allemaal kunnen meten. Daarom werken we met conservatieve schattingen en veiligheidsmarges.
+                </p>
+            </div>
+
+            <h2 class="section-heading">Wetenschappelijk Onderzoek</h2>
+            <p class="section-text">
+                Uitgebreid onderzoek door het Amerikaanse National Institutes of Health (NIH) en gepubliceerd in de LactMed database toont de effecten van alcohol op borstvoeding. Hieronder de belangrijkste bevindingen uit klinische studies.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Voedingsgedrag</h3>
+            <p class="section-text">
+                In klinische studies met 12 moeders bleek dat baby's die melk dronken met alcohol 20 tot 23% minder melk consumeerden tijdens de 3 tot 4 uur na inname, ondanks dat de tijd aan de borst en het aantal zuigbewegingen onveranderd bleven. Baby's compenseerden dit later door vaker te voeden, waardoor de totale hoeveelheid melk over 20 uur gelijk bleef.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Melkproductie en Toeschietreflex</h3>
+            <p class="section-text">
+                Moeders die 0,3 gram alcohol per kg lichaamsgewicht dronken, produceerden gemiddeld 9,3% minder melk 2 uur na alcoholinname dan wanneer ze een niet-alcoholische drank consumeerden. Studies tonen ook aan dat alcohol de oxytocine-respons (toeschietreflex) doseringsafhankelijk remt: bij 0,5-0,99 g/kg met 18%, bij 1-1,49 g/kg met 62%, en bij 1,5-1,99 g/kg met maar liefst 80%. Dit verklaart waarom alcohol tijdelijk de toeschietreflex kan remmen, wat de melkproductie kort kan verminderen.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Effect op Babyslaap</h3>
+            <p class="section-text">
+                Baby's sliepen vaker maar voor kortere perioden tijdens de 3,5 tot 4 uur na alcoholinname door de moeder. Dit gold zowel na borstvoeding als wanneer baby's melk kregen met een equivalent alcoholgehalte. Baby's compenseerden dit later door meer REM-slaap, zonder langdurig effect na 24 uur.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Goed Nieuws: Matig Gebruik met Timing</h3>
+            <p class="section-text">
+                Een grote prospectieve cohortstudie uit Australië toont aan dat matig alcoholgebruik met goede timing - zoals onze app helpt berekenen - geen negatief effect heeft op baby-ontwikkeling. Wanneer moeders hun alcoholgebruik tijdelijk plannen om de hoeveelheid alcohol in moedermelk te minimaliseren, hebben hun baby's tot 12 maanden geen verhoogd risico op nadelige uitkomsten vergeleken met baby's van niet-drinkende moeders.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Belangrijk: Meer dan 1 Drankje per Dag</h3>
+            <p class="section-text">
+                Lange-termijn ontwikkelingsstudies laten zien dat alcoholinname van meer dan 1 drankje per dag tijdens het geven van borstvoeding een meetbare afname in motorische ontwikkeling veroorzaakt bij 1 jaar oude baby's, hoewel de mentale ontwikkeling onveranderd bleef. Daarom adviseren wij - in lijn met CDC en AAP richtlijnen - maximaal 1 standaarddrankje per dag, met voldoende wachttijd.
+            </p>
+
+            <h3 style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 18px; color: #333; margin: 30px 0 15px 0;">Duur van Borstvoeding</h3>
+            <p class="section-text">
+                Een 1-jarige survey onder 587 moeders in Australië toont dat vrouwen die meer dan 2 standaarddrankjes per dag dronken twee keer zo vaak stopten met borstvoeding voor 6 maanden postpartum dan moeders die onder deze hoeveelheid bleven. Matig gebruik beïnvloedt de borstvoedingsduur niet negatief.
+            </p>
+
+            <div class="highlight-box" id="quote-carousel" style="margin-top: 40px;">
+                <h3 class="highlight-title">Uit het Onderzoek</h3>
+                <div class="quote-container">
+                    <!-- Quote 1 -->
+                    <div class="quote-slide active">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Infants who drank milk that contained alcohol consumed 20 to 23% less milk during the 3- or 4-hour testing session, even though the time spent at the breast and number of sucks was unchanged."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Klinische studie met 12 moeders, gepubliceerd in LactMed (NIH)
+                        </p>
+                    </div>
+                    <!-- Quote 2 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Nursing mothers who ingested a 0.3 grams/kg dose of alcohol produced an average of 9.3% less milk 2 hours after the alcohol intake using a breast pump than they did when a nonalcoholic beverage was taken."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — LactMed melkproductie studie
+                        </p>
+                    </div>
+                    <!-- Quote 3 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Alcohol doses of 0.5 to 0.99 grams/kg reduced oxytocin response to infant sucking by 18%; doses of 1 to 1.49 grams/kg reduced the response by 62%; and doses from 1.5 to 1.99 grams/kg reduced the response by 80%."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — LactMed oxytocine onderzoek (toeschietreflex)
+                        </p>
+                    </div>
+                    <!-- Quote 4 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Infants slept more frequently for shorter periods of time during the 3.5 to 4 hours after alcohol intake, whether it was after mothers drank 0.3 grams/kg of alcohol before breastfeeding or infants were given their mothers' milk spiked with an equivalent amount of alcohol."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Meerdere slaapstudies, LactMed database
+                        </p>
+                    </div>
+                    <!-- Quote 5 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Most mothers' alcohol use was moderate, and drinking was almost always timed to minimize the amount of alcohol in breastmilk. The infants of mothers who used alcohol postpartum had no greater risk of adverse outcomes up to 12 months of age than the infants of mothers who were alcohol abstainers."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Prospectieve cohort studie, Australië
+                        </p>
+                    </div>
+                    <!-- Quote 6 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Alcohol intake of more than 1 drink daily during nursing produced a measurable decrease in motor function development, but not mental development at 1 year of age."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — Lange-termijn ontwikkelingsstudie, LactMed
+                        </p>
+                    </div>
+                    <!-- Quote 7 -->
+                    <div class="quote-slide">
+                        <p class="section-text" style="font-style: italic; color: #555;">
+                            "Women who drank more than 2 standard drinks daily were twice as likely to discontinue breastfeeding by 6 months postpartum than mothers who reported use below this amount."
+                        </p>
+                        <p class="section-text" style="font-size: 14px; color: #666; margin-top: 10px;">
+                            — 1-jaar survey studie, 587 moeders, Australië
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disclaimer-box">
+                <h3 class="disclaimer-box-title">Belangrijke disclaimers</h3>
+                <ul class="bullet-list">
+                    <li><strong>Geen medisch advies:</strong> Mommy Milk Bar is een informatieve tool, geen medisch hulpmiddel. We stellen geen diagnoses en meten geen alcohol in je bloed of melk.</li>
+                    <li><strong>Variatie tussen personen:</strong> Ons model werkt met gemiddelden en aannames. Jouw lichaam kan alcohol sneller of langzamer verwerken dan gemiddeld.</li>
+                    <li><strong>Je eigen gevoel blijft leidend:</strong> Voel je je nog niet 100% fit, denk je dat er nog alcohol in je bloed zit, dan kun je beter langer wachten.</li>
+                    <li><strong>Veiligheid voorop:</strong> Ook als je melk weer vrij van alcohol is volgens de app, is het belangrijk dat jijzelf weer helemaal nuchter en scherp bent.</li>
+                    <li><strong>Richtlijn, geen harde regel:</strong> Zoals experts benadrukken, zijn deze tijden richtlijnen gebaseerd op gemiddelden. Individuele omstandigheden kunnen afwijken. Bij twijfel: wacht langer of raadpleeg een medisch professional.</li>
+                </ul>
+
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #FFD4D4;">
+                    <p style="font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: #D45A5A; margin-bottom: 10px;">
+                        Aansprakelijkheid
+                    </p>
+                    <p style="font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 13px; line-height: 22px; color: #666;">
+                        Mommy Milk Bar kan niet aansprakelijk worden gesteld voor enige schade voortvloeiend uit het gebruik van deze indicaties. De uiteindelijke beslissing om te voeden ligt altijd bij jou. Wij bieden een hulpmiddel op basis van wetenschappelijke richtlijnen, maar geen garanties. Raadpleeg bij twijfel altijd een medisch professional.
+                    </p>
+                </div>
+            </div>
+
+            <div class="sources-section">
+                <h3 class="sources-title">Bronnen en Expert Consultaties</h3>
+                <a href="https://www.ncbi.nlm.nih.gov/books/NBK501469/" target="_blank" class="source-link">
+                    1. Alcohol - Drugs and Lactation Database (LactMed) - NCBI Bookshelf
+                </a>
+                <a href="https://abcpediatrics.org/2023/12/22/alcohol-and-breastfeeding/" target="_blank" class="source-link">
+                    2. Alcohol and Breastfeeding - ABC Pediatrics of Dunn
+                </a>
+                <a href="https://infantrisk.com/content/alcohol-breastfeeding-whats-your-time-zero" target="_blank" class="source-link">
+                    3. Alcohol & Breastfeeding: What's your time-to-zero? | InfantRisk Center
+                </a>
+                <a href="https://www.beststart.org/resources/alc_reduction/pdf/brstfd_alc_deskref_eng.pdf" target="_blank" class="source-link">
+                    4. Drinking Alcohol while Breastfeeding Desk Reference - BestStart
+                </a>
+                <a href="https://helpwithdrinking.ca/getting-help/information-for-specific-populations/alcohol-and-breastmilk-chestmilk-calculator/" target="_blank" class="source-link">
+                    5. Alcohol and breastmilk/chestmilk calculator - Help With Drinking Canada
+                </a>
+                <a href="https://www.cdc.gov/" target="_blank" class="source-link">
+                    6. Centers for Disease Control and Prevention (CDC)
+                </a>
+                <a href="https://publications.aap.org/" target="_blank" class="source-link">
+                    7. American Academy of Pediatrics
+                </a>
+                <a href="https://keciagaither.com/" target="_blank" class="source-link">
+                    8. Dr. Kecia Gaither, MD MPH FACOG - Double Board-Certified OB-GYN & Maternal-Fetal Medicine
+                </a>
+            </div>
+
+            <a href="index.html" class="back-link">← Terug naar home</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-divider"></div>
+            <div class="footer-content">
+                <nav class="footer-nav">
+                    <a href="privacy.html" class="footer-link">Privacy</a>
+                    <a href="terms.html" class="footer-link">Voorwaarden</a>
+                    <a href="how-we-calculate.html" class="footer-link">Hoe wij rekenen</a>
+                    <a href="mailto:info@mommymilkbar.nl" class="footer-link">Contact</a>
+                </nav>
+                <div class="footer-social">
+                    <a href="https://instagram.com/mommymilkbar" target="_blank" rel="noopener noreferrer" class="social-link">
+                        <img src="assets/images/Instagram_logo.png" alt="Instagram" class="social-icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

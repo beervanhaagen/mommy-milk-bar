@@ -118,15 +118,11 @@ export default function Home() {
   const [activePlanningSafeTime, setActivePlanningSafeTime] = useState<number | null>(null);
   const [isPlanningExpanded, setIsPlanningExpanded] = useState(true);
   const [safetyMarginMin, setSafetyMarginMin] = useState(0);
-  const [showPlanningReminder, setShowPlanningReminder] = useState(false);
 
   // ZZZ Animation refs
   const zzz1Anim = useRef(new Animated.Value(0)).current;
   const zzz2Anim = useRef(new Animated.Value(0)).current;
   const zzz3Anim = useRef(new Animated.Value(0)).current;
-
-  // Shake animation ref for planning button
-  const shakeAnim = useRef(new Animated.Value(0)).current;
 
   // Check for active sessions and update time
   useEffect(() => {
@@ -354,7 +350,7 @@ export default function Home() {
       if (IconComponent) {
         return <IconComponent size={24} />;
       }
-      return <Text style={styles.planningMomentIconText}>🍷</Text>;
+      return <WineIcon />;
     }
 
     if (moment.type === 'pump') {
@@ -430,26 +426,9 @@ export default function Home() {
     }
   };
 
-  // Shake animation for planning button
-  const triggerShake = () => {
-    Animated.sequence([
-      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
-      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
-    ]).start();
-  };
-
-  // Handle planning button press with validation
+  // Handle planning button press
   const handlePlanningPress = () => {
-    if (!hasLoggedDrinkToday) {
-      setShowPlanningReminder(true);
-      triggerShake();
-      // Hide reminder after 3 seconds
-      setTimeout(() => setShowPlanningReminder(false), 3000);
-    } else {
-      router.push('/planning/smart');
-    }
+    router.push('/planning/smart');
   };
 
   const mainChoices = [
@@ -768,18 +747,10 @@ export default function Home() {
           )}
 
           {/* Section: Plannen */}
-          <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
-            {showPlanningReminder && (
-              <View style={styles.planningReminderBanner}>
-                <Text style={styles.planningReminderText}>
-                  Je hebt nog geen drankje gelogd
-                </Text>
-              </View>
-            )}
-            <TouchableOpacity
-              style={styles.planCard}
-              onPress={handlePlanningPress}
-            >
+          <TouchableOpacity
+            style={styles.planCard}
+            onPress={handlePlanningPress}
+          >
               {/* Left Section - Icon */}
               <View style={styles.planCardLeft}>
                 <Image
@@ -798,8 +769,6 @@ export default function Home() {
                 </TouchableOpacity>
               </View>
             </TouchableOpacity>
-          </Animated.View>
-
         </View>
 
         {/* Quick Actions - Hidden until activity */}
@@ -1385,9 +1354,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  planningMomentIconText: {
-    fontSize: 20,
-  },
   planningMomentDetails: {
     flex: 1,
   },
@@ -1547,23 +1513,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     color: '#A8A5A2',
-    textAlign: 'center',
-  },
-  planningReminderBanner: {
-    backgroundColor: '#FFF3E0',
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#FFB74D',
-    alignItems: 'center',
-  },
-  planningReminderText: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 13,
-    color: '#F57C00',
     textAlign: 'center',
   },
 });

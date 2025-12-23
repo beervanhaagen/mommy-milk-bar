@@ -7,10 +7,10 @@ import { AnimatedBackground } from "../../src/components/AnimatedBackground";
 const { width, height } = Dimensions.get('window');
 
 // SVG Icon Components
-const CloudIcon = () => (
+const ShieldIcon = () => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
     <Path
-      d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"
+      d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
       stroke="#F49B9B"
       strokeWidth={2}
       strokeLinecap="round"
@@ -20,33 +20,23 @@ const CloudIcon = () => (
   </Svg>
 );
 
-const DatabaseIcon = () => (
+const HeartIcon = () => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
     <Path
-      d="M12 2C6.5 2 2 3.79 2 6v12c0 2.21 4.5 4 10 4s10-1.79 10-4V6c0-2.21-4.5-4-10-4z"
-      stroke="#F49B9B"
-      strokeWidth={2}
-      fill="none"
-    />
-    <Path
-      d="M2 12c0 2.21 4.5 4 10 4s10-1.79 10-4"
-      stroke="#F49B9B"
-      strokeWidth={2}
-      fill="none"
-    />
-  </Svg>
-);
-
-const ChartIcon = () => (
-  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
-    <Polyline
-      points="22 12 18 12 15 21 9 3 6 12 2 12"
+      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
       stroke="#F49B9B"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
       fill="none"
     />
+  </Svg>
+);
+
+const CalendarIcon = () => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+    <Rect x={3} y={4} width={18} height={18} rx={2} ry={2} stroke="#F49B9B" strokeWidth={2} fill="none" />
+    <Path d="M16 2v4M8 2v4M3 10h18" stroke="#F49B9B" strokeWidth={2} strokeLinecap="round" />
   </Svg>
 );
 
@@ -110,7 +100,7 @@ export default function Ready() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={styles.progressBarFill} />
+          <View style={[styles.progressBarFill, { width: 262.5 }]} />
         </View>
       </View>
 
@@ -137,32 +127,28 @@ export default function Ready() {
 
         {/* Benefits of Account */}
         <View style={styles.benefitsCard}>
-          {/* Nu gratis (pilot) ribbon op de kaart */}
-          <View style={styles.ribbon}>
-            <Text style={styles.ribbonText}>Nu gratis (pilot)</Text>
-          </View>
           <Text style={styles.benefitsTitle}>Account aanmaken</Text>
           <Text style={styles.benefitsSubtitle}>Voordelen:</Text>
 
           <View style={styles.benefit}>
             <View style={styles.benefitIconContainer}>
-              <CloudIcon />
+              <ShieldIcon />
             </View>
-            <Text style={styles.benefitText}>Sync tussen apparaten</Text>
+            <Text style={styles.benefitText}>Zekerheid bij elke voeding</Text>
           </View>
 
           <View style={styles.benefit}>
             <View style={styles.benefitIconContainer}>
-              <DatabaseIcon />
+              <HeartIcon />
             </View>
-            <Text style={styles.benefitText}>Back-up van je gegevens</Text>
+            <Text style={styles.benefitText}>Vertrouwen in je beslissingen</Text>
           </View>
 
           <View style={styles.benefit}>
             <View style={styles.benefitIconContainer}>
-              <ChartIcon />
+              <CalendarIcon />
             </View>
-            <Text style={styles.benefitText}>Geschiedenis bewaren</Text>
+            <Text style={styles.benefitText}>Altijd inzicht in je planning</Text>
           </View>
         </View>
 
@@ -178,10 +164,17 @@ export default function Ready() {
         <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
           <Text style={styles.skipButtonText}>Ga door zonder account</Text>
         </TouchableOpacity>
+
+        {/* Login Link */}
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push('/auth/login')}
+        >
+          <Text style={styles.loginButtonText}>Ik heb al een account, inloggen</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -219,7 +212,6 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: 4,
-    width: '100%',
     backgroundColor: '#F49B9B',
     borderRadius: 2,
   },
@@ -307,28 +299,6 @@ const styles = StyleSheet.create({
     color: '#8E8B88',
     marginBottom: 16,
   },
-  ribbon: {
-    position: 'absolute',
-    top: -8,
-    right: -40,
-    backgroundColor: '#F49B9B',
-    paddingVertical: 6,
-    paddingHorizontal: 40,
-    transform: [{ rotate: '40deg' }],
-    shadowColor: '#F49B9B',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 10,
-  },
-  ribbonText: {
-    fontFamily: 'Poppins',
-    fontWeight: '700',
-    fontSize: 11,
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
   benefit: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -387,12 +357,16 @@ const styles = StyleSheet.create({
     color: '#8E8B88',
     textDecorationLine: 'underline',
   },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
+  loginButton: {
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  loginButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#F49B9B',
+    textDecorationLine: 'underline',
   },
 });

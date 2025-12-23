@@ -34,6 +34,36 @@ const TIPS = [
     title: 'Pump & dump werkt niet',
     content: 'Melk weggooien verlaagt de alcoholconcentratie niet. De lever is de enige factor die alcohol afbreekt — melk volgt je bloed.',
   },
+  {
+    id: 7,
+    title: 'Borstvoeding is maatwerk',
+    content: 'Elke mama en baby is uniek. Wat werkt voor de één, hoeft niet te werken voor jou. Vertrouw op je eigen gevoel!',
+  },
+  {
+    id: 8,
+    title: 'Meer drinken = meer melk?',
+    content: 'Extra water drinken maakt niet meer melk, maar wel voldoende drinken is belangrijk. Dorst tijdens voeden is normaal!',
+  },
+  {
+    id: 9,
+    title: 'Borstvoeding is gratis',
+    content: 'Geen flesjes wassen, geen poeder afmeten, altijd op de juiste temperatuur. Handig voor onderweg én goed voor de portemonnee!',
+  },
+  {
+    id: 10,
+    title: 'Cluster feeding is normaal',
+    content: 'Baby\'s groeien in groeispurts en willen dan vaker drinken. Dit is geen teken dat je te weinig melk hebt, maar juist hoe je lichaam meer aanmaakt!',
+  },
+  {
+    id: 11,
+    title: 'Borstvoeding verbrandt calorieën',
+    content: 'Je verbrandt ongeveer 500 extra calorieën per dag door borstvoeding te geven. Een extraatje mag dus zeker!',
+  },
+  {
+    id: 12,
+    title: 'Borstvoeding in het openbaar',
+    content: 'Borstvoeding geven waar je wilt is jouw recht. Je hoeft je nergens voor te schamen — het is de natuurlijkste zaak van de wereld!',
+  },
 ];
 
 export function TipCarousel() {
@@ -106,16 +136,19 @@ export function TipCarousel() {
       </ScrollView>
 
       <View style={styles.pagination}>
-        {TIPS.map((_, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => scrollToIndex(index)}
-            style={[
-              styles.paginationDot,
-              activeIndex === index && styles.paginationDotActive,
-            ]}
-          />
-        ))}
+        {[0, 1, 2].map((dotIndex) => {
+          const groupSize = Math.ceil(TIPS.length / 3);
+          const isActive = Math.floor(activeIndex / groupSize) === dotIndex;
+          return (
+            <View
+              key={dotIndex}
+              style={[
+                styles.paginationDot,
+                isActive && styles.paginationDotActive,
+              ]}
+            />
+          );
+        })}
       </View>
     </View>
   );

@@ -23,6 +23,8 @@ serve(async (req: Request): Promise<Response> => {
 
   try {
     const payload = await req.json();
+    console.log('Received payload:', JSON.stringify(payload, null, 2));
+
     const {
       userId,
       email,
@@ -34,6 +36,7 @@ serve(async (req: Request): Promise<Response> => {
     } = payload;
 
     if (!userId || !email || !verificationToken) {
+      console.error('Missing required fields:', { userId: !!userId, email: !!email, verificationToken: !!verificationToken });
       return new Response(
         JSON.stringify({
           success: false,
@@ -63,26 +66,27 @@ serve(async (req: Request): Promise<Response> => {
 
     const now = new Date().toISOString();
 
+    const profileData = {
+      id: userId,
+      // GDPR Consent fields
+      consent_version: consentVersion || '1.0.0',
+      age_consent: true, // Required for signup
+      medical_disclaimer_consent: true, // Required for signup
+      privacy_policy_consent: true, // Required for signup
+      marketing_consent: marketingConsent ?? false,
+      analytics_consent: analyticsConsent ?? false,
+      consent_timestamp: now,
+      // Onboarding
+      has_completed_onboarding: false,
+      // Preferences
+      notifications_enabled: true,
+      safety_mode: 'cautious', // Default to cautious mode
+    };
+
+    console.log('Upserting profile data:', JSON.stringify(profileData, null, 2));
+
     const { error: upsertError } = await supabase.from('profiles').upsert(
-      {
-        id: userId,
-        // GDPR Consent fields
-        consent_version: consentVersion || '1.0.0',
-        age_consent: true, // Required for signup
-        medical_disclaimer_consent: true, // Required for signup
-        privacy_policy_consent: true, // Required for signup
-        marketing_consent: marketingConsent ?? false,
-        analytics_consent: analyticsConsent ?? false,
-        consent_given_at: now,
-        // Onboarding
-        has_completed_onboarding: false,
-        // Preferences
-        notifications_enabled: true,
-        safety_mode: 'cautious', // Default to cautious mode
-        // GDPR Compliance
-        processing_basis: 'consent',
-        data_retention_years: 2,
-      },
+      profileData,
       {
         onConflict: 'id',
       }
@@ -90,12 +94,19 @@ serve(async (req: Request): Promise<Response> => {
 
     if (upsertError) {
       console.error('Upsert profile error', upsertError);
+      console.error('Upsert error details:', JSON.stringify(upsertError, null, 2));
       return new Response(
-        JSON.stringify({ success: false, message: 'Profiel opslaan mislukt' }),
+        JSON.stringify({
+          success: false,
+          message: 'Profiel opslaan mislukt',
+          error: upsertError.message,
+          details: upsertError
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    console.log('Profile created successfully for user:', userId);
     return new Response(
       JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

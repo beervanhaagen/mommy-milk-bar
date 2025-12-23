@@ -118,13 +118,13 @@ export default function EssentialInfo() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: 240 }]} />
+          <View style={[styles.progressBarFill, { width: 225 }]} />
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Nog even 5 vragen</Text>
-        <Text style={styles.subtitle}>Zodat we accurate berekeningen kunnen maken</Text>
+        <Text style={styles.title}>Elkaar leren kennen</Text>
+        <Text style={styles.subtitle}>zodat we nauwkeurigere berekeningen kunnen maken</Text>
 
         {/* Weight Slider */}
         <View style={styles.card}>
@@ -246,7 +246,6 @@ export default function EssentialInfo() {
         <Text style={styles.buttonText}>Doorgaan</Text>
       </TouchableOpacity>
 
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -470,13 +469,5 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFFFFF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

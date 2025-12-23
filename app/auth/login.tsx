@@ -20,7 +20,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { signIn } from '../../src/services/auth.service';
+import { signIn, resendVerificationEmail } from '../../src/services/auth.service';
 import Svg, { Path } from 'react-native-svg';
 import { AnimatedBackground } from '../../src/components/AnimatedBackground';
 
@@ -31,6 +31,16 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleBack = () => {
+    // Als er geen vorige scherm is (bijv. na uitloggen), voorkom een GO_BACK warning
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      // Ga dan netjes terug naar het startscherm
+      router.replace('/landing');
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -44,7 +54,28 @@ export default function LoginScreen() {
       // Auth state change will automatically navigate via index.tsx
       router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert('Inloggen mislukt', error.message);
+      // Check if error is about unverified email
+      if (error.message?.includes('e-mailadres verifiëren') || error.message?.includes('Email not confirmed')) {
+        Alert.alert(
+          'E-mail niet geverifieerd',
+          'Je moet eerst je e-mailadres verifiëren. Controleer je inbox voor de verificatiemail.',
+          [
+            { text: 'Annuleren', style: 'cancel' },
+            {
+              text: 'Opnieuw versturen',
+              onPress: async () => {
+                try {
+                  await resendVerificationEmail(email);
+                } catch (resendError: any) {
+                  Alert.alert('Fout', resendError.message || 'Kon verificatie e-mail niet versturen');
+                }
+              }
+            }
+          ]
+        );
+      } else {
+        Alert.alert('Inloggen mislukt', error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -62,7 +93,7 @@ export default function LoginScreen() {
         <AnimatedBackground variant="variant2" />
 
         {/* Back Button */}
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Svg width={20} height={20} viewBox="0 0 24 24">
             <Path d="M15 18l-6-6 6-6" fill="#F49B9B" />
           </Svg>
@@ -149,7 +180,6 @@ export default function LoginScreen() {
         </View>
 
         {/* Bottom Line */}
-        <View style={styles.bottomLine} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -274,13 +304,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
     color: '#F49B9B',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 20,
-    backgroundColor: '#E6E6E6',
   },
 });

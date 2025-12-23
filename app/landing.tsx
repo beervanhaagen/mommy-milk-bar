@@ -11,20 +11,27 @@ export default function Landing() {
   const profile = useStore((state) => state.profile);
   const { isAuthenticated } = useAuth();
 
+  const handleBack = () => {
+    // Alleen terug gaan als er echt een vorige pagina is
+    if (router.canGoBack()) {
+      router.back();
+    }
+  };
+
   const handleGetStarted = () => {
     // If authenticated and onboarded, go to app
     if (isAuthenticated && profile.hasCompletedOnboarding) {
       router.replace('/(tabs)');
     } else {
       // Not authenticated or onboarding not complete - start onboarding
-      router.push('/onboarding/usp-1');
+      router.push('/onboarding/intro-mimi');
     }
   };
 
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Svg width={20} height={20} viewBox="0 0 24 24">
           <Path d="M15 18l-6-6 6-6" fill="#FFFCF4" />
         </Svg>
@@ -41,12 +48,12 @@ export default function Landing() {
 
       {/* Title */}
       <Text style={styles.title}>
-        Welkom bij Mama Milk Bar
+        Welkom bij Mommy Milk Bar
       </Text>
 
       {/* Description */}
       <Text style={styles.description}>
-        De tracking app voor moeders die borstvoeding geven en willen genieten.
+        De tracking app voor moeders die borstvoeding geven en bewust omgaan met alcohol.
       </Text>
 
       {/* Get Started Button */}
@@ -63,9 +70,6 @@ export default function Landing() {
           <Text style={styles.loginLinkText}>Al een account? Log in</Text>
         </TouchableOpacity>
       )}
-
-      {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -130,11 +134,16 @@ const styles = StyleSheet.create({
     width: 374,
     height: 63,
     left: (width - 374) / 2,
-    top: 690,
+    bottom: 100,
     backgroundColor: '#E47C7C',
     borderRadius: 38,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#E47C7C',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   buttonText: {
     fontFamily: 'Poppins',
@@ -146,8 +155,9 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     position: 'absolute',
-    top: 770,
+    bottom: 35,
     alignSelf: 'center',
+    paddingVertical: 12,
   },
   loginLinkText: {
     fontFamily: 'Poppins',
@@ -155,13 +165,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FFFFFF',
     textDecorationLine: 'underline',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    top: height * 0.984,
-    backgroundColor: '#E6E6E6',
   },
 });

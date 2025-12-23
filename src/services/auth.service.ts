@@ -66,7 +66,12 @@ export const signUp = async (data: SignUpData) => {
     );
 
     if (createProfileError || !createProfileResponse?.success) {
-      console.error('Profile initialization failed', createProfileError || createProfileResponse);
+      console.error('Profile initialization failed', {
+        error: createProfileError,
+        response: createProfileResponse,
+        fullError: JSON.stringify(createProfileError),
+        fullResponse: JSON.stringify(createProfileResponse),
+      });
       throw new Error(
         createProfileError?.message ||
           createProfileResponse?.message ||

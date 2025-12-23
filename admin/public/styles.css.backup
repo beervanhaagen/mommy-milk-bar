@@ -1,0 +1,460 @@
+/* Modern, Clean Design for Mommy Milk Bar */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF6B9D;
+    --primary-dark: #E85A8A;
+    --secondary: #C147E9;
+    --accent: #FFB8D1;
+    --bg: #FAFAFA;
+    --bg-soft: #FFF5F8;
+    --text: #2D2D2D;
+    --text-light: #6B6B6B;
+    --text-lighter: #999;
+    --white: #FFFFFF;
+    --success: #4CAF50;
+    --warning: #FF6B6B;
+    --shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.header {
+    padding: 2rem 1.5rem;
+    background: var(--white);
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Hero Section */
+.hero {
+    padding: 6rem 1.5rem;
+    background: linear-gradient(180deg, var(--white) 0%, var(--bg-soft) 100%);
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    font-size: 1.375rem;
+    color: var(--text-light);
+    margin-bottom: 2.5rem;
+    line-height: 1.5;
+}
+
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem 2rem;
+    background: var(--text);
+    color: var(--white);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.0625rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-download:hover {
+    background: #1a1a1a;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-download-large {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.125rem;
+}
+
+.apple-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.availability {
+    margin-top: 1rem;
+    font-size: 0.9375rem;
+    color: var(--text-lighter);
+}
+
+/* Demo Section */
+.demo-section {
+    padding: 6rem 1.5rem;
+    background: var(--white);
+}
+
+.demo-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.demo-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+}
+
+.demo-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-light);
+    margin-bottom: 3rem;
+}
+
+.demo-container {
+    background: var(--bg-soft);
+    border-radius: 24px;
+    padding: 3rem 2rem;
+    box-shadow: var(--shadow);
+}
+
+.demo-visual {
+    margin-bottom: 3rem;
+}
+
+.mimi-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 2rem;
+}
+
+.mimi-state {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.5s ease;
+}
+
+.mimi-hidden {
+    opacity: 0;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--white);
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.status-icon {
+    font-size: 1.125rem;
+}
+
+.status-badge.safe {
+    background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.timeline-controls {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.9375rem;
+    color: var(--text-light);
+}
+
+.timeline-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.timeline-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    outline: none;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--white);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: var(--white);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-track {
+    width: 100%;
+    height: 8px;
+    background: #E0E0E0;
+    border-radius: 4px;
+    position: relative;
+    margin-top: -1.75rem;
+    pointer-events: none;
+}
+
+.timeline-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 4px;
+    width: 50%;
+    transition: width 0.1s ease;
+}
+
+/* Features Section */
+.features {
+    padding: 6rem 1.5rem;
+    background: var(--bg);
+}
+
+.features-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+}
+
+.feature {
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.feature-text {
+    font-size: 1rem;
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+    padding: 6rem 1.5rem;
+    background: linear-gradient(135deg, var(--bg-soft) 0%, var(--white) 100%);
+    text-align: center;
+}
+
+.cta-content {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text);
+}
+
+.cta-text {
+    font-size: 1.25rem;
+    color: var(--text-light);
+    margin-bottom: 2.5rem;
+}
+
+/* Footer */
+.footer {
+    padding: 3rem 1.5rem 2rem;
+    background: var(--text);
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.footer-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+}
+
+.footer-text {
+    font-size: 0.9375rem;
+}
+
+.footer-text a {
+    color: var(--white);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    transition: border-color 0.2s;
+}
+
+.footer-text a:hover {
+    border-bottom-color: var(--white);
+}
+
+.footer-disclaimer {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.footer-copyright {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.125rem;
+    }
+
+    .demo-title,
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .demo-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .mimi-container {
+        width: 220px;
+        height: 220px;
+    }
+
+    .features-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        padding: 4rem 1.5rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-subtitle br {
+        display: none;
+    }
+
+    .btn-download {
+        padding: 0.875rem 1.75rem;
+        font-size: 1rem;
+    }
+
+    .demo-section,
+    .features,
+    .cta-section {
+        padding: 4rem 1.5rem;
+    }
+}

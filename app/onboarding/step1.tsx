@@ -8,7 +8,7 @@ export default function Step1() {
   const router = useRouter();
 
   const handleNext = () => {
-    router.push('/onboarding/step2');
+    router.push('/onboarding/intro-mimi');
   };
 
   return (
@@ -32,18 +32,22 @@ export default function Step1() {
       </View>
 
       {/* Title */}
-      <Text style={styles.title}>Genieten van een glas met controle</Text>
-      
+      <Text style={styles.title}>Mommy Milk Bar</Text>
+
       {/* Description */}
-      <Text style={styles.description}>De app helpt je om verantwoord te voeden, zelfs na een glas wijn.</Text>
+      <Text style={styles.description}>De tracking app voor moeders die borstvoeding geven en bewust omgaan met alcohol.</Text>
 
       {/* Continue Button */}
       <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Volgende</Text>
+        <Text style={styles.buttonText}>Aan de slag</Text>
+      </TouchableOpacity>
+
+      {/* Login Link */}
+      <TouchableOpacity style={styles.loginLink} onPress={() => router.push('/login')}>
+        <Text style={styles.loginLinkText}>Al een account? Log in</Text>
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -117,11 +121,16 @@ const styles = StyleSheet.create({
     width: 374,
     height: 63,
     left: (width - 374) / 2,
-    top: 769,
+    bottom: 100,
     backgroundColor: '#F49B9B',
     borderRadius: 38,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#F49B9B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   buttonText: {
     fontFamily: 'Poppins',
@@ -131,12 +140,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFFFFF',
   },
-  bottomLine: {
+  loginLink: {
     position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    top: 882,
-    backgroundColor: '#E6E6E6',
+    bottom: 60,
+    alignSelf: 'center',
+    paddingVertical: 12,
+  },
+  loginLinkText: {
+    fontFamily: 'Poppins',
+    fontWeight: '400',
+    fontSize: 14,
+    color: '#8E8B88',
+    textDecorationLine: 'underline',
   },
 });

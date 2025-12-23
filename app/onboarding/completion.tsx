@@ -119,7 +119,7 @@ export default function Completion() {
 
         {/* Mimi */}
         <View style={styles.mimiContainer}>
-          <Image source={require('../../assets/Mimi_karakters/1_enthousiast_whiter.png')} style={styles.mimiImage} resizeMode="contain" />
+          <Image source={require('../../assets/Mimi_karakters/1_enthousiast_whiter.png')} style={styles.mimiImage as any} resizeMode="contain" />
         </View>
 
         {/* Text */}
@@ -151,7 +151,6 @@ export default function Completion() {
       </TouchableOpacity>
       <Text style={styles.nudgeText}>Account aanmaken geeft je backups, synchronisatie en persoonlijke meldingen. Je data is van jou. We verkopen geen persoonsgegevens.</Text>
 
-      <View style={styles.bottomLine} />
     </Animated.View>
   );
 }

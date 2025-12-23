@@ -9,7 +9,7 @@ export default function WhatIsMMB() {
   const router = useRouter();
 
   const handleNext = () => {
-    router.push('/onboarding/how-it-works');
+    router.push('/onboarding/essential-info');
   };
 
   return (
@@ -28,12 +28,12 @@ export default function WhatIsMMB() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: 120 }]} />
+          <View style={[styles.progressBarFill, { width: 187.5 }]} />
         </View>
       </View>
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Wat is Mama Milk Bar?</Text>
+        <Text style={styles.title}>Wat is Mommy Milk Bar?</Text>
         <Text style={styles.subtitle}>Voordat we beginnen, even duidelijk wat we wel en niet doen.</Text>
 
         {/* What it IS */}
@@ -125,7 +125,6 @@ export default function WhatIsMMB() {
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -378,13 +377,5 @@ const styles = StyleSheet.create({
     bottom: -20,
     right: -10,
     zIndex: 10,
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

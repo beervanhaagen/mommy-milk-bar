@@ -126,7 +126,7 @@ export default function SurveyNames() {
         {/* Microcopy */}
         <View style={styles.microcopy}>
           <Text style={styles.microcopyText}>
-            💡 Met namen maken we de app persoonlijker. We gebruiken "mama" en "baby" als je liever geen namen deelt.
+            Met namen maken we de app persoonlijker. We gebruiken "mama" en "baby" als je liever geen namen deelt.
           </Text>
         </View>
 

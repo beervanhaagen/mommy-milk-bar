@@ -81,7 +81,7 @@ export default function MimiLogic() {
       {/* Content */}
       <View style={styles.content}>
         {/* Title */}
-        <Text style={styles.title}>Hoe werkt Mama Milk Bar?</Text>
+        <Text style={styles.title}>Hoe werkt Mommy Milk Bar?</Text>
         <Text style={styles.subtitle}>Mimi verandert op basis van de countdown</Text>
 
         {/* Mimi Character - Dynamic */}
@@ -147,7 +147,6 @@ export default function MimiLogic() {
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -317,14 +316,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });
 

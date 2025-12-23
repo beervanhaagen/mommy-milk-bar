@@ -146,23 +146,6 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({
         <Text style={styles.helperText}>Dit is de tijd waarop je laatste voeding klaar was.</Text>
       </View>
 
-      {/* Duur voeding */}
-      <View style={styles.section}>
-        <View style={styles.sectionRow}>
-          <Text style={styles.sectionTitle}>Duur voeding</Text>
-          <TouchableOpacity
-            style={styles.durationButton}
-            onPress={() => {
-              setTempDuration(feedDurationMin);
-              setShowDurationPicker(true);
-            }}
-          >
-            <Text style={styles.durationButtonText}>{feedDurationMin} min</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.helperText}>Standaard rekenen we met 30 minuten.</Text>
-      </View>
-
       {/* Frequentie */}
       <View style={styles.section}>
         <View style={styles.sectionRow}>
@@ -279,54 +262,6 @@ const BabyRitmeTracker: React.FC<BabyRitmeTrackerProps> = ({
         </Modal>
       )}
 
-      {/* Duration Picker Modal */}
-      {showDurationPicker && (
-        <Modal
-          visible={showDurationPicker}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setShowDurationPicker(false)}
-        >
-          <View style={styles.pickerModal}>
-            <View style={styles.pickerContainer}>
-              <Text style={styles.pickerTitle}>Duur voeding instellen</Text>
-              <View style={styles.intervalPickerContainer}>
-                <TouchableOpacity
-                  style={styles.intervalPickerButton}
-                  onPress={() => setTempDuration(Math.max(10, tempDuration - 5))}
-                >
-                  <Text style={styles.intervalPickerButtonText}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.intervalPickerText}>{tempDuration} min</Text>
-                <TouchableOpacity
-                  style={styles.intervalPickerButton}
-                  onPress={() => setTempDuration(Math.min(90, tempDuration + 5))}
-                >
-                  <Text style={styles.intervalPickerButtonText}>+</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.pickerActions}>
-                <TouchableOpacity
-                  style={styles.pickerCancelButton}
-                  onPress={() => setShowDurationPicker(false)}
-                >
-                  <Text style={styles.pickerCancelText}>Annuleren</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.pickerConfirmButton}
-                  onPress={() => {
-                    setFeedDurationMin(tempDuration);
-                    if (onFeedDurationChange) onFeedDurationChange(tempDuration);
-                    setShowDurationPicker(false);
-                  }}
-                >
-                  <Text style={styles.pickerConfirmText}>Bevestigen</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      )}
     </View>
   );
 };

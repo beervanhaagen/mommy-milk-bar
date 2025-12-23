@@ -126,7 +126,6 @@ export default function AnonymousConsent() {
         </Text>
       </TouchableOpacity>
 
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -306,13 +305,5 @@ const styles = StyleSheet.create({
   },
   buttonTextDisabled: {
     color: '#B3AFAF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

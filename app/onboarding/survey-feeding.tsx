@@ -93,7 +93,6 @@ export default function SurveyFeeding() {
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={handleNext}><Text style={styles.buttonText}>Doorgaan</Text></TouchableOpacity>
-      <View style={styles.bottomLine} />
     </View>
   );
 }

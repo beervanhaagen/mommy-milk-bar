@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions, Image, Animated, Vibration } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Dimensions, Vibration } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useStore } from '../../src/state/store';
 import { drinkTypes } from '../../src/data/drinkTypes';
 import { DrinkLogTable } from '../../src/components/DrinkLogTable';
 import { CountdownCard } from '../../src/components/CountdownCard';
 import { CustomDrinkInput } from '../../src/components/CustomDrinkInput';
-import { AnimatedBackground } from '../../src/components/AnimatedBackground';
-import Svg, { Path } from 'react-native-svg';
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,12 +17,6 @@ export default function Drinks() {
   const [selectedDrink, setSelectedDrink] = useState('wine');
   const [quantity, setQuantity] = useState(1);
   const [customAlcohol, setCustomAlcohol] = useState({ percentage: 12, volume: 150 });
-
-  // Success animation state
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successAnim] = useState(new Animated.Value(0));
-  const [mimiScale] = useState(new Animated.Value(0));
-  const [confettiFall] = useState(new Animated.Value(0));
 
   const currentSession = getCurrentSession();
   const profile = getProfile();
@@ -58,51 +50,9 @@ export default function Drinks() {
       }
     });
 
-    // Show success screen
+    // Direct navigate to home - no success screen
     Vibration.vibrate(100);
-    setShowSuccess(true);
-
-    // Geen fade - direct zichtbaar
-    successAnim.setValue(1);
-
-    // Reset animaties voor elke keer
-    mimiScale.setValue(0);
-    confettiFall.setValue(0);
-
-    // Mimi bounce animation
-    Animated.sequence([
-      Animated.spring(mimiScale, {
-        toValue: 1,
-        friction: 3,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-      Animated.spring(mimiScale, {
-        toValue: 0.95,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-      Animated.spring(mimiScale, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Confetti - later en 20% sneller (2800ms i.p.v. 3500ms)
-    setTimeout(() => {
-      Animated.timing(confettiFall, {
-        toValue: 1,
-        duration: 2800,
-        useNativeDriver: true,
-      }).start();
-    }, 400);
-
-    // Auto-navigate naar home na 2.5 seconden
-    setTimeout(() => {
-      setShowSuccess(false);
-      router.push('/(tabs)'); // Direct to home tab, avoid index routing logic
-    }, 2500);
+    router.push('/(tabs)');
   };
 
   const handleCustomAlcoholChange = (percentage: number, volume: number) => {
@@ -271,86 +221,6 @@ export default function Drinks() {
         )}
 
       </ScrollView>
-
-      {/* Success splash - vergelijkbaar met planning screen */}
-      {showSuccess && (
-        <Animated.View style={[styles.successSplash, { opacity: successAnim }]}>
-          {/* Milky white background with pink spheres */}
-          <AnimatedBackground variant="variant2" />
-
-          {/* Darker pink confetti pieces - van hoger, langzamer */}
-          {Array.from({ length: 60 }).map((_, i) => {
-            const colors = ['#F49B9B', '#E8797A', '#D95F61', '#FA9795', '#FFB4A8'];
-            const color = colors[i % colors.length];
-            const size = Math.random() * 14 + 6;
-            const left = Math.random() * 100;
-            const fallDistance = 1000 + Math.random() * 500;
-            const rotation = Math.random() * 720 - 360;
-            const startDelay = Math.random() * 300;
-
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  styles.confettiPiece,
-                  {
-                    backgroundColor: color,
-                    width: size,
-                    height: size,
-                    left: `${left}%`,
-                    transform: [
-                      {
-                        translateY: confettiFall.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [-300 - startDelay, fallDistance],
-                        }),
-                      },
-                      {
-                        rotate: confettiFall.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0deg', `${rotation}deg`],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            );
-          })}
-
-          {/* Success messages */}
-          <View style={styles.successTextContainer}>
-            {/* Roze celebration tekst - boven Mimi */}
-            <View style={styles.celebrationTextContainer}>
-              <Text style={styles.celebrationText}>Je countdown is bijgewerkt</Text>
-              <Text style={styles.celebrationText}>Goed bezig!</Text>
-            </View>
-
-            {/* Animated Mimi with bounce effect */}
-            <Animated.View
-              style={[
-                styles.successMimiContainer,
-                {
-                  transform: [
-                    {
-                      scale: mimiScale.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <Image source={require('../../assets/Mimi_karakters/2_mimi_happy_1.png')} style={styles.successMimi} />
-            </Animated.View>
-
-            {/* Zwarte title en subtekst - onder Mimi */}
-            <Text style={styles.successTitle}>Drankje gelogd!</Text>
-            <Text style={styles.successSubtitle}>Bekijk je countdown op home</Text>
-          </View>
-        </Animated.View>
-      )}
     </SafeAreaView>
   );
 }
@@ -615,68 +485,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     color: '#6A5856',
-    textAlign: 'center',
-  },
-  // Success splash styles
-  successSplash: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAF7F3',
-    overflow: 'hidden',
-  },
-  confettiPiece: {
-    position: 'absolute',
-    borderRadius: 3,
-    opacity: 0.9,
-  },
-  successTextContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 40,
-  },
-  celebrationTextContainer: {
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 24,
-  },
-  celebrationText: {
-    fontFamily: 'Quicksand',
-    fontWeight: '700',
-    fontSize: 19,
-    lineHeight: 26,
-    color: '#E8797A',
-    textAlign: 'center',
-    textShadowColor: 'rgba(232, 121, 122, 0.25)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  successMimiContainer: {
-    marginBottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  successMimi: {
-    width: 160,
-    height: 160,
-    resizeMode: 'contain',
-  },
-  successTitle: {
-    fontFamily: 'Quicksand',
-    fontWeight: '700',
-    fontSize: 26,
-    color: '#4B3B36',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  successSubtitle: {
-    fontFamily: 'Poppins',
-    fontWeight: '400',
-    fontSize: 15,
-    color: '#7A6C66',
     textAlign: 'center',
   },
 });

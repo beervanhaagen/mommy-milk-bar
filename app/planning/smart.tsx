@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Animated, Vibration, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Vibration } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -10,7 +10,6 @@ import VisuelePlanningTimeline from '../../src/components/VisuelePlanningTimelin
 import SlimmeDrankjePlanner, { PlannedDrink } from '../../src/components/SlimmeDrankjePlanner';
 import SlimmeVoorspellingen, { PlanningMoment } from '../../src/components/SlimmeVoorspellingen';
 import { PlanningTipCarousel } from '../../src/components/PlanningTipCarousel';
-import { AnimatedBackground } from '../../src/components/AnimatedBackground';
 import Svg, { Path } from 'react-native-svg';
 
 
@@ -36,12 +35,6 @@ export default function SmartPlannerScreen() {
   const [feedDurationMin, setFeedDurationMin] = useState(30);
   const [strategy, setStrategy] = useState<'minimal' | 'conservative'>('minimal');
   const [planningMoments, setPlanningMoments] = useState<PlanningMoment[]>([]);
-  
-  // Animation state
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [confettiAnim] = useState(new Animated.Value(0));
-  const [mimiScale] = useState(new Animated.Value(0));
-  const [confettiFall] = useState(new Animated.Value(0));
 
   const currentSession = getCurrentSession();
   const profile = getProfile();
@@ -213,45 +206,9 @@ export default function SmartPlannerScreen() {
     } catch (e) {
       // swallow
     }
-    setShowConfetti(true);
 
-    // Geen fade - direct zichtbaar
-    confettiAnim.setValue(1);
-
-    // Mimi bounce animation
-    Animated.sequence([
-      Animated.spring(mimiScale, {
-        toValue: 1,
-        friction: 3,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-      Animated.spring(mimiScale, {
-        toValue: 0.95,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-      Animated.spring(mimiScale, {
-        toValue: 1,
-        friction: 3,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Confetti - later en 20% sneller
-    setTimeout(() => {
-      Animated.timing(confettiFall, {
-        toValue: 1,
-        duration: 2800,
-        useNativeDriver: true,
-      }).start();
-    }, 400);
-
-    // Scherm blijft staan (5 seconden), geen fade out
-    setTimeout(() => {
-      setShowConfetti(false);
-      router.back();
-    }, 5000);
+    // Direct navigate to home - no success screen
+    router.back();
   };
 
   return (
@@ -429,13 +386,13 @@ export default function SmartPlannerScreen() {
               }}
             />
             <View style={styles.timePickerActions}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.timePickerCancelButton}
                 onPress={cancelDatePicker}
               >
                 <Text style={styles.timePickerCancelText}>Annuleren</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.timePickerConfirmButton}
                 onPress={confirmDatePicker}
               >
@@ -444,87 +401,6 @@ export default function SmartPlannerScreen() {
             </View>
           </View>
         </View>
-      )}
-
-
-      {/* Full-screen success splash */}
-      {showConfetti && (
-        <Animated.View style={[styles.successSplash, { opacity: confettiAnim }]}>
-          {/* Milky white background with pink spheres */}
-          <AnimatedBackground variant="variant2" />
-
-          {/* Darker pink confetti pieces - van hoger, langzamer */}
-          {Array.from({ length: 60 }).map((_, i) => {
-            const colors = ['#F49B9B', '#E8797A', '#D95F61', '#FA9795', '#FFB4A8'];
-            const color = colors[i % colors.length];
-            const size = Math.random() * 14 + 6;
-            const left = Math.random() * 100;
-            const fallDistance = 1000 + Math.random() * 500;
-            const rotation = Math.random() * 720 - 360;
-            const startDelay = Math.random() * 300;
-
-            return (
-              <Animated.View
-                key={i}
-                style={[
-                  styles.confettiPiece,
-                  {
-                    backgroundColor: color,
-                    width: size,
-                    height: size,
-                    left: `${left}%`,
-                    transform: [
-                      {
-                        translateY: confettiFall.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [-300 - startDelay, fallDistance],
-                        }),
-                      },
-                      {
-                        rotate: confettiFall.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: ['0deg', `${rotation}deg`],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            );
-          })}
-
-          {/* Success messages */}
-          <View style={styles.successTextContainer}>
-            {/* Roze celebration tekst - boven Mimi */}
-            <View style={styles.celebrationTextContainer}>
-              <Text style={styles.celebrationText}>Bewust bezig met drankjes & voeding</Text>
-              <Text style={styles.celebrationText}>Goed bezig!</Text>
-            </View>
-
-            {/* Animated Mimi with bounce effect */}
-            <Animated.View
-              style={[
-                styles.successMimiContainer,
-                {
-                  transform: [
-                    {
-                      scale: mimiScale.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [0, 1],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-              <Image source={require('../../assets/Mimi_karakters/2_mimi_happy_1.png')} style={styles.successMimi} />
-            </Animated.View>
-
-            {/* Zwarte title en subtekst - onder Mimi */}
-            <Text style={styles.successTitle}>Planning opgeslagen!</Text>
-            <Text style={styles.successSubtitle}>Vind hem terug op je homescreen</Text>
-          </View>
-        </Animated.View>
       )}
     </SafeAreaView>
   );
@@ -865,67 +741,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     color: '#FFFFFF',
-  },
-  successSplash: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FAF7F3',
-    overflow: 'hidden',
-  },
-  confettiPiece: {
-    position: 'absolute',
-    borderRadius: 3,
-    opacity: 0.9,
-  },
-  successTextContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 40,
-  },
-  celebrationTextContainer: {
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 24,
-  },
-  celebrationText: {
-    fontFamily: 'Quicksand',
-    fontWeight: '700',
-    fontSize: 19,
-    lineHeight: 26,
-    color: '#E8797A',
-    textAlign: 'center',
-    textShadowColor: 'rgba(232, 121, 122, 0.25)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  successMimiContainer: {
-    marginBottom: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  successMimi: {
-    width: 160,
-    height: 160,
-    resizeMode: 'contain',
-  },
-  successTitle: {
-    fontFamily: 'Quicksand',
-    fontWeight: '700',
-    fontSize: 26,
-    color: '#4B3B36',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  successSubtitle: {
-    fontFamily: 'Poppins',
-    fontWeight: '400',
-    fontSize: 15,
-    color: '#7A6C66',
-    textAlign: 'center',
   },
   bottomNav: {
     flexDirection: 'row',

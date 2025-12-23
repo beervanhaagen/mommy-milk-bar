@@ -48,16 +48,16 @@ export const TimelinePreview: React.FC<TimelinePreviewProps> = ({
   const getTipsForFeasibility = (feasibility: Feasibility): string[] => {
     switch (feasibility) {
       case 'GREEN':
-        return ['🎉 Past perfect tussen je voedingen!'];
+        return ['Past perfect tussen je voedingen!'];
       case 'YELLOW':
         return [
-          '💡 Voed 30 min vóór start om zonder voorraad te kunnen.',
-          '⏰ Met +1 drankje schuift veilig voeden naar 00:15.'
+          'Voed 30 min vóór start om zonder voorraad te kunnen.',
+          'Met +1 drankje schuift veilig voeden naar 00:15.'
         ];
       case 'RED':
         return [
-          '⚠️ Overweeg om minder te drinken of de timing aan te passen.',
-          '🤱 Voed vóór start en verschuif eerste slok.'
+          'Overweeg om minder te drinken of de timing aan te passen.',
+          'Voed vóór start en verschuif eerste slok.'
         ];
       default:
         return [];
@@ -91,7 +91,7 @@ export const TimelinePreview: React.FC<TimelinePreviewProps> = ({
         <View style={styles.timelineLine} />
         
         <View style={styles.timelineItem}>
-          <Text style={styles.timelineIcon}>🍷</Text>
+          <View style={styles.timelineDotDrink} />
           <Text style={styles.timelineLabel}>Drink</Text>
           <Text style={styles.timelineTime}>{formatTime(plan.startAt!)}</Text>
         </View>
@@ -201,6 +201,18 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginBottom: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  timelineDotDrink: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginBottom: 6,
+    backgroundColor: '#F49B9B',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,

@@ -134,7 +134,6 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
   const [strategy, setStrategy] = useState<'minimal' | 'conservative'>(propStrategy);
   // Extra marge bovenop LactMed + eventuele 15% cautious-factor
   const [safetyMarginMin, setSafetyMarginMin] = useState<number>(0);
-  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Sync strategy from prop
   useEffect(() => {
@@ -536,28 +535,6 @@ const SlimmeVoorspellingen: React.FC<SlimmeVoorspellingenProps> = ({
         </Text>
       )}
 
-      {/* Info Modal */}
-      <Modal
-        visible={showInfoModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowInfoModal(false)}
-      >
-        <View style={styles.infoModalOverlay}>
-          <View style={styles.infoModalContainer}>
-            <Text style={styles.infoModalTitle}>Informatie</Text>
-            <Text style={styles.infoModalText}>
-              Indicatie, geen medisch advies
-            </Text>
-            <TouchableOpacity
-              style={styles.infoModalButton}
-              onPress={() => setShowInfoModal(false)}
-            >
-              <Text style={styles.infoModalButtonText}>Begrepen</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -734,47 +711,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontFamily: 'Poppins',
     marginTop: 20,
-  },
-  infoModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  infoModalContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
-    width: '80%',
-    maxWidth: 320,
-  },
-  infoModalTitle: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 18,
-    color: '#4B3B36',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  infoModalText: {
-    fontFamily: 'Poppins',
-    fontSize: 14,
-    color: '#7A6C66',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 20,
-  },
-  infoModalButton: {
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: '#F49B9B',
-    alignItems: 'center',
-  },
-  infoModalButtonText: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 16,
-    color: '#FFFFFF',
   },
 });
 

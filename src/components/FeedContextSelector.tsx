@@ -87,9 +87,8 @@ export const FeedContextSelector: React.FC<FeedContextSelectorProps> = ({
 
       {/* Mimi tip */}
       <View style={styles.mimiTip}>
-        <Text style={styles.tipIcon}>💡</Text>
         <Text style={styles.tipText}>
-          Voed vlak vóór je eerste drankje, dat scheelt vaak uren!
+          Tip: Voed vlak vóór je eerste drankje, dat scheelt vaak uren!
         </Text>
       </View>
     </View>

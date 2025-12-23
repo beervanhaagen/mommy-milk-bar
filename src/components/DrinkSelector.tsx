@@ -134,7 +134,6 @@ export const DrinkSelector: React.FC<DrinkSelectorProps> = ({
 
         {/* Volume info for selected drink */}
         <View style={styles.volumeInfo}>
-          <Text style={styles.volumeInfoIcon}>ℹ️</Text>
           <Text style={styles.volumeInfoText}>
             We gaan uit van standaard glazen ({
               drinkType === 'WINE' ? '~105ml wijn' :

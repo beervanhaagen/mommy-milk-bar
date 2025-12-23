@@ -173,11 +173,8 @@ export default function PlanDrinkInlineScreen() {
       {/* Confetti Animation */}
       {showConfetti && (
         <View style={styles.confettiContainer}>
-          <Animated.View style={[styles.confetti, { opacity: confettiAnim }]}>
-            <Text style={styles.confettiText}>🎉</Text>
-          </Animated.View>
           <Text style={styles.confettiMessage}>
-            🎉 Je planning staat klaar! Ik hou de tijd voor je bij ⏰💚
+            Je planning staat klaar! Ik hou de tijd voor je bij
           </Text>
         </View>
       )}

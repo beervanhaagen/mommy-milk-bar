@@ -243,7 +243,6 @@ export default function Demo() {
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -486,14 +485,6 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFFFFF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    top: 882,
-    backgroundColor: '#E6E6E6',
   },
   fixedHeader: {
     position: 'absolute',

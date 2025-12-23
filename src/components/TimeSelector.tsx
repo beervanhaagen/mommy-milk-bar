@@ -64,9 +64,17 @@ export const TimeSelector: React.FC<TimeSelectorProps> = ({ selectedTime, onTime
   };
 
   const handleTimeChange = (event: any, date?: Date) => {
-    setShowTimePicker(false);
-    if (date) {
-      onTimeChange(date);
+    // On iOS, only close when user confirms (event.type === 'set')
+    // On Android, the picker auto-closes so we always process
+    const isConfirmed = event?.type === 'set' || event?.type === undefined;
+
+    if (isConfirmed) {
+      setShowTimePicker(false);
+      if (date) {
+        onTimeChange(date);
+      }
+    } else if (event?.type === 'dismissed') {
+      setShowTimePicker(false);
     }
   };
 

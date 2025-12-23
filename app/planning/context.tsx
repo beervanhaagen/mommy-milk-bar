@@ -112,7 +112,7 @@ export default function FeedingContextScreen() {
 
         {/* Info Card */}
         <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>💡 Tip</Text>
+          <Text style={styles.infoTitle}>Tip</Text>
           <Text style={styles.infoText}>
             {plan.prePump 
               ? `Zet ${plan.targetVolumeMl || 120}ml klaar voor de periode dat je niet kunt voeden.`

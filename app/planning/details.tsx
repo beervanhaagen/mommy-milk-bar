@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Animated } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { DrinkPlan } from '../../src/types/planning';
+import { WineGlassIcon, BeerMugIcon, SpiritsIcon, CocktailIcon } from '../../src/components/icons/DrinkIcons';
 
 export default function PlanDrinkDetailsScreen() {
   const router = useRouter();
@@ -40,10 +41,10 @@ export default function PlanDrinkDetailsScreen() {
   }, [plan.drinks, glassFill]);
 
   const drinkTypes = [
-    { id: 'WINE', label: 'Wijn', icon: '🍷' },
-    { id: 'BEER', label: 'Bier', icon: '🍺' },
-    { id: 'COCKTAIL', label: 'Cocktail', icon: '🍸' },
-    { id: 'OTHER', label: 'Overig', icon: '🥃' }
+    { id: 'WINE', label: 'Wijn', icon: WineGlassIcon },
+    { id: 'BEER', label: 'Bier', icon: BeerMugIcon },
+    { id: 'COCKTAIL', label: 'Cocktail', icon: CocktailIcon },
+    { id: 'OTHER', label: 'Overig', icon: SpiritsIcon }
   ];
 
   const paceOptions = [
@@ -142,7 +143,7 @@ export default function PlanDrinkDetailsScreen() {
                 ]}
                 onPress={() => updatePlan({ drinkType: type.id as any })}
               >
-                <Text style={styles.typeIcon}>{type.icon}</Text>
+                <type.icon size={24} />
                 <Text style={[
                   styles.typeLabel,
                   plan.drinkType === type.id && styles.typeLabelActive

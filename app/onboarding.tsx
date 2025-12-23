@@ -158,7 +158,6 @@ export default function Onboarding() {
       </TouchableOpacity>
 
       {/* Bottom Line - Fixed */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -298,13 +297,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    top: 882,
-    backgroundColor: '#E6E6E6',
   },
 });

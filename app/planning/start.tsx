@@ -73,24 +73,32 @@ export default function PlanDrinkStartScreen() {
   };
 
   const handleTimeChange = (event: any, selectedDate?: Date) => {
-    setShowTimePicker(false);
-    if (selectedDate) {
-      setSelectedTime(selectedDate);
-      const plan: Partial<DrinkPlan> = {
-        startAt: selectedDate,
-        drinks: 1,
-        pace: 'TWO_HOURS',
-        drinkType: 'WINE',
-        goal: 'MIN_FREEZER',
-        canPreFeed: true,
-        canMicroPump: true,
-        microPumpTargetMl: 80,
-        safetyBufferMin: 30
-      };
-      router.push({
-        pathname: '/planning/details',
-        params: { planData: JSON.stringify(plan) }
-      });
+    // On iOS, only close and navigate when user confirms (event.type === 'set')
+    // On Android, the picker auto-closes so we always process
+    const isConfirmed = event?.type === 'set' || event?.type === undefined;
+
+    if (isConfirmed) {
+      setShowTimePicker(false);
+      if (selectedDate) {
+        setSelectedTime(selectedDate);
+        const plan: Partial<DrinkPlan> = {
+          startAt: selectedDate,
+          drinks: 1,
+          pace: 'TWO_HOURS',
+          drinkType: 'WINE',
+          goal: 'MIN_FREEZER',
+          canPreFeed: true,
+          canMicroPump: true,
+          microPumpTargetMl: 80,
+          safetyBufferMin: 30
+        };
+        router.push({
+          pathname: '/planning/details',
+          params: { planData: JSON.stringify(plan) }
+        });
+      }
+    } else if (event?.type === 'dismissed') {
+      setShowTimePicker(false);
     }
   };
 
@@ -108,7 +116,7 @@ export default function PlanDrinkStartScreen() {
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>Wanneer denk je iets te drinken?</Text>
-          <Text style={styles.subtitle}>We plannen samen even slim, zodat jij straks écht kunt ontspannen 🍷💤</Text>
+          <Text style={styles.subtitle}>We plannen samen even slim, zodat jij straks écht kunt ontspannen</Text>
         </View>
 
         {/* Quick Options */}

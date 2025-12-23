@@ -26,7 +26,7 @@ export default function USP1() {
     { id: 1, type: 'feeding', time: '18:00', label: 'Laatste voeding', subtitle: 'Eerst voeden, dan drinken' },
     { id: 2, type: 'drink', time: '18:30', label: 'Drankje 1', subtitle: 'Wijn · 1 glas' },
     { id: 3, type: 'drink', time: '20:00', label: 'Drankje 2', subtitle: 'Wijn · 1 glas' },
-    { id: 4, type: 'pump', time: '20:24', label: 'Kolven en flesje geven', subtitle: 'Vergeet het flesje niet' },
+    { id: 4, type: 'pump', time: '20:24', label: 'Kolven en flesje', subtitle: 'Je baby heeft honger' },
     { id: 5, type: 'safe', time: '22:15', label: 'Veilig voeden', subtitle: 'Alcohol volledig afgebroken' },
   ];
 
@@ -70,7 +70,7 @@ export default function USP1() {
   };
 
   const handleNext = () => {
-    router.push('/onboarding/usp-2');
+    router.push('/onboarding/what-is-mmb');
   };
 
   return (
@@ -89,7 +89,7 @@ export default function USP1() {
           </Svg>
         </TouchableOpacity>
         <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: 60 }]} />
+          <View style={[styles.progressBarFill, { width: 150 }]} />
         </View>
       </View>
 
@@ -110,6 +110,9 @@ export default function USP1() {
 
         {/* Title */}
         <Text style={styles.title}>Plan met vertrouwen</Text>
+
+        {/* Subtitle */}
+        <Text style={styles.subtitle}>Een duidelijke planning die vertrouwen geeft</Text>
 
         {/* Planning Widget - Similar to home screen */}
         <View style={styles.planningWidget}>
@@ -161,10 +164,6 @@ export default function USP1() {
             );
           })}
         </View>
-
-        <Text style={styles.subtext}>
-          Een duidelijke planning die vertrouwen geeft
-        </Text>
       </ScrollView>
 
       {/* Continue Button */}
@@ -173,7 +172,6 @@ export default function USP1() {
       </TouchableOpacity>
 
       {/* Bottom Line */}
-      <View style={styles.bottomLine} />
     </View>
   );
 }
@@ -240,7 +238,16 @@ const styles = StyleSheet.create({
     lineHeight: 42,
     textAlign: 'center',
     color: '#4B3B36',
-    marginBottom: 16,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontFamily: 'Poppins',
+    fontWeight: '300',
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'center',
+    color: '#8E8B88',
+    marginBottom: 20,
   },
   planningWidget: {
     width: '100%',
@@ -362,14 +369,6 @@ const styles = StyleSheet.create({
   safeBubble: {
     backgroundColor: '#FFE8EC',
   },
-  subtext: {
-    fontFamily: 'Poppins',
-    fontWeight: '600',
-    fontSize: 14,
-    lineHeight: 22,
-    textAlign: 'center',
-    color: '#F49B9B',
-  },
   button: {
     position: 'absolute',
     width: 374,
@@ -393,13 +392,5 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     color: '#FFFFFF',
-  },
-  bottomLine: {
-    position: 'absolute',
-    width: 143,
-    height: 5,
-    left: (width - 143) / 2,
-    bottom: 14,
-    backgroundColor: '#E6E6E6',
   },
 });

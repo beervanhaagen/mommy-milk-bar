@@ -13,9 +13,11 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Path } from 'react-native-svg';
+import { supabase } from '../lib/supabase';
 
 interface FeedbackData {
   rating: 'positive' | 'negative';
+  npsScore: number | null;
   comment: string;
   timestamp: string;
 }
@@ -62,6 +64,7 @@ const CloseIcon = () => (
 export const FeedbackWidget: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [rating, setRating] = useState<'positive' | 'negative' | null>(null);
+  const [npsScore, setNpsScore] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -84,20 +87,38 @@ export const FeedbackWidget: React.FC = () => {
 
     const feedbackData: FeedbackData = {
       rating,
+      npsScore,
       comment,
       timestamp: new Date().toISOString(),
     };
 
     try {
-      // Get existing feedback
-      const existingData = await AsyncStorage.getItem('mmb:user_feedback');
-      const feedbackList = existingData ? JSON.parse(existingData) : [];
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
 
-      // Add new feedback
-      feedbackList.push(feedbackData);
+      if (user) {
+        // Save to Supabase
+        const { error } = await supabase
+          .from('feedback')
+          .insert({
+            user_id: user.id,
+            rating,
+            nps_score: npsScore,
+            comment: comment.trim() || null,
+          });
 
-      // Save back to storage
-      await AsyncStorage.setItem('mmb:user_feedback', JSON.stringify(feedbackList));
+        if (error) {
+          console.error('Supabase error:', error);
+          // Fallback to AsyncStorage
+          throw error;
+        }
+      } else {
+        // No user, save to AsyncStorage as fallback
+        const existingData = await AsyncStorage.getItem('mmb:user_feedback');
+        const feedbackList = existingData ? JSON.parse(existingData) : [];
+        feedbackList.push(feedbackData);
+        await AsyncStorage.setItem('mmb:user_feedback', JSON.stringify(feedbackList));
+      }
 
       setSubmitted(true);
 
@@ -111,6 +132,7 @@ export const FeedbackWidget: React.FC = () => {
           setShowModal(false);
           setExpanded(false);
           setRating(null);
+          setNpsScore(null);
           setComment('');
           setSubmitted(false);
           fadeAnim.setValue(1);
@@ -118,6 +140,16 @@ export const FeedbackWidget: React.FC = () => {
       }, 2000);
     } catch (error) {
       console.error('Failed to save feedback:', error);
+      // Try AsyncStorage as fallback
+      try {
+        const existingData = await AsyncStorage.getItem('mmb:user_feedback');
+        const feedbackList = existingData ? JSON.parse(existingData) : [];
+        feedbackList.push(feedbackData);
+        await AsyncStorage.setItem('mmb:user_feedback', JSON.stringify(feedbackList));
+        setSubmitted(true);
+      } catch (storageError) {
+        console.error('AsyncStorage fallback failed:', storageError);
+      }
     }
   };
 
@@ -125,6 +157,7 @@ export const FeedbackWidget: React.FC = () => {
     setShowModal(false);
     setExpanded(false);
     setRating(null);
+    setNpsScore(null);
     setComment('');
     setSubmitted(false);
   };
@@ -165,36 +198,68 @@ export const FeedbackWidget: React.FC = () => {
       {expanded && rating === 'positive' && !showModal && (
         <View style={styles.container}>
           <View style={styles.expandedContainer}>
-            <Text style={styles.thankYouTitle}>Dankjewel!</Text>
-            <Text style={styles.thankYouText}>
-              Je feedback helpt ons de app te verbeteren voor alle mama's
+            <Text style={styles.thankYouTitle}>Fijn om te horen!</Text>
+            <Text style={styles.npsQuestion}>
+              Hoe waarschijnlijk zou je Mommy Milk Bar aanbevelen aan een vriendin?
             </Text>
-            <TextInput
-              style={styles.optionalInput}
-              placeholder="Wil je nog iets delen? (optioneel)"
-              placeholderTextColor="#B3AFAF"
-              multiline
-              numberOfLines={3}
-              value={comment}
-              onChangeText={setComment}
-              textAlignVertical="top"
-            />
-            <View style={styles.actionRow}>
-              <TouchableOpacity
-                style={styles.skipButton}
-                onPress={handleClose}
-              >
-                <Text style={styles.skipButtonText}>Sluiten</Text>
-              </TouchableOpacity>
-              {comment.trim().length > 0 && (
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleSubmit}
-                >
-                  <Text style={styles.submitButtonText}>Versturen</Text>
-                </TouchableOpacity>
-              )}
+
+            {/* NPS Score Selector */}
+            <View style={styles.npsContainer}>
+              <View style={styles.npsRow}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                  <TouchableOpacity
+                    key={score}
+                    style={[
+                      styles.npsButton,
+                      npsScore === score && styles.npsButtonActive,
+                    ]}
+                    onPress={() => setNpsScore(score)}
+                  >
+                    <Text
+                      style={[
+                        styles.npsButtonText,
+                        npsScore === score && styles.npsButtonTextActive,
+                      ]}
+                    >
+                      {score}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={styles.npsLabels}>
+                <Text style={styles.npsLabelText}>Helemaal niet</Text>
+                <Text style={styles.npsLabelText}>Zeer waarschijnlijk</Text>
+              </View>
             </View>
+
+            {npsScore !== null && (
+              <>
+                <TextInput
+                  style={styles.optionalInput}
+                  placeholder="Wil je nog iets delen? (optioneel)"
+                  placeholderTextColor="#B3AFAF"
+                  multiline
+                  numberOfLines={3}
+                  value={comment}
+                  onChangeText={setComment}
+                  textAlignVertical="top"
+                />
+                <View style={styles.actionRow}>
+                  <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={handleClose}
+                  >
+                    <Text style={styles.skipButtonText}>Sluiten</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={styles.submitButtonText}>Versturen</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
         </View>
       )}
@@ -346,6 +411,57 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  npsQuestion: {
+    fontFamily: 'Poppins',
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#4B3B36',
+    marginBottom: 16,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  npsContainer: {
+    marginBottom: 20,
+  },
+  npsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  npsButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FAF7F3',
+    borderWidth: 1.5,
+    borderColor: '#E0D5D5',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  npsButtonActive: {
+    backgroundColor: '#F49B9B',
+    borderColor: '#F49B9B',
+  },
+  npsButtonText: {
+    fontFamily: 'Poppins',
+    fontWeight: '600',
+    fontSize: 13,
+    color: '#7A6C66',
+  },
+  npsButtonTextActive: {
+    color: '#FFFFFF',
+  },
+  npsLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+  },
+  npsLabelText: {
+    fontFamily: 'Poppins',
+    fontWeight: '300',
+    fontSize: 11,
+    color: '#A8A5A2',
   },
   optionalInput: {
     backgroundColor: '#FAF7F3',
