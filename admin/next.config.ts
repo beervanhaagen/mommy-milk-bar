@@ -14,9 +14,7 @@ const nextConfig: NextConfig = {
   },
 
   // Set the correct root for file tracing in monorepo
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, '../'),
-  },
+  outputFileTracingRoot: path.join(__dirname, '../'),
 };
 
 export default nextConfig;
