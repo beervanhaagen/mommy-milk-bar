@@ -1,8 +1,9 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
-  // Base path for admin panel (keeps admin at /admin while serving static site at /)
-  basePath: '/admin',
+  // Temporarily removed basePath to fix routing error
+  // basePath: '/admin',
 
   // Enable strict mode
   reactStrictMode: true,
@@ -10,6 +11,11 @@ const nextConfig: NextConfig = {
   // Image optimization
   images: {
     domains: ['lqmnkdqyoxytyyxuglhx.supabase.co'],
+  },
+
+  // Set the correct root for file tracing in monorepo
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, '../'),
   },
 };
 
