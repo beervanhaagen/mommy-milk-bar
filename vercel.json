@@ -1,22 +1,18 @@
 {
-  "buildCommand": null,
-  "outputDirectory": null,
-  "framework": null,
-  "installCommand": null,
+  "version": 2,
   "builds": [
     {
-      "src": "website/**",
-      "use": "@vercel/static"
-    },
-    {
       "src": "admin/package.json",
-      "use": "@vercel/next"
+      "use": "@vercel/next",
+      "config": {
+        "rootDirectory": "admin"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/admin/(.*)",
-      "dest": "/admin/$1"
+      "src": "/admin(/.*)?",
+      "dest": "/admin$1"
     },
     {
       "src": "/verify-email",
@@ -25,6 +21,10 @@
     {
       "src": "/reset-password",
       "dest": "/website/reset-password.html"
+    },
+    {
+      "src": "/(.*\\.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot|mp4|webm|mp3|wav|ogg))",
+      "dest": "/website/$1"
     },
     {
       "src": "/(.*)",
