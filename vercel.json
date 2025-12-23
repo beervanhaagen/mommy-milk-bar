@@ -1,0 +1,34 @@
+{
+  "buildCommand": null,
+  "outputDirectory": null,
+  "framework": null,
+  "installCommand": null,
+  "builds": [
+    {
+      "src": "website/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "admin/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/verify-email",
+      "dest": "/website/verify-email.html"
+    },
+    {
+      "src": "/reset-password",
+      "dest": "/website/reset-password.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/website/$1"
+    }
+  ]
+}
