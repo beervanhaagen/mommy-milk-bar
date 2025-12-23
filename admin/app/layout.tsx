@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
+import { Header } from '@/components/layout/Header';
+import { Sidebar } from '@/components/layout/Sidebar';
 import './globals.css';
 
 const inter = Inter({
@@ -31,7 +33,15 @@ export default function RootLayout({
         className={`${inter.variable} ${poppins.variable} font-sans antialiased bg-cockpit-bg text-cockpit-text-primary`}
         suppressHydrationWarning
       >
-        {children}
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <div className="flex-1 flex">
+            <Sidebar />
+            <main className="flex-1 p-8 bg-cockpit-bg">
+              {children}
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   );
