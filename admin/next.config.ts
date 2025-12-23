@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import path from 'path';
 
 const nextConfig: NextConfig = {
   // Temporarily removed basePath to fix routing error
@@ -12,9 +11,6 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['lqmnkdqyoxytyyxuglhx.supabase.co'],
   },
-
-  // Set the correct root for file tracing in monorepo
-  outputFileTracingRoot: path.join(__dirname, '../'),
 };
 
 export default nextConfig;
