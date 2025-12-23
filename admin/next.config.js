@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Temporarily removed basePath to fix routing error
-  // basePath: '/admin',
+  basePath: '/admin',
 
   // Enable strict mode
   reactStrictMode: true,

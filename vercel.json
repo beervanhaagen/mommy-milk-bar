@@ -1,0 +1,54 @@
+{
+  "builds": [
+    {
+      "src": "admin/package.json",
+      "use": "@vercel/next"
+    },
+    {
+      "src": "website/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/admin/_next/(.*)",
+      "dest": "/admin/_next/$1"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/verify-email",
+      "dest": "/website/verify-email.html"
+    },
+    {
+      "src": "/reset-password",
+      "dest": "/website/reset-password.html"
+    },
+    {
+      "src": "/privacy",
+      "dest": "/website/privacy.html"
+    },
+    {
+      "src": "/terms",
+      "dest": "/website/terms.html"
+    },
+    {
+      "src": "/how-we-calculate",
+      "dest": "/website/how-we-calculate.html"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/website/assets/$1"
+    },
+    {
+      "src": "/(.*)\\.(css|js)",
+      "dest": "/website/$1.$2"
+    },
+    {
+      "src": "/",
+      "dest": "/website/index.html"
+    }
+  ]
+}
